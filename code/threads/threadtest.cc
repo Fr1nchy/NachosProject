@@ -45,7 +45,9 @@ ThreadTest ()
     DEBUG ('t', "Entering SimpleTest\n");
 
     Thread *t = new Thread ("forked thread");
+    //Thread *t1 = new Thread ("2nd forked thread");
 
     t->Fork (SimpleThread, 1);
+    //t1->Fork (SimpleThread, 2);
     SimpleThread (0);
 }
