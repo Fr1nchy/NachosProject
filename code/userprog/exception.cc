@@ -69,7 +69,7 @@ ExceptionHandler (ExceptionType which)
 {
     int type = machine->ReadRegister (2);
 
-    if ((which == SyscallException) && (type == SC_Halt))
+    /*if ((which == SyscallException) && (type == SC_Halt))
       {
 	  DEBUG ('a', "Shutdown, initiated by user program.\n");
 	  interrupt->Halt ();
@@ -79,8 +79,28 @@ ExceptionHandler (ExceptionType which)
 	  printf ("Unexpected user mode exception %d %d\n", which, type);
 	  ASSERT (FALSE);
       }
+    */
+    if (which == SyscallException) {
+      switch (type) {
+      case SC_Halt: {
+        DEBUG ('a', "Shutdown, initiated by user program.\n");
+        interrupt->Halt();
+        break;
+      }
+      case SC_PutChar: {
+        char ch = (char)machine->ReadRegister(4);
+        synchconsole->SynchPutChar(ch);
+        break;
+      }
+      default: {
+        printf("Unexpected user mode exception %d %d\n", which, type);
+        ASSERT(FALSE);
+      }
+      }
+      UpdatePC();
+    }
 
     // LB: Do not forget to increment the pc before returning!
-    UpdatePC ();
+    //UpdatePC ();
     // End of addition
 }
