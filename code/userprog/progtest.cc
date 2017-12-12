@@ -84,24 +84,24 @@ ConsoleTest (char *in, char *out)
     readAvail = new Semaphore ("read avail", 0);
     writeDone = new Semaphore ("write done", 0);
 
-    for (;;)
-      {
+    for (;;) {
 	  readAvail->P ();	// wait for character to arrive
-	  ch = console->GetChar ();
-      if (ch != '\n')
-      {
-          console->PutChar('<');
-        writeDone->P ();  // wait for write to finish
-
-        console->PutChar (ch);    // echo it!
-        writeDone->P ();  // wait for write to finish
-
-        console->PutChar('>');
-        writeDone->P ();  // wait for write to finish
+	   ch = console->GetChar ();
+      if (ch == 'c') {
+        console->PutChar('<');   
+        writeDone->P();
+        console->PutChar(ch);  
+        writeDone->P();  
+        console->PutChar('>');    
       }
+      else
+      console->PutChar (ch);    // echo it!
+
+      writeDone->P ();  // wait for write to finish
       if (ch == 'q' || ch == EOF)
 	      return;		// if q, quit
-      }
+    }
+
 }
 
 void
