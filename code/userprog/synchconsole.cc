@@ -28,15 +28,7 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 
 void SynchConsole::SynchPutChar(const char ch)
 {
-	if (ch == 'c') {
-        console->PutChar('<');   
-        writeDone->P();
-        console->PutChar(ch);  
-        writeDone->P();  
-        console->PutChar('>');    
-      }
-      else
-      console->PutChar (ch);    // echo it!
+    console->PutChar (ch);    // echo it!
 	writeDone->P();
 }
 

@@ -106,7 +106,6 @@ ExceptionHandler (ExceptionType which)
         char buffer[MAX_STRING_SIZE];
         copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
         synchconsole->SynchPutString(buffer);
-        delete &buffer;
         break;
       }
       default: {

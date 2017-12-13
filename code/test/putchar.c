@@ -10,12 +10,12 @@ void print(char c, int n)
 	PutChar('\n');
 }
 
-/*void prints(const char *s){
+void prints(const char *s){
 	PutString(s);
-}*/
+}
 int main()
 {
 	print('a',4);
-	//prints('hello');
+	prints("hello");
 	Halt();
 }
