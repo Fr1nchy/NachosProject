@@ -64,6 +64,16 @@ UpdatePC ()
 //      are in machine.h.
 //----------------------------------------------------------------------
 
+void copyStringFromMachine( int from, char *to, unsigned size){
+  unsigned int i = 0;
+  int res = 0;
+
+  while((i < size) && (machine->ReadMem(from+i, 1, &res))){
+    to[i] = res;
+    i++;
+  }
+}
+
 void
 ExceptionHandler (ExceptionType which)
 {
@@ -92,9 +102,16 @@ ExceptionHandler (ExceptionType which)
         synchconsole->SynchPutChar(ch);
         break;
       }
+      case SC_PutString: {
+        char buffer[MAX_STRING_SIZE];
+        copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
+        synchconsole->SynchPutString(buffer);
+        delete &buffer;
+        break;
+      }
       default: {
         printf("Unexpected user mode exception %d %d\n", which, type);
-        ASSERT(FALSE);
+        ASSERT(FALSE); break;
       }
       }
       UpdatePC();
@@ -104,3 +121,5 @@ ExceptionHandler (ExceptionType which)
     //UpdatePC ();
     // End of addition
 }
+
+

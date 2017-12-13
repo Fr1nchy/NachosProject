@@ -11,6 +11,8 @@ static void ReadAvail(int arg) { readAvail->V(); }
 
 static void WriteDone(int arg) { writeDone->V(); }
 
+char *buffer[MAX_STRING_SIZE];
+
 SynchConsole::SynchConsole(char *readFile, char *writeFile)
 {
 	readAvail = new Semaphore("read avail", 0);
@@ -26,7 +28,15 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 
 void SynchConsole::SynchPutChar(const char ch)
 {
-	console->PutChar(ch);
+	if (ch == 'c') {
+        console->PutChar('<');   
+        writeDone->P();
+        console->PutChar(ch);  
+        writeDone->P();  
+        console->PutChar('>');    
+      }
+      else
+      console->PutChar (ch);    // echo it!
 	writeDone->P();
 }
 
@@ -40,10 +50,17 @@ char SynchConsole::SynchGetChar()
 
 void SynchConsole::SynchPutString(const char s[])
 {
-// ...
+	int i = 0;
+	while((i < MAX_STRING_SIZE) && (s[i] != '\0')){
+		SynchPutChar(s[i]);
+		i++;    
+	}
 }
 
 void SynchConsole::SynchGetString(char *s, int n)
 {
-// ...
+	for(int i = 0; i< n; i++){
+		s[i] = SynchGetChar();
+	}
+	s[n] = '\0';
 }
