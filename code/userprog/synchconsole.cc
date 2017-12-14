@@ -56,3 +56,10 @@ void SynchConsole::SynchGetString(char *s, int n)
 	}
 	s[n] = '\0';
 }
+
+void SynchConsole::SynchPutInt(int n){
+    char c;
+    snprintf(&c,1,"%d",n);
+	console->PutChar (n);   
+	writeDone->P();
+}

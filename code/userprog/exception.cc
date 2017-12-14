@@ -128,7 +128,12 @@ ExceptionHandler (ExceptionType which)
         int n = (char)machine->ReadRegister(5);
         synchconsole->SynchGetString(buffer,n);
         copyStringToMachine(s, buffer,n);
-
+        break;
+      }
+      case SC_PutInt: {
+        DEBUG ('a', "Execp: PutInt\n");
+        int n = machine->ReadRegister(4);
+        synchconsole->SynchPutInt(n);
         break;
       }
 
