@@ -19,3 +19,7 @@ int main()
 	prints("hello");
 	Halt();
 }
+
+/*Partie 6: return 0 ; puis  recupération erreur pour traiter
+Ajouter un case dans execpt 
+*/ 

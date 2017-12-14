@@ -74,6 +74,11 @@ void copyStringFromMachine( int from, char *to, unsigned size){
   }
 }
 
+void copyStringToMachine( int reg, char *buf, unsigned size){
+  unsigned int i = 0;
+  while((i < size) && (machine->WriteMem(reg+i, 1,(int)buf[i])));
+}
+
 void
 ExceptionHandler (ExceptionType which)
 {
@@ -98,16 +103,35 @@ ExceptionHandler (ExceptionType which)
         break;
       }
       case SC_PutChar: {
+        DEBUG ('a', "Execp: Putchar\n");
         char ch = (char)machine->ReadRegister(4);
         synchconsole->SynchPutChar(ch);
         break;
       }
       case SC_PutString: {
+        DEBUG ('a', "Execp: PutString\n");
         char buffer[MAX_STRING_SIZE];
         copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
         synchconsole->SynchPutString(buffer);
         break;
       }
+      case SC_GetChar: {
+        DEBUG ('a', "Execp: GetChar\n");
+        machine->WriteRegister (2, synchconsole->SynchGetChar());
+        break;
+      }
+      case SC_GetString: {
+        DEBUG ('a', "Execp: GetString\n");
+        char buffer[MAX_STRING_SIZE];
+
+        int s = machine->ReadRegister(4);
+        int n = (char)machine->ReadRegister(5);
+        synchconsole->SynchGetString(buffer,n);
+        copyStringToMachine(s, buffer,n);
+
+        break;
+      }
+
       default: {
         printf("Unexpected user mode exception %d %d\n", which, type);
         ASSERT(FALSE); break;
