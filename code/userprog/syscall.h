@@ -136,6 +136,10 @@ void PutChar(char c);
 
 void PutString(const char *s);
 
+char GetChar();
+
+char * GetString(char *s, int n);
+
 void copyStringFromMachine( int from, char *to, unsigned size);
 
 void copyStringToMachine( int reg, char *buf, unsigned size);
