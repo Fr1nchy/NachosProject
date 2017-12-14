@@ -76,7 +76,8 @@ void copyStringFromMachine( int from, char *to, unsigned size){
 
 void copyStringToMachine( int reg, char *buf, unsigned size){
   unsigned int i = 0;
-  while((i < size) && (machine->WriteMem(reg+i, 1,(int)buf[i])));
+  while((i < size) && (machine->WriteMem(reg+i, 1,(int)buf[i])))
+    i++;
 }
 
 void
@@ -125,7 +126,7 @@ ExceptionHandler (ExceptionType which)
         char buffer[MAX_STRING_SIZE];
 
         int s = machine->ReadRegister(4);
-        int n = (char)machine->ReadRegister(5);
+        int n = machine->ReadRegister(5);
         synchconsole->SynchGetString(buffer,n);
         copyStringToMachine(s, buffer,n);
         break;
