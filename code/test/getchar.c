@@ -15,7 +15,7 @@ void prints(const char *s){
 }
 int main()
 {
-	print(GetChar(), 3);
+	//print(GetChar(), 3);
 	int n = 10;
 	char str[n+1];
 	GetString(str, n);

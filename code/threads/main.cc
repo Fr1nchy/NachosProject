@@ -61,6 +61,7 @@ extern void Print (char *file), PerformanceTest (void);
 extern void StartProcess (char *file), ConsoleTest (char *in, char *out);
 extern void SynchConsoleTest (char *in, char *out);
 extern void MailTest (int networkID);
+extern void UserThreadCreate(void f(void *a), void *b);
 
 //----------------------------------------------------------------------
 // main
