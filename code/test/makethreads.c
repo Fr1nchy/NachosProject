@@ -1,7 +1,8 @@
 #include "syscall.h"
 
-void printChar(char c) {
-	PutChar('a');
+void printChar(void * c) {
+    char s = *((char*)c);
+	PutChar(s);
 } 
 
 int main()
