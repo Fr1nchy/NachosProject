@@ -61,6 +61,7 @@ void SynchConsole::SynchPutInt(int n){
     snprintf(str,15,"%d",n);
 	SynchPutString(str);
 }
+
 void SynchConsole::SynchGetInt(int *n){
   char c;
   char str[15];
