@@ -1,11 +1,13 @@
 #include "syscall.h"
 
-void printChar() {
+void printChar(char c) {
 	PutChar('a');
 } 
+
 int main()
 {
-	printChar();
+	char c = 'a';
+	UserThreadCreate(printChar, &c);
 	Halt();
 }
 
