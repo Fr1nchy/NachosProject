@@ -28,6 +28,7 @@ void SynchGetString(char *s, int n);
 
 void SynchPutInt(int n);
 
+void SynchGetInt(int *n);
 // Unix fgets(3S)
 
 private:

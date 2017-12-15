@@ -56,10 +56,23 @@ void SynchConsole::SynchGetString(char *s, int n)
 	}
 	s[n] = '\0';
 }
-
 void SynchConsole::SynchPutInt(int n){
-    char c;
-    snprintf(&c,1,"%d",n);
-	console->PutChar (n);   
-	writeDone->P();
+    char str[15];
+    snprintf(str,15,"%d",n);
+	SynchPutString(str);
+}
+void SynchConsole::SynchGetInt(int *n){
+  char c;
+  char str[15];
+  int i =0;
+
+  c=SynchGetChar();
+  while((c>='0')&&(c<='9')&&(i<15)){
+    str[i] = c;
+    c=SynchGetChar();
+    i++;
+  }
+  str[i] = '\0';
+  sscanf(str,"%d",n);
+    
 }

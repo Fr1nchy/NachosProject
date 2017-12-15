@@ -136,6 +136,17 @@ ExceptionHandler (ExceptionType which)
         DEBUG ('a', "Execp: PutInt\n");
         int n = machine->ReadRegister(4);
         synchconsole->SynchPutInt(n);
+
+        break;
+      }
+      case SC_GetInt: {
+        DEBUG ('a', "Execp: GetInt\n");
+        int entier = 0;
+        int n = machine->ReadRegister(4);
+
+        synchconsole->SynchGetInt(&entier);
+        printf("Get:%d\n",entier);
+        machine->WriteMem(n, 1,entier);
         break;
       }
       case SC_UserThreadCreate: {

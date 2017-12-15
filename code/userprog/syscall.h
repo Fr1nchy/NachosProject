@@ -34,8 +34,9 @@
 #define SC_GetChar	13
 #define SC_GetString	14
 #define SC_PutInt	15
-#define SC_UserThreadCreate	16
-#define SC_UserThreadExit	17
+#define SC_GetInt 16
+#define SC_UserThreadCreate	17
+#define SC_UserThreadExit	18
 
 #ifdef IN_USER_MODE
 
@@ -144,6 +145,8 @@ char GetChar();
 void GetString(char *s, int n);
 
 int PutInt(int n);
+
+void GetInt(int * n);
 
 void copyStringFromMachine( int from, char *to, unsigned size);
 
