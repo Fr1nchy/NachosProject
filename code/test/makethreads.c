@@ -3,11 +3,12 @@
 void printChar(void * c) {
     char s = *((char*)c);
 	PutChar(s);
+	UserThreadExit();
 } 
 
 int main()
 {
-	char c = 'a';
+	char c = 't';
 	UserThreadCreate(printChar, &c);
 	Halt();
 }
