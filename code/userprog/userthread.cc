@@ -1,35 +1,34 @@
 #include "userthread.h"
 #include "machine.h"
 #include "syscall.h"
-struct Parametre
-{   
-    int f;
-    int arg;
-};
 
 static void StartUserThread(int f) {  
-    Parametre p = *((Parametre*)f);
-    
-	machine->WriteRegister(StackReg, machine->ReadRegister(PCReg)-PageSize*3);
-    
 
+    Parametre p = *((Parametre*)f);
+
+    printf("bbb: %d, %d\n",p.f,p.arg);
     currentThread->space->InitRegisters ();
     currentThread->space->RestoreState ();
+
     machine->WriteRegister(PrevPCReg,machine->ReadRegister(PCReg));
-    machine->WriteRegister(4,p.arg);
     machine->WriteRegister(PCReg,p.f);
-    machine->WriteRegister(NextPCReg,machine->ReadRegister(PCReg)+4);
+    machine->WriteRegister(NextPCReg,p.f+4);
+    machine->WriteRegister(4,p.arg);
+
+    //machine->WriteRegister(StackReg, machine->ReadRegister(PCReg)-PageSize*3);
+
     machine->Run();
 }
 
 int do_UserThreadCreate(int f, int arg) {
     Thread* newThread = new Thread("User thread");
-    Parametre p;
-    p.f = f;
-    p.arg = arg;
-    newThread->Fork(StartUserThread, (int)&p);
-    //delete p;
-	return do_UserThreadExit();
+
+    Parametre * p = new Parametre();
+    p->f = f;
+    p->arg = arg;
+
+    newThread->Fork(StartUserThread, (int)p);
+	return 0;
 }    
 
 int do_UserThreadExit() {
