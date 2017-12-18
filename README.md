@@ -7,20 +7,22 @@ email for professors : cse-nachos@lists.forge.imag.fr
 
 <h2>Réunion de groupe n°1 : 18/12</h2>
 
-  Etape 2 : Plus ou moins finie
-  Préciser pourquoi cette implémentation.
-  Possibilité d'améliorer le programme d'après le prof ? (Partie 6)
-  FONCTIONNEL !
+  <h3>Etape 2 :</h3> Plus ou moins finie
+  <p>Préciser pourquoi cette implémentation.<br/>
+  Possibilité d'améliorer le programme d'après le prof ? (Partie 6)<br/>
+  FONCTIONNEL</p>
 
-  Rapport : 
-  Intro
-  Détailler chaque étape : - contenu (entier)
-                                     - difficultés
-                                     - améliorations possibles
-  Gestion du temps : diagramme Gantt          
 
-  Etape 3 : Commencée
-  Problème de terminaison d'un thread.
+  <h3>>Rapport :</h3> 
+  Intro<br/>
+  Détailler chaque étape : <ul><li>contenu (entier) </li>
+  <li>difficultés </li>
+  <li>améliorations possibles </li>
+  </ul>
+  Gestion du temps : diagramme Gantt <br/>         
+
+ <h3>Etape 3 :<h3> Commencée<br/>
+  Problème de terminaison d'un thread.<br/>
 
 
 
