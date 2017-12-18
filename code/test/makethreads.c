@@ -3,6 +3,7 @@
 void printChar(void * c) {
     char s = *((char*)c);
 	PutChar(s);
+    UserThreadExit();
 } 
 
 int main()

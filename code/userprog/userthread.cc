@@ -5,17 +5,16 @@
 static void StartUserThread(int f) {
     Parametre p = *((Parametre*)f);
     
-	machine->WriteRegister(StackReg, machine->ReadRegister(PCReg)-PageSize*3);
-    
-    machine->WriteRegister(PrevPCReg,machine->ReadRegister(PCReg));
-    machine->WriteRegister(4,p.arg);
-    machine->WriteRegister(PCReg,p.f);
-    machine->WriteRegister(NextPCReg,machine->ReadRegister(PCReg)+4);
-
     currentThread->space->InitRegisters ();
     currentThread->space->RestoreState ();
 
-    printf("aaaaaa\n");
+    machine->WriteRegister(PrevPCReg,machine->ReadRegister(PCReg));
+    machine->WriteRegister(PCReg,p.f);
+    machine->WriteRegister(NextPCReg,p.f+4);
+    machine->WriteRegister(4,p.arg);
+    
+	machine->WriteRegister(StackReg, machine->ReadRegister(PCReg)-PageSize*3);
+    
 	machine->Run();
 }
 
@@ -26,7 +25,7 @@ int do_UserThreadCreate(int f, int arg) {
     p->arg = arg;
     newThread->Fork(StartUserThread, (int)p);
     delete p;
-	return do_UserThreadExit();
+	return 0;
 }    
 
 int do_UserThreadExit() {
