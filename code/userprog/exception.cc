@@ -151,7 +151,7 @@ ExceptionHandler (ExceptionType which)
       }
       case SC_UserThreadCreate: {
         DEBUG('a', "Excep: UserThreadCreate\n");
-        int f = machine->ReadRegister(4); //void *f ?
+        int f = machine->ReadRegister(4);
         int arg = machine->ReadRegister(5);
         do_UserThreadCreate(f, arg);
         break;
