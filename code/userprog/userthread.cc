@@ -1,6 +1,9 @@
 #include "userthread.h"
 #include "machine.h"
 #include "syscall.h"
+#include "synch.h"
+
+static Semaphore *userThreadEnded;
 
 static void StartUserThread(int f) {  
 
@@ -21,6 +24,7 @@ static void StartUserThread(int f) {
 }
 
 int do_UserThreadCreate(int f, int arg) {
+    userThreadEnded = new Semaphore("user thread finished", 0);
     Thread* newThread = new Thread("User thread");
 
     Parametre * p = new Parametre();
@@ -28,10 +32,17 @@ int do_UserThreadCreate(int f, int arg) {
     p->arg = arg;
 
     newThread->Fork(StartUserThread, (int)p);
+    userThreadEnded->P();
+    
 	return 0;
 }    
 
 int do_UserThreadExit() {
+        printf("\nafin\n");
+        userThreadEnded->V();
 	currentThread->Finish();
+        printf("\nbfin\n");
+
+    printf("fin\n");
 	return 0;
 }
