@@ -9,7 +9,8 @@ void printChar(void * c) {
 int main()
 {
 	char c = 't';
-	UserThreadCreate(printChar, &c);
+	int res = UserThreadCreate(printChar, &c);
+    PutInt(res);
 	Halt();
 }
 

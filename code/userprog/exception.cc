@@ -152,7 +152,8 @@ ExceptionHandler (ExceptionType which)
         DEBUG('a', "Excep: UserThreadCreate\n");
         int f = machine->ReadRegister(4);
         int arg = machine->ReadRegister(5);
-        do_UserThreadCreate(f, arg);
+        int res = do_UserThreadCreate(f, arg);
+        machine->WriteMem(2, 1,res);
         break;
       }
       case SC_UserThreadExit: {

@@ -157,7 +157,7 @@ Initialize (int argc, char **argv)
     
     numberThreads = 0;
     semaNumThreads = new Semaphore("numThreads", 1);
-
+    
     interrupt->Enable ();
     CallOnUserAbort (Cleanup);	// if user hits ctl-C
 
