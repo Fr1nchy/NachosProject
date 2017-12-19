@@ -145,7 +145,6 @@ ExceptionHandler (ExceptionType which)
         int n = machine->ReadRegister(4);
 
         synchconsole->SynchGetInt(&entier);
-        printf("Get:%d\n",entier);
         machine->WriteMem(n, 1,entier);
         break;
       }

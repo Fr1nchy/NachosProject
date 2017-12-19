@@ -101,40 +101,78 @@ Semaphore::V ()
 // Dummy functions -- so we can compile our later assignments 
 // Note -- without a correct implementation of Condition::Wait(), 
 // the test case in the network assignment won't work!
-Lock::Lock (const char *debugName)
-{
+Lock::Lock (const char *debugName){
+    /*name = debugName;
+    value = 1;
+    queue = new List;*/
 }
 
-Lock::~Lock ()
-{
+Lock::~Lock (){
+   // delete queue;
 }
 void
-Lock::Acquire ()
-{
+Lock::Acquire (){
+   /* IntStatus oldLevel = interrupt->SetLevel (IntOff);
+    while (value == 0){				
+	  queue->Append ((void *) currentThread);
+	  currentThread->Sleep ();
+    }
+    value--;
+    (void) interrupt->SetLevel (oldLevel);*/
 }
 void
-Lock::Release ()
-{
+Lock::Release (){
+    /*Thread *thread;
+    IntStatus oldLevel = interrupt->SetLevel (IntOff);
+    thread = (Thread *) queue->Remove ();
+    if (thread != NULL)	scheduler->ReadyToRun (thread);
+    value++;
+    (void) interrupt->SetLevel (oldLevel);*/
 }
 
-Condition::Condition (const char *debugName)
-{
+Condition::Condition (const char *debugName){
+    /*name = debugName;
+    queue = new List;
+    value = 0;*/
 }
 
 Condition::~Condition ()
 {
+    //delete queue;
 }
 void
 Condition::Wait (Lock * conditionLock)
 {
-    ASSERT (FALSE);
+    /*conditionLock->Release();
+    IntStatus oldLevel = interrupt->SetLevel (IntOff);
+    while (value == 0){
+        queue->Append ((void *) currentThread); 
+        currentThread->Sleep ();
+    }
+    (void) interrupt->SetLevel (oldLevel);
+    conditionLock->Acquire();*/
 }
 
 void
 Condition::Signal (Lock * conditionLock)
 {
+    /*Thread *thread;
+    IntStatus oldLevel = interrupt->SetLevel (IntOff);
+    thread = (Thread *) queue->Remove ();
+    if (thread != NULL)	scheduler->ReadyToRun (thread);
+    value = 1;
+    (void) interrupt->SetLevel (oldLevel);*/
 }
 void
 Condition::Broadcast (Lock * conditionLock)
 {
+   /* Thread *thread = (Thread *) queue->Remove ();
+    IntStatus oldLevel = interrupt->SetLevel (IntOff);
+    
+    while(thread != NULL){
+        scheduler->ReadyToRun (thread);
+        thread = (Thread *) queue->Remove ();
+    }
+    value = 1;
+    (void) interrupt->SetLevel (oldLevel);*/
 }

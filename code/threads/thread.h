@@ -81,10 +81,16 @@ class Thread
     // THEY MUST be in this position for SWITCH to work.
     int *stackTop;		// the current stack pointer
     int machineState[MachineStateSize];	// all registers except for stackTop
-    int id;
+    int id_t;
 
   public:
-      int getId();
+      int getId_t(){
+        return id_t;
+      }
+      void setId_t(int id){
+        id_t = id;
+      }
+
       Thread (const char *debugName);	// initialize a Thread 
      ~Thread ();		// deallocate a Thread
     // NOTE -- thread being deleted

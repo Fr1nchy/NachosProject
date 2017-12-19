@@ -2,17 +2,16 @@
 #include "machine.h"
 #include "syscall.h"
 #include "synch.h"
-
-static Semaphore *userThreadEnded;
+#include "system.h"
 
 static void StartUserThread(int f) {  
 
     Parametre p = *((Parametre*)f);
 
-    printf("bbb: %d, %d\n",p.f,p.arg);
+    
     currentThread->space->InitRegisters ();
     currentThread->space->RestoreState ();
-
+    
     machine->WriteRegister(PrevPCReg,machine->ReadRegister(PCReg));
     machine->WriteRegister(PCReg,p.f);
     machine->WriteRegister(NextPCReg,p.f+4);
@@ -24,25 +23,27 @@ static void StartUserThread(int f) {
 }
 
 int do_UserThreadCreate(int f, int arg) {
-    userThreadEnded = new Semaphore("user thread finished", 0);
     Thread* newThread = new Thread("User thread");
-
     Parametre * p = new Parametre();
+
+    semaNumThreads->P();
+
+    newThread->setId_t(numberThreads);
+    numberThreads = numberThreads +1;
+    semaNumThreads->V();
+ 
     p->f = f;
     p->arg = arg;
 
     newThread->Fork(StartUserThread, (int)p);
-    userThreadEnded->P();
-    
-	return 0;
+      
+	return newThread->getId_t();
 }    
 
 int do_UserThreadExit() {
-        printf("\nafin\n");
-        userThreadEnded->V();
 	currentThread->Finish();
-        printf("\nbfin\n");
 
-    printf("fin\n");
 	return 0;
 }
+
+
