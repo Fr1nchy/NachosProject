@@ -5,6 +5,12 @@ email for professors : cse-nachos@lists.forge.imag.fr
 [NachOS/Team H] to precise in the mail object.
 
 
+#Biblio
+http://www.groupes.polymtl.ca/inf2610/documentation/notes/chap4.pdf : terminaison des threads - multithreading<br/>
+
+
+#Suivi de projet
+
 <h2>Réunion de groupe n°1 : 18/12</h2>
 
   <h3>Etape 2 :</h3> Plus ou moins finie
@@ -21,7 +27,7 @@ email for professors : cse-nachos@lists.forge.imag.fr
   </ul>
   Gestion du temps : diagramme Gantt <br/>         
 
- <h3>Etape 3 :<h3> Commencée<br/>
+ <h3>Etape 3 :</h3> Commencée<br/>
   Problème de terminaison d'un thread.<br/>
 
 
