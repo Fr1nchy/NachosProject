@@ -5,11 +5,11 @@ email for professors : cse-nachos@lists.forge.imag.fr
 [NachOS/Team H] to precise in the mail object.
 
 
-#Biblio
+# Biblio
 http://www.groupes.polymtl.ca/inf2610/documentation/notes/chap4.pdf : terminaison des threads - multithreading<br/>
 
 
-#Suivi de projet
+# Suivi de projet
 
 <h2>Réunion de groupe n°1 : 18/12</h2>
 
