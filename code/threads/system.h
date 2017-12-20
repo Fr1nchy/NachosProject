@@ -19,8 +19,9 @@
 /****Gestion des threads users *******/
 #include "list.h"
 #include "synch.h"
-extern int numberThreads;
+extern int nbThreads;
 extern int idThread;
+extern const int nbThreadsMax;
 extern Semaphore * semaNumThreads;
 /************************************/
 

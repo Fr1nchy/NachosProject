@@ -8,10 +8,25 @@ void printChar(void * c) {
 
 int main()
 {
-	char c = 't';
-	UserThreadCreate(printChar, &c);
-	c = 'a';
-	UserThreadCreate(printChar, &c);
+	char c = '0';
+	int t1 = UserThreadCreate(printChar, &c);
+	char d = '1';
+	int t2 = UserThreadCreate(printChar, &d);
+	char e = '2';
+	int t3 = UserThreadCreate(printChar, &e);
+	char f = '3';
+	int t4 = UserThreadCreate(printChar, &f);
+	char g = '4';
+	int t5 = UserThreadCreate(printChar, &g);
+	char h = '5';
+	int t6 = UserThreadCreate(printChar, &h);
+
+	UserThreadJoin(t1);
+	UserThreadJoin(t2);
+	UserThreadJoin(t3);
+	UserThreadJoin(t4);
+	UserThreadJoin(t5);
+	UserThreadJoin(t6);
     Halt();
 }
 

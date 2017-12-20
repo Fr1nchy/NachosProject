@@ -104,7 +104,7 @@ ExceptionHandler (ExceptionType which)
         interrupt->Halt();
 
         /** Test **/
-        while (numberThreads == 0){
+        while (nbThreads == 0){
 	        currentThread->Sleep ();
         }
         /**********/
