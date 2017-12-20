@@ -15,7 +15,7 @@ int main(){
   char c1 = 'c';
   char c2 = 'z';
   UserThreadCreate(characterInterleaved, (void *) &c1);
-  //PutInt(4);
+  PutInt(4);
   UserThreadCreate(characterInterleaved, (void *) &c2);
   Halt();
   return 0;

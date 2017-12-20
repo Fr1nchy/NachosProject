@@ -36,7 +36,8 @@
 #define SC_PutInt	15
 #define SC_GetInt 16
 #define SC_UserThreadCreate	17
-#define SC_UserThreadExit	18
+#define SC_UserThreadJoin 18
+#define SC_UserThreadExit	19
 
 #ifdef IN_USER_MODE
 
@@ -153,6 +154,8 @@ void copyStringFromMachine( int from, char *to, unsigned size);
 void copyStringToMachine( int reg, char *buf, unsigned size);
 
 int UserThreadCreate(void f(void *a), void* b);
+
+void UserThreadJoin(int Idthread);
 
 void UserThreadExit ();
 

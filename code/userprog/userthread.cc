@@ -27,7 +27,6 @@ int do_UserThreadCreate(int f, int arg) {
     Parametre * p = new Parametre();
 
     semaNumThreads->P();
-
     newThread->setId_t(numberThreads);
     numberThreads = numberThreads +1;
     semaNumThreads->V();
@@ -37,13 +36,17 @@ int do_UserThreadCreate(int f, int arg) {
 
     newThread->Fork(StartUserThread, (int)p);
       
-	return newThread->getId_t();
+	  return newThread->getId_t();
 }    
 
 int do_UserThreadExit() {
 	currentThread->Finish();
-
 	return 0;
+}
+
+void join_UserThread(int id){
+  
+  
 }
 
 

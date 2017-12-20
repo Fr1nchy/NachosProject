@@ -153,7 +153,14 @@ ExceptionHandler (ExceptionType which)
         int f = machine->ReadRegister(4);
         int arg = machine->ReadRegister(5);
         int res = do_UserThreadCreate(f, arg);
-        machine->WriteMem(2, 1,res);
+        machine->WriteRegister(2,res);
+        break;
+      }
+      case SC_UserThreadJoin: {
+        DEBUG('a', "Excep: UserThreadJoin\n");
+
+        int arg = machine->ReadRegister(4);
+        join_UserThread(arg);
         break;
       }
       case SC_UserThreadExit: {
