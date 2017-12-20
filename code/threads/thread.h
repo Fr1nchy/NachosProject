@@ -74,6 +74,8 @@ extern void ThreadPrint (int arg);
 //  Some threads also belong to a user address space; threads
 //  that only run in the kernel have a NULL address space.
 
+class Semaphore;
+
 class Thread
 {
   private:
@@ -81,14 +83,14 @@ class Thread
     // THEY MUST be in this position for SWITCH to work.
     int *stackTop;		// the current stack pointer
     int machineState[MachineStateSize];	// all registers except for stackTop
-    int id_t;
-
+    int id;
+    
   public:
-      int getId_t(){
-        return id_t;
+      int getId(){
+        return id;
       }
-      void setId_t(int id){
-        id_t = id;
+      void setId(int tid){
+        id = tid;
       }
 
       Thread (const char *debugName);	// initialize a Thread 
@@ -116,10 +118,16 @@ class Thread
     {
 	return (name);
     }
+
     void Print ()
     {
 	printf ("%s, ", name);
     }
+
+    Semaphore *sem;
+
+    void Sem_P();
+    void Sem_V();
 
   private:
     // some of the private data for this class is listed above

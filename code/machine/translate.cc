@@ -192,7 +192,8 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
     unsigned int pageFrame;
 
     DEBUG('a', "\tTranslate 0x%x, %s: ", virtAddr, writing ? "write" : "read");
-
+    // printf("virtAddr %d\n", virtAddr);
+    // printf("size %d\n", size);
 // check for alignment errors
     if (((size == 4) && (virtAddr & 0x3)) || ((size == 2) && (virtAddr & 0x1))){
 	DEBUG('a', "alignment problem at %d, size %d!\n", virtAddr, size);
@@ -209,6 +210,7 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
     offset = (unsigned) virtAddr % PageSize;
     
     if (tlb == NULL) {		// => page table => vpn is index into table
+    //printf("pageTableSize : %d", pageTableSize);
 	if (vpn >= pageTableSize) {
 	    DEBUG('a', "virtual page # %d too large for page table size %d!\n", 
 			virtAddr, pageTableSize);
@@ -251,5 +253,6 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
     *physAddr = pageFrame * PageSize + offset;
     ASSERT((*physAddr >= 0) && ((*physAddr + size) <= MemorySize));
     DEBUG('a', "phys addr = 0x%x\n", *physAddr);
+    // printf("physAddr %d\n", *physAddr);
     return NoException;
 }
