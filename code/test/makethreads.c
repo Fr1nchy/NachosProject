@@ -9,9 +9,10 @@ void printChar(void * c) {
 int main()
 {
 	char c = 't';
-	int res = UserThreadCreate(printChar, &c);
-    PutInt(res);
-	Halt();
+	UserThreadCreate(printChar, &c);
+	c = 'a';
+	//UserThreadCreate(printChar, &c);
+    Halt();
 }
 
 /*Partie 6: return 0 ; puis  recupération erreur pour traiter

@@ -4,6 +4,8 @@
 #include "synch.h"
 #include "system.h"
 
+static Semaphore* s;
+
 static void StartUserThread(int f) {  
 
     Parametre p = *((Parametre*)f);
@@ -23,6 +25,7 @@ static void StartUserThread(int f) {
 }
 
 int do_UserThreadCreate(int f, int arg) {
+    s = new Semaphore("User thread finished", 0);
     Thread* newThread = new Thread("User thread");
     Parametre * p = new Parametre();
 
@@ -35,11 +38,14 @@ int do_UserThreadCreate(int f, int arg) {
     p->arg = arg;
 
     newThread->Fork(StartUserThread, (int)p);
+    s->P();
+
       
 	  return newThread->getId_t();
 }    
 
 int do_UserThreadExit() {
+    s->V();
 	currentThread->Finish();
 	return 0;
 }
