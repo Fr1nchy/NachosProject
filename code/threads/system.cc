@@ -12,7 +12,8 @@
 // These are all initialized and de-allocated by this file.
 
 /****Gestion des threads users *******/
-int numberThreads;
+int nbThreads;
+const int nbThreadsMax = 20;
 int idThread;
 Semaphore * semaNumThreads;
 /************************************/
@@ -159,7 +160,7 @@ Initialize (int argc, char **argv)
     currentThread->setStatus (RUNNING);
     
     /****Gestion des threads users *******/
-    numberThreads = 0;
+    nbThreads = 0;
     idThread = 0;
     semaNumThreads = new Semaphore("numThreads", 1);
     /************************************/
