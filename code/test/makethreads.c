@@ -11,7 +11,7 @@ int main()
 	char c = 't';
 	UserThreadCreate(printChar, &c);
 	c = 'a';
-	//UserThreadCreate(printChar, &c);
+	UserThreadCreate(printChar, &c);
     Halt();
 }
 

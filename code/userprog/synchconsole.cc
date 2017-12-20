@@ -32,44 +32,36 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 void SynchConsole::SynchPutChar(const char ch)
 {
     monitor->P();
-    printf("PutChar\n");
     console->PutChar (ch);    // echo it!
 	writeDone->P();
-    printf("End PutChar\n");
     monitor->V();
 }
 
 char SynchConsole::SynchGetChar()
 {
     monitor->P();
-    printf("GetChar\n");
 	char ch;
 	readAvail->P();
 	ch = console->GetChar();
-    printf("End GetChar\n");
     monitor->V();
 	return ch;
 }
 
 void SynchConsole::SynchPutString(const char s[])
 {
-    printf("PutString\n");
 	int i = 0;
 	while((i < MAX_STRING_SIZE) && (s[i] != '\0')){
 		SynchPutChar(s[i]);
 		i++;    
 	}
-    printf("End PutString\n");
 }
 
 void SynchConsole::SynchGetString(char *s, int n)
 {
-    printf("GetString\n");
 	for(int i = 0; i< n; i++){
 		s[i] = SynchGetChar();
 	}
 	s[n] = '\0';
-    printf("End GetString\n");
 }
 void SynchConsole::SynchPutInt(int n){
     char str[15];

@@ -102,6 +102,12 @@ ExceptionHandler (ExceptionType which)
       case SC_Halt: {
         DEBUG ('a', "Shutdown, initiated by user program.\n");
         interrupt->Halt();
+
+        /** Test **/
+        while (numberThreads == 0){
+	        currentThread->Sleep ();
+        }
+        /**********/
         break;
       }
       case SC_PutChar: {
