@@ -11,8 +11,11 @@
 // This defines *all* of the global data structures used by Nachos.
 // These are all initialized and de-allocated by this file.
 
+/****Gestion des threads users *******/
 int numberThreads;
+int idThread;
 Semaphore * semaNumThreads;
+/************************************/
 
 Thread *currentThread;		// the thread we are running now
 Thread *threadToBeDestroyed;	// the thread that just finished
@@ -155,9 +158,12 @@ Initialize (int argc, char **argv)
     currentThread = new Thread ("main");
     currentThread->setStatus (RUNNING);
     
+    /****Gestion des threads users *******/
     numberThreads = 0;
+    idThread = 0;
     semaNumThreads = new Semaphore("numThreads", 1);
-    
+    /************************************/
+
     interrupt->Enable ();
     CallOnUserAbort (Cleanup);	// if user hits ctl-C
 

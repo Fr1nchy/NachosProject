@@ -16,10 +16,13 @@
 #include "stats.h"
 #include "timer.h"
 
-
+/****Gestion des threads users *******/
+#include "list.h"
 #include "synch.h"
 extern int numberThreads;
+extern int idThread;
 extern Semaphore * semaNumThreads;
+/************************************/
 
 // Initialization and cleanup routines
  

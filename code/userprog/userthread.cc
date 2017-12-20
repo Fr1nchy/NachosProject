@@ -30,8 +30,9 @@ int do_UserThreadCreate(int f, int arg) {
     Parametre * p = new Parametre();
 
     semaNumThreads->P();
-    newThread->setId_t(numberThreads);
+    newThread->setId_t(idThread);
     numberThreads = numberThreads +1;
+    idThread = idThread +1;
     semaNumThreads->V();
  
     p->f = f;
@@ -41,18 +42,19 @@ int do_UserThreadCreate(int f, int arg) {
     s->P();
 
       
-	  return newThread->getId_t();
+    return newThread->getId_t();
 }    
 
 int do_UserThreadExit() {
     s->V();
+    semaNumThreads->P();
+    numberThreads = numberThreads -1;
+    semaNumThreads->V();
 	currentThread->Finish();
 	return 0;
 }
 
 void join_UserThread(int id){
-  
-  
 }
 
 
