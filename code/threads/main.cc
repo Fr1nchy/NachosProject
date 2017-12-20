@@ -98,7 +98,15 @@ main (int argc, char **argv)
 #ifdef USER_PROGRAM
 	  if (!strcmp (*argv, "-x"))
 	    {			// run a user program
-		ASSERT (argc > 1);
+	    ASSERT (argc > 1);
+	    if (argc == 2)
+    		synchconsole = new SynchConsole(NULL,NULL);
+		else
+		  {
+		      ASSERT (argc > 3);
+		      synchconsole = new SynchConsole (*(argv + 2), *(argv + 3));
+		      argCount = 4;
+		  }
 		StartProcess (*(argv + 1));
 		argCount = 2;
 	    }
