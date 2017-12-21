@@ -5,14 +5,16 @@ void prints(const char *s){
 }
 int main()
 {
+	PutString("Donner votre nom :\n");
 	char str[15];
 	GetString(str, 15);
+	PutString("Bonjour Monsieur ");
+	PutString(str);
 	//PutString(str);
-	while(str[0] != '\0'){
+	/*while(str[0] != '\0'){
 		PutString(str);
 		GetString(str, 15);
 	}
-	/*
 	PutString(str);
 	GetString(str, 15);
 	PutString(str);

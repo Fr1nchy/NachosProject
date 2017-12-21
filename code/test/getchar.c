@@ -10,16 +10,9 @@ void print(char c, int n)
 	PutChar('\n');
 }
 
-void prints(const char *s){
-	PutString(s);
-}
 int main()
 {
-	//print(GetChar(), 3);
-	int n = 10;
-	char str[n+1];
-	GetString(str, n);
-	prints(str); //Test getString
+	print(GetChar(), 3);
 	Halt();
 }
 
