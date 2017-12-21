@@ -12,7 +12,7 @@ void print(int n){
 int main()
 {
 	int n ;
-    PutInt(10);
+    PutInt(256);
     PutChar('\n');
     GetInt(&n);
     PutChar('\n');

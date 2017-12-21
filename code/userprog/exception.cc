@@ -149,9 +149,10 @@ ExceptionHandler (ExceptionType which)
         DEBUG ('a', "Execp: GetInt\n");
         int entier = 0;
         int n = machine->ReadRegister(4);
-
+        printf("n:%d\n",n);
         synchconsole->SynchGetInt(&entier);
-        machine->WriteMem(n, 1,entier);
+        printf("entier:%d\n",entier);
+        machine->WriteMem(n, 4,entier);
         break;
       }
       case SC_UserThreadCreate: {
