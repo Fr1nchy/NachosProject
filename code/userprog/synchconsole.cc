@@ -14,6 +14,10 @@ static void WriteDone(int arg) { writeDone->V(); }
 
 char *buffer[MAX_STRING_SIZE];
 
+/*void initBuffer(char *buffer){
+
+}*/
+
 SynchConsole::SynchConsole(char *readFile, char *writeFile)
 {
 	readAvail = new Semaphore("read avail", 0);
@@ -62,11 +66,11 @@ void SynchConsole::SynchGetString(char *s, int n)
 	for(int i = 0; i< n; i++){
 		ch = SynchGetChar();
 		if (ch == EOF){
-			s[i] = ch;
+			s[i] = '\0';
 			break;
 		}
-		else if(ch == '\n'){
-			s[i] = ch;
+		else if(ch 	== '\n'){
+			s[i] = '\n';
 			s[i+1] = '\0';
 			break;
 		}
