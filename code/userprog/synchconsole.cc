@@ -74,7 +74,7 @@ void SynchConsole::SynchGetString(char *s, int n)
 	}
 	s[n] = '\0';
 }
-void SynchConsole::SynchPutInt(int n){
+void SynchConsole::SynchPutInt(const int n){
     char str[15];
     snprintf(str,15,"%d",n);
 	SynchPutString(str);
