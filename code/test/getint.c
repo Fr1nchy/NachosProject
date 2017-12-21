@@ -11,11 +11,11 @@ void print(int n){
 }
 int main()
 {
-	int n ;
-    PutInt(256);
-    PutChar('\n');
+	int n;
+    //PutInt(256);
     GetInt(&n);
+    PutInt(n);
     PutChar('\n');
-	print(n);
+	//print(n);
 	Halt();
 }
