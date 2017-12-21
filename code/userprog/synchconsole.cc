@@ -78,7 +78,7 @@ void SynchConsole::SynchGetString(char *s, int n)
 	}
 	s[n] = '\0';
 }
-void SynchConsole::SynchPutInt(int n){
+void SynchConsole::SynchPutInt(const int n){
     char str[15];
     snprintf(str,15,"%d",n);
 	SynchPutString(str);
@@ -87,10 +87,12 @@ void SynchConsole::SynchPutInt(int n){
 void SynchConsole::SynchGetInt(int *n){
   char c;
   char str[15];
-  int i =0;
 
   c=SynchGetChar();
-  while((c>='0')&&(c<='9')&&(i<15)){
+  if (c=='-' || (c>='0' && c<='9') ) str[0] = c;
+  int i = 1;
+  c = SynchGetChar();
+  while(c>='0' && c<='9' && i<15) {
     str[i] = c;
     c=SynchGetChar();
     i++;

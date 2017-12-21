@@ -74,7 +74,6 @@ int do_UserThreadCreate(int f, int arg) {
 int do_UserThreadExit() {
     //s->V();
 
-
     currentThread->Sem_V();
     int index = getIndexThreadById(currentThread->getId());
     if (index > nbThreadsMax) threads[index] = NULL;
