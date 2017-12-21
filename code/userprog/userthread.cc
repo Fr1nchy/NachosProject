@@ -30,10 +30,15 @@ static void StartUserThread(int f) {
 
 static int getIndexThreadById(int id) {
     int i = 0;
-    while (i < nbThreadsMax && threads[i]->getId() != id) {
+    while ((i < nbThreadsMax)&&(threads[i]!=NULL)&&(threads[i]->getId() != id)) {
         i++;
     }
-    return i;
+    if(i==nbThreadsMax || threads[i]==NULL){
+        return -1;
+    }else{
+        return i;
+    }
+    
 }
 
 int do_UserThreadCreate(int f, int arg) {
@@ -82,16 +87,13 @@ int do_UserThreadExit() {
 	return 0;
 }
 
-void join_UserThread(int tid){
-    //printf("Waiting for thread %d...\n", tid);
-    int index = getIndexThreadById(tid);
-    if (index <= nbThreadsMax) {
-        threads[index]->Sem_P();
+void join_UserThread(int tid){    
+    if (tid < nbThreadsMax) {
+        int index = getIndexThreadById(tid);   
+        if(index !=-1){
+            threads[index]->Sem_P();
+        }
     }
-    //printf("...Finished waiting for thread %d\n", tid);
-
-
-
 }
 
 
