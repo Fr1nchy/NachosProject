@@ -52,7 +52,7 @@ int do_UserThreadCreate(int f, int arg) {
     Parametre * p = new Parametre();
 
     newThread->setTid(idThread);
-    //newThread->setBid(currentThread->space->bitmap->Find());
+    newThread->setBid(currentThread->space->bitmap->Find());
     int i = 0;
     while (i < nbThreadsMax && threads[i] != NULL) i++;
     if (i < nbThreadsMax) threads[i] = newThread;
@@ -80,7 +80,7 @@ int do_UserThreadExit() {
     int index = getIndexThreadById(currentThread->getTid());
     if (index > nbThreadsMax) threads[index] = NULL;
     currentThread->Finish();
-
+    currentThread->space->bitmap->Clear(currentThread->getBid());
     semaNumThreads->P();
     nbThreads--;
     semaNumThreads->V();
