@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 static Semaphore* s;
 static Thread** threads = new Thread*[nbThreadsMax];
 
@@ -30,7 +31,7 @@ static void StartUserThread(int f) {
 
 static int getIndexThreadById(int id) {
     int i = 0;
-    while ((i < nbThreadsMax)&&(threads[i]!=NULL)&&(threads[i]->getId() != id)) {
+    while ((i < nbThreadsMax)&&(threads[i]!=NULL)&&(threads[i]->getTid() != id)) {
         i++;
     }
     if(i==nbThreadsMax || threads[i]==NULL){
@@ -50,7 +51,8 @@ int do_UserThreadCreate(int f, int arg) {
     Thread* newThread = new Thread("User thread");
     Parametre * p = new Parametre();
 
-    newThread->setId(idThread);
+    newThread->setTid(idThread);
+    //newThread->setBid(currentThread->space->bitmap->Find());
     int i = 0;
     while (i < nbThreadsMax && threads[i] != NULL) i++;
     if (i < nbThreadsMax) threads[i] = newThread;
@@ -68,14 +70,14 @@ int do_UserThreadCreate(int f, int arg) {
     //s->P();
 
       
-    return newThread->getId();
+    return newThread->getTid();
 }    
 
 int do_UserThreadExit() {
     //s->V();
 
     currentThread->Sem_V();
-    int index = getIndexThreadById(currentThread->getId());
+    int index = getIndexThreadById(currentThread->getTid());
     if (index > nbThreadsMax) threads[index] = NULL;
     currentThread->Finish();
 

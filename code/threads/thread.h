@@ -83,14 +83,23 @@ class Thread
     // THEY MUST be in this position for SWITCH to work.
     int *stackTop;		// the current stack pointer
     int machineState[MachineStateSize];	// all registers except for stackTop
-    int id;
+    int tid;        // thread id
+    int bid;        // id associated to the thread in the bitmap
+
     
   public:
-      int getId(){
-        return id;
+      int getTid(){
+        return tid;
       }
-      void setId(int tid){
-        id = tid;
+      void setTid(int id){
+        tid = id;
+      }
+
+      int getBid(){
+        return bid;
+      }
+      void setBid(int id){
+        bid = id;
       }
 
       Thread (const char *debugName);	// initialize a Thread 

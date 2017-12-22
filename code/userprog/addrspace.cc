@@ -64,6 +64,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 {
     NoffHeader noffH;
     unsigned int i, size;
+    
 
     executable->ReadAt ((char *) &noffH, sizeof (noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&
@@ -98,6 +99,10 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	  // a separate page, we could set its 
 	  // pages to be read-only
       }
+
+    // Initializing the mapping table
+
+    bitmap = new BitMap(nbThreadsMax);
 
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment

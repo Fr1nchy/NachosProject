@@ -38,6 +38,7 @@ Thread::Thread (const char *threadName)
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
+    bid = -1;
     sem = new Semaphore("Thread sem", 0);
 
 #ifdef USER_PROGRAM
