@@ -4,7 +4,8 @@ int main()
 {
 	PutString("hello world \nThis is a new line\n");
 	char str[900];
-	for (int i = 0; i < 900; i++)
+    int i;
+	for (i = 0; i < 900; i++)
 	{
 		str[i] = '-';
 	}
