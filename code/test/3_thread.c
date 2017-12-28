@@ -13,10 +13,10 @@ void printChar(void * c) {
 
 int main()
 {
-	int i = 5;
-	int t1 = UserThreadCreate(printChar, &i);
-    i = 10;
-    int t2 = UserThreadCreate(printChar, &i);
+    int i = 5;
+    int t1 = UserThreadCreate(printChar, &i);
+    int j = 10;
+    int t2 = UserThreadCreate(printChar, &j);
 
     PutString("wait main\n");
 

@@ -203,3 +203,19 @@ AddrSpace::RestoreState ()
     machine->pageTable = pageTable;
     machine->pageTableSize = numPages;
 }
+
+int
+AddrSpace::ThreadSpace(){
+	int bid = bitmap->Find();
+	//printf("bid:%d\n",bid);
+	if(bid == -1){
+		return -1;
+	}else{
+		currentThread->setBid(bid);
+		return ( numPages * PageSize - PageSize*bid -16);
+	}
+}
+void
+AddrSpace::ResetSpace(){
+	 bitmap->Clear(currentThread->getBid());
+}

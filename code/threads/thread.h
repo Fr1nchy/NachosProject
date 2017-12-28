@@ -84,9 +84,7 @@ class Thread
     int *stackTop;		// the current stack pointer
     int machineState[MachineStateSize];	// all registers except for stackTop
     int tid;        // thread id
-    int bid;        // id associated to the thread in the bitmap
-
-    
+    int bid;
   public:
       int getTid(){
         return tid;
@@ -94,7 +92,6 @@ class Thread
       void setTid(int id){
         tid = id;
       }
-
       int getBid(){
         return bid;
       }

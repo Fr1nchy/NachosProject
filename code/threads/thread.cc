@@ -38,9 +38,9 @@ Thread::Thread (const char *threadName)
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
-    bid = -1;
     sem = new Semaphore("Thread sem", 0);
-
+    tid = -1;
+    bid = -1;
 #ifdef USER_PROGRAM
     space = NULL;
     // FBT: Need to initialize special registers of simulator to 0
