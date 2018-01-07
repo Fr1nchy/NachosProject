@@ -25,7 +25,7 @@
 __start:
 	jal	main
 	move	$4,$0		
-	jal	Exit	 /* if we return from main, exit(0) */
+	jal	UserThreadExit	 /* if we return from main, exit(0) */
 	.end __start
 
 /* -------------------------------------------------------------
@@ -193,13 +193,21 @@ UserThreadJoin:
 	j	$31
 	.end UserThreadJoin
 
-    .globl	UserThreadExit
+ 	.globl	UserThreadExit
 	.ent	UserThreadExit
 UserThreadExit:
 	addiu $2,$0,SC_UserThreadExit
 	syscall
 	j	$31
 	.end UserThreadExit
+
+	.globl	ForkExec
+	.ent	ForkExec
+ForkExec:
+	addiu $2,$0,SC_ForkExec
+	syscall
+	j	$31
+	.end ForkExec
 
 /* dummy function to keep gcc happy */
         .globl  __main

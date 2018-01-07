@@ -130,11 +130,6 @@ class Thread
 	printf ("%s, ", name);
     }
 
-    Semaphore *sem;
-
-    void Sem_P();
-    void Sem_V();
-
   private:
     // some of the private data for this class is listed above
 

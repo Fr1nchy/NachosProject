@@ -7,10 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-//static Semaphore* s;
-static Thread** threads = new Thread*[nbThreadsMax];
-
 static void StartUserThread(int f) {  
     Parametre p = *((Parametre*)f);
 
@@ -32,69 +28,39 @@ static void StartUserThread(int f) {
     }
 }
 
-static int getIndexThreadById(int id) {
-    int i = 0;
-    while ((i < nbThreadsMax)&&(threads[i]!=NULL)&&(threads[i]->getTid() != id)) {
-        i++;
-    }
-    if(i==nbThreadsMax || threads[i]==NULL){
-        return -1;
-    }else{
-        return i;
-    }
-    
-}
-
 int do_UserThreadCreate(int f, int arg) {
-    //s = new Semaphore("User thread finished", 0);
-
     Thread* newThread = new Thread("User thread");
     Parametre * p = new Parametre();
-    
-    semaNumThreads->P();
-
-    newThread->setTid(idThread);
-    int i = 0;
-    while (i < nbThreadsMax && threads[i] != NULL) i++;
-    if (i < nbThreadsMax) threads[i] = newThread;
-    else return 0; //Nb threads max atteint
-
-    nbThreads++;
-    idThread++;
-    semaNumThreads->V();
- 
     p->f = f;
     p->arg = arg;
-
-    newThread->Fork(StartUserThread, (int)p);
-    //s->P();
-
-      
-    return newThread->getTid();
+  
+    int bid = currentThread->space->incrementIdNbThread();
+    int tid = currentThread->space->getIdThread();
+    if(bid!=-1){
+    	p->f = f;
+    	p->arg = arg;
+	newThread->setBid(bid);
+	newThread->setTid(tid);
+    	newThread->Fork(StartUserThread, (int)p);
+    }
+    return bid;
 }    
 
 int do_UserThreadExit() {
-    //s->V();
-
-    currentThread->Sem_V();
-    int index = getIndexThreadById(currentThread->getTid());
-    if (index > nbThreadsMax) threads[index] = NULL;
-    currentThread->Finish();
-    currentThread->space->ResetSpace();
-    semaNumThreads->P();
-    nbThreads--;
-    semaNumThreads->V();
-
-	return 0;
+    //printf("fin:%d\n",currentThread->getBid());
+    if(currentThread->getBid()!=-1){
+	    semJoinThreads[currentThread->getBid()]->V();
+	    currentThread->Finish();
+	    currentThread->space->decrementNbThreadResetSpace();
+    }else{
+    	interrupt->Halt();
+    }
+    
+    return 0;
 }
 
-void join_UserThread(int tid){    
-    if (tid < nbThreadsMax) {
-        int index = getIndexThreadById(tid);   
-        if(index !=-1){
-            threads[index]->Sem_P();
-        }
-    }
+void join_UserThread(int bid){
+	semJoinThreads[bid]->P();
 }
 
 

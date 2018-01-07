@@ -38,7 +38,6 @@ Thread::Thread (const char *threadName)
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
-    sem = new Semaphore("Thread sem", 0);
     tid = -1;
     bid = -1;
 #ifdef USER_PROGRAM
@@ -214,20 +213,6 @@ Thread::Yield ()
       }
     (void) interrupt->SetLevel (oldLevel);
 }
-
-// Synchronization management
-// sem wait
-void Thread::Sem_P()
-{
-    sem->P();
-}
-
-// sem post
-void Thread::Sem_V()
-{
-    sem->V();
-}
-
 
 //----------------------------------------------------------------------
 // Thread::Sleep

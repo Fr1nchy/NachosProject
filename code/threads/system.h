@@ -21,8 +21,12 @@
 #include "synch.h"
 extern int nbThreads;
 extern int idThread;
+extern int nbProcess;
+#define TAILLEMAX 20
 extern const int nbThreadsMax;
 extern Semaphore * semaNumThreads;
+extern  Semaphore *semJoinThreads[TAILLEMAX];
+extern Semaphore *semNumProcess;
 /************************************/
 
 // Initialization and cleanup routines

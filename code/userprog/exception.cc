@@ -25,7 +25,7 @@
 #include "system.h"
 #include "syscall.h"
 #include "userthread.h"
-
+#include "userfork.h"
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
 // the user program immediately after the "syscall" instruction.
@@ -158,7 +158,7 @@ ExceptionHandler (ExceptionType which)
         int f = machine->ReadRegister(4);
         int arg = machine->ReadRegister(5);
         int res = do_UserThreadCreate(f, arg);
-        machine->WriteRegister(2,res);
+	if(res!=-1) machine->WriteRegister(2,res);
         break;
       }
       case SC_UserThreadJoin: {
@@ -173,7 +173,15 @@ ExceptionHandler (ExceptionType which)
         do_UserThreadExit();
         break;
       }
-
+      case SC_ForkExec: {
+        DEBUG ('a', "Execp: ForkExec");
+	
+        char buffer[MAX_STRING_SIZE];
+        copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
+	int res = do_UserForkCreate(buffer);
+	machine->WriteRegister(2,res);
+        break;
+      }
       default: {
         printf("Unexpected user mode exception %d %d\n", which, type);
         ASSERT(FALSE); break;

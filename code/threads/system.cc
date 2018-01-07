@@ -13,9 +13,12 @@
 
 /****Gestion des threads users *******/
 int nbThreads;
-const int nbThreadsMax = 20;
+const int nbThreadsMax = TAILLEMAX;
 int idThread;
+int nbProcess;
 Semaphore * semaNumThreads;
+Semaphore *semJoinThreads[nbThreadsMax];
+Semaphore *semNumProcess;
 /************************************/
 
 Thread *currentThread;		// the thread we are running now
@@ -161,8 +164,13 @@ Initialize (int argc, char **argv)
     
     /****Gestion des threads users *******/
     nbThreads = 0;
+    nbProcess = 0;
     idThread = 0;
     semaNumThreads = new Semaphore("numThreads", 1);
+    for(int i = 0; i < nbThreadsMax; i++){
+    	semJoinThreads[i] = new Semaphore("joinThreads",0);
+    }
+    semNumProcess = new Semaphore("numProcess",1);
     /************************************/
 
     interrupt->Enable ();

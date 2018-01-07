@@ -19,8 +19,8 @@
 #include "system.h"
 #include "addrspace.h"
 #include "noff.h"
-
 #include <strings.h>		/* for bzero */
+#include "thread.h"
 
 //----------------------------------------------------------------------
 // SwapHeader
@@ -45,6 +45,25 @@ SwapHeader (NoffHeader * noffH)
     noffH->uninitData.inFileAddr = WordToHost (noffH->uninitData.inFileAddr);
 }
 
+static void
+ReadAtVirtual(OpenFile *executable, int virtualaddr, int numBytes,int position, TranslationEntry *pageTable,unsigned numPages){
+	int taille = 0;
+	char buffer[numBytes];
+	
+	TranslationEntry * tmpTable = machine->pageTable;
+    	unsigned tmpPage = machine->pageTableSize;
+	
+    	machine->pageTable = pageTable;
+    	machine->pageTableSize = numPages;
+    
+	taille = executable->ReadAt(buffer, numBytes,position);
+	for(int i = 0; i < taille;i++){
+		machine->WriteMem(virtualaddr+i,1,buffer[i]);
+	}
+	machine->pageTable = tmpTable;
+        machine->pageTableSize = tmpPage;
+}
+
 //----------------------------------------------------------------------
 // AddrSpace::AddrSpace
 //      Create an address space to run a user program.
@@ -65,13 +84,11 @@ AddrSpace::AddrSpace (OpenFile * executable)
     NoffHeader noffH;
     unsigned int i, size;
     
-
     executable->ReadAt ((char *) &noffH, sizeof (noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&
 	(WordToHost (noffH.noffMagic) == NOFFMAGIC))
 	SwapHeader (&noffH);
     ASSERT (noffH.noffMagic == NOFFMAGIC);
-
 // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size + UserStackSize;	// we need to increase the size
     // to leave room for the stack
@@ -88,10 +105,11 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	   numPages, size);
 // first, set up the translation 
     pageTable = new TranslationEntry[numPages];
+    frameprovider = new FrameProvider(NumPhysPages);
     for (i = 0; i < numPages; i++)
       {
 	  pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
-	  pageTable[i].physicalPage = i;
+	  pageTable[i].physicalPage = frameprovider->GetEmptyFrame();
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
 	  pageTable[i].dirty = FALSE;
@@ -102,8 +120,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
 
     // Initializing the mapping table
 
-    bitmap = new BitMap(nbThreadsMax);
-
+    bitmap = new BitMap(nbThreadsMax);   
+    
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
     bzero (machine->mainMemory, size);
@@ -111,19 +129,16 @@ AddrSpace::AddrSpace (OpenFile * executable)
 // then, copy in the code and data segments into memory
     if (noffH.code.size > 0)
       {
-	  DEBUG ('a', "Initializing code segment, at 0x%x, size %d\n",
-		 noffH.code.virtualAddr, noffH.code.size);
-	  executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
-			      noffH.code.size, noffH.code.inFileAddr);
+	  DEBUG ('a', "Initializing code segment, at 0x%x, size %d\n",noffH.code.virtualAddr, noffH.code.size);
+	  //executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),noffH.code.size, noffH.code.inFileAddr);
+	  ReadAtVirtual(executable, noffH.code.virtualAddr, noffH.code.size,noffH.code.inFileAddr, pageTable, numPages);
       }
     if (noffH.initData.size > 0)
       {
 	  DEBUG ('a', "Initializing data segment, at 0x%x, size %d\n",
 		 noffH.initData.virtualAddr, noffH.initData.size);
-	  executable->ReadAt (&
-			      (machine->mainMemory
-			       [noffH.initData.virtualAddr]),
-			      noffH.initData.size, noffH.initData.inFileAddr);
+	  //executable->ReadAt (&(machine->mainMemory[noffH.initData.virtualAddr]),noffH.initData.size, noffH.initData.inFileAddr);
+	  ReadAtVirtual(executable, noffH.initData.virtualAddr, noffH.initData.size,noffH.initData.inFileAddr, pageTable, numPages);
       }
 
 }
@@ -139,6 +154,11 @@ AddrSpace::~AddrSpace ()
   // delete pageTable;
   delete [] pageTable;
   // End of modification
+  for(unsigned i =  0; i < numPages;i++){
+  	frameprovider->ReleaseFrame(pageTable[i].physicalPage);
+  }
+  delete bitmap;
+  delete frameprovider;
 }
 
 //----------------------------------------------------------------------
@@ -203,19 +223,40 @@ AddrSpace::RestoreState ()
     machine->pageTable = pageTable;
     machine->pageTableSize = numPages;
 }
-
+int
+AddrSpace::incrementIdNbThread(){
+	int bid ;
+		
+	semaNumThreads->P();
+	bid = bitmap->Find(); //if(nbThreads < nbThreadsMax) -1
+	//printf("bid:%d\n",bid);
+	if(bid != -1){
+		nbThreads++;
+	}
+	semaNumThreads->V();
+	return bid;
+}
+int
+AddrSpace::getIdThread(){
+	semaNumThreads->P();
+	int res = idThread;
+	idThread++;
+	semaNumThreads->V();
+	return res;
+}
+void
+AddrSpace::decrementNbThreadResetSpace(){
+	semaNumThreads->P();
+	nbThreads--;
+	bitmap->Clear(currentThread->getBid());
+	semaNumThreads->V();
+}
 int
 AddrSpace::ThreadSpace(){
-	int bid = bitmap->Find();
-	//printf("bid:%d\n",bid);
+	int bid = currentThread->getBid();
 	if(bid == -1){
 		return -1;
 	}else{
-		currentThread->setBid(bid);
 		return ( numPages * PageSize - PageSize*bid -16);
 	}
-}
-void
-AddrSpace::ResetSpace(){
-	 bitmap->Clear(currentThread->getBid());
 }
