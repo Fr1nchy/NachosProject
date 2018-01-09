@@ -38,8 +38,8 @@ class AddrSpace
     int incrementIdNbThread();
     int getIdThread();
     void decrementNbThreadResetSpace();
+    int ExitThread();
     BitMap* bitmap;
-    FrameProvider * frameprovider;
   private:
       TranslationEntry * pageTable;	// Assume linear page table translation
     // for now!

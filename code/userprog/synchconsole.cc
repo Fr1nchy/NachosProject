@@ -36,7 +36,7 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 void SynchConsole::SynchPutChar(const char ch)
 {
     monitor->P();
-    console->PutChar (ch);    // echo it!
+    console->PutChar(ch);    // echo it!
 	writeDone->P();
     monitor->V();
 }

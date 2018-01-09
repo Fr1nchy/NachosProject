@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "userfork.h"
 
 static void StartUserThread(int f) {  
     Parametre p = *((Parametre*)f);
@@ -39,28 +40,30 @@ int do_UserThreadCreate(int f, int arg) {
     if(bid!=-1){
     	p->f = f;
     	p->arg = arg;
-	newThread->setBid(bid);
-	newThread->setTid(tid);
+	    newThread->setBid(bid);
+	    newThread->setTid(tid);
     	newThread->Fork(StartUserThread, (int)p);
     }
     return bid;
 }    
 
 int do_UserThreadExit() {
-    //printf("fin:%d\n",currentThread->getBid());
-    if(currentThread->getBid()!=-1){
-	    semJoinThreads[currentThread->getBid()]->V();
-	    currentThread->Finish();
-	    currentThread->space->decrementNbThreadResetSpace();
+
+    //printf("fin_exit:%d\n",currentThread->getBid());
+    currentThread->space->decrementNbThreadResetSpace();
+    if(currentThread->space->ExitThread()==0){
+        do_UserForkExit();
     }else{
-    	interrupt->Halt();
+        //printf("finish\n");
+	    currentThread->Finish();        
     }
-    
     return 0;
 }
 
 void join_UserThread(int bid){
-	semJoinThreads[bid]->P();
+    if(bid < nbThreadsMax){
+	    semJoinThreads[bid]->P();
+    }
 }
 
 

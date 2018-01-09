@@ -12,10 +12,13 @@ void print(int n){
 int main()
 {
 	int n;
-    //PutInt(256);
+    PutInt(256);
+    PutChar('\n');
+
     GetInt(&n);
     PutInt(n);
     PutChar('\n');
 	//print(n);
-	Halt();
+	//Halt();
+    return 0;
 }
