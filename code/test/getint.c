@@ -1,17 +1,20 @@
 #include "syscall.h"
 
-void print(int n){
+void print(char c, int n)
+{
 	int i;
 	for (i = 0; i < n; i++) {
-        PutChar('i');
-        PutChar(':');
-	    PutInt(i);
-        PutChar('\n');
+	PutChar(c+i);
 	}
+
+	PutChar('\n');
 }
 int main()
 {
 	int n;
+    PutString("ss_getchar\n");
+	print(GetChar(), 3);
+
     PutInt(256);
     PutChar('\n');
 
