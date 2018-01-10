@@ -13,15 +13,19 @@ FrameProvider::~FrameProvider(){
 
 int
 FrameProvider::GetEmptyFrame(){
-	int rand =0;
+	int rand;
 	RandomInit(0);
-	
+
 	rand = Random()%NumPhysPages;
-        while(this->bitmap->Test(rand)) {
-                rand = Random()%NumPhysPages;
-        }
-	bitmap->Mark(rand);
-	bzero(&(machine->mainMemory[ PageSize * rand] ), PageSize);
+    while(this->bitmap->Test(rand)&&(bitmap->NumClear()!=0)) {//ajouter securite
+        rand = Random()%NumPhysPages;
+    }
+    if (bitmap->NumClear()== 0) {
+        rand =-1;
+    }else{
+        bitmap->Mark(rand);
+	    bzero(&(machine->mainMemory[PageSize*rand]),PageSize);
+    }
 	return rand;
 }
 

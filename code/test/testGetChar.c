@@ -12,10 +12,9 @@ void print(char c, int n)
 
 int main()
 {
+    PutString("ss_getchar\n");
 	print(GetChar(), 3);
-	Halt();
+	//Halt();
+    return 0;
 }
 
-/*Partie 6: return 0 ; puis  recupération erreur pour traiter
-Ajouter un case dans execpt 
-*/ 
