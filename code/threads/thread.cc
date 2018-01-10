@@ -38,8 +38,8 @@ Thread::Thread (const char *threadName)
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
-    tid = -1;
-    bid = -1;
+    tid = 0;
+    bid = 0;
 #ifdef USER_PROGRAM
     space = NULL;
     // FBT: Need to initialize special registers of simulator to 0
@@ -107,7 +107,9 @@ Thread::Fork (VoidFunctionPtr func, int arg)
     // an already running program, as in the "fork" Unix system call. 
     
     // LB: Observe that currentThread->space may be NULL at that time.
-    this->space = currentThread->space;
+    if (this->space == NULL) {
+        this->space = currentThread->space;
+    }
 
 #endif // USER_PROGRAM
 

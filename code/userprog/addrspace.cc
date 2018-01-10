@@ -51,17 +51,17 @@ ReadAtVirtual(OpenFile *executable, int virtualaddr, int numBytes,int position, 
 	char buffer[numBytes];
 	
 	TranslationEntry * tmpTable = machine->pageTable;
-    	unsigned tmpPage = machine->pageTableSize;
+    unsigned tmpPage = machine->pageTableSize;
 	
-    	machine->pageTable = pageTable;
-    	machine->pageTableSize = numPages;
+    machine->pageTable = pageTable;
+    machine->pageTableSize = numPages;
     
 	taille = executable->ReadAt(buffer, numBytes,position);
 	for(int i = 0; i < taille;i++){
 		machine->WriteMem(virtualaddr+i,1,buffer[i]);
 	}
 	machine->pageTable = tmpTable;
-        machine->pageTableSize = tmpPage;
+    machine->pageTableSize = tmpPage;
 }
 
 //----------------------------------------------------------------------
@@ -101,15 +101,15 @@ AddrSpace::AddrSpace (OpenFile * executable)
     // at least until we have
     // virtual memory
 
-    DEBUG ('a', "Initializing address space, num pages %d, size %d\n",
-	   numPages, size);
+    DEBUG ('a', "Initializing address space, num pages %d, size %d\n",numPages, size);
 // first, set up the translation 
     pageTable = new TranslationEntry[numPages];
-    frameprovider = new FrameProvider(NumPhysPages);
     for (i = 0; i < numPages; i++)
       {
+
+
 	  pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
-	  pageTable[i].physicalPage = frameprovider->GetEmptyFrame();
+	  pageTable[i].physicalPage = frameprovider->GetEmptyFrame();  //printf("ici : %d\n",pageTable[i].physicalPage);
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
 	  pageTable[i].dirty = FALSE;
@@ -121,10 +121,11 @@ AddrSpace::AddrSpace (OpenFile * executable)
     // Initializing the mapping table
 
     bitmap = new BitMap(nbThreadsMax);   
-    
+    incrementIdNbThread();
+
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
-    bzero (machine->mainMemory, size);
+    //bzero (machine->mainMemory, size);
 
 // then, copy in the code and data segments into memory
     if (noffH.code.size > 0)
@@ -249,6 +250,7 @@ AddrSpace::decrementNbThreadResetSpace(){
 	semaNumThreads->P();
 	nbThreads--;
 	bitmap->Clear(currentThread->getBid());
+    semJoinThreads[currentThread->getBid()]->V();
 	semaNumThreads->V();
 }
 int
@@ -259,4 +261,12 @@ AddrSpace::ThreadSpace(){
 	}else{
 		return ( numPages * PageSize - PageSize*bid -16);
 	}
+}
+
+int
+AddrSpace::ExitThread(){
+    semaNumThreads->P();
+    int res = nbThreads;
+    semaNumThreads->V();
+    return res;
 }

@@ -16,30 +16,18 @@ int do_UserForkCreate (char *filename){
 	}
 	Thread* newThread = new Thread(filename);
 	newThread->space = space;
-	
-	int bid = currentThread->space->incrementIdNbThread();
-    	int tid = currentThread->space->getIdThread();
-	if(bid!=-1){
-	    newThread->setBid(bid);
-	    newThread->setTid(tid);
-    	    newThread->Fork(StartUserFork,0);
-    	}
-        return 0;
+    newThread->Fork(StartUserFork,0);
+    
+    return 0;
 }
 
 void StartUserFork (int arg){
     currentThread->space->InitRegisters ();
     currentThread->space->RestoreState ();
-    
-    machine->WriteRegister(StackReg,currentThread->space->ThreadSpace());    
-    if(machine->ReadRegister(StackReg) == -1) {
-    	do_UserForkExit();
-    }else {
-    	machine->Run();
-    }
+    machine->Run();
 }
 
-void do_UserForkExit (){
-    
+void do_UserForkExit(){
+    interrupt->Halt();
 }
 
