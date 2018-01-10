@@ -15,7 +15,7 @@
 #include "interrupt.h"
 #include "stats.h"
 #include "timer.h"
-
+#include "tabjoin.h"
 /****Gestion des threads users *******/
 #include "list.h"
 #include "synch.h"
