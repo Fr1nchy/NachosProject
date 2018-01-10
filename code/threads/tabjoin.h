@@ -1,7 +1,7 @@
 #ifndef TABJOIN_H
 #define TABJOIN_H
 
-#include "system.h"
+//#include "system.h"
 #include "synch.h"
 
 class Couple
@@ -28,7 +28,8 @@ class Tabjoin
     int Add(int tid); //renvoie -1 si erreur 
     int Suppr(int tid);
   private:
-    Couple * tab;  
+    int size;
+    Couple** tab;  
 };
 
 #endif 
