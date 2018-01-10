@@ -80,7 +80,6 @@ void SynchConsole::SynchGetString(char *s, int n)
 }
 void SynchConsole::SynchPutInt(const int n){
     char str[15];
-    printf("n:%d\n",n);
     snprintf(str,15,"%d",n);
 	SynchPutString(str);
 }
