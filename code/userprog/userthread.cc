@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 static void StartUserThread(int f) {  
     Parametre p = *((Parametre*)f);
@@ -17,14 +18,13 @@ static void StartUserThread(int f) {
     machine->WriteRegister(PCReg,p.f);
     machine->WriteRegister(NextPCReg,p.f+4);
     machine->WriteRegister(4,p.arg);
-
     machine->WriteRegister(StackReg,currentThread->space->ThreadSpace());
     //printf("stack:%d\n",machine->ReadRegister(StackReg));
     
     if(machine->ReadRegister(StackReg) == -1) {
     	do_UserThreadExit();
     }else {
-    	machine->Run();
+    	machine->Run();    
     }
 }
 
@@ -39,9 +39,13 @@ int do_UserThreadCreate(int f, int arg) {
     if(bid!=-1){
     	p->f = f;
     	p->arg = arg;
-	newThread->setBid(bid);
-	newThread->setTid(tid);
+	    newThread->setBid(bid);
+	    newThread->setTid(tid);
     	newThread->Fork(StartUserThread, (int)p);
+    }
+    else
+    {
+        printf("UserThreadCreate Exception : bid = -1");
     }
     return bid;
 }    
@@ -60,7 +64,10 @@ int do_UserThreadExit() {
 }
 
 void join_UserThread(int bid){
-	semJoinThreads[bid]->P();
+    printf("exit bid %d\n", bid);
+    //sleep(1); 
+    // if (bid < nbThreadsMax)
+    semJoinThreads[bid]->P();  
 }
 
 
