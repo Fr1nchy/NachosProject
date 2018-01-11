@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "userfork.h"
+#include "listjoin.h"
 
 static void StartUserThread(int f) {  
     Parametre p = *((Parametre*)f);
@@ -42,7 +43,7 @@ int do_UserThreadCreate(int f, int arg) {
     	p->arg = arg;
 	    newThread->setBid(bid);
 	    newThread->setTid(tid);
-        tabThJoin->Add(tid);
+        listThJoin->Add(tid);
     	newThread->Fork(StartUserThread, (int)p);
     }
 
@@ -50,17 +51,12 @@ int do_UserThreadCreate(int f, int arg) {
 }    
 
 int do_UserThreadExit() {
-
-    printf("fin_exitBid:%d Tid:%d\n",currentThread->getBid(),currentThread->getTid());
-    printf("IF\n");
+    //printf("fin_exitBid:%d Tid:%d\n",currentThread->getBid(),currentThread->getTid());
     currentThread->space->decrementNbThreadResetSpace();
-printf("ELSE\n");
     if(currentThread->space->ExitThread()==0){
-        
         do_UserForkExit();
     }else{
-
-        printf("finish\n");
+        //printf("finish\n");
 	    currentThread->Finish();        
     }
     return 0;
@@ -69,9 +65,10 @@ printf("ELSE\n");
 void join_UserThread(int tid){
 
     if(tid < nbThreadsMax){
-	    //semJoinThreads[bid]->P();
-        printf("threadBID : %d\n",currentThread->getBid());
-        tabThJoin->Find(tid)->P();
+        Element * e = listThJoin->Find(tid);
+        if(e !=NULL){
+            e->s->P();
+        }
     }
 }
 

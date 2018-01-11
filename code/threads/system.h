@@ -15,7 +15,7 @@
 #include "interrupt.h"
 #include "stats.h"
 #include "timer.h"
-#include "tabjoin.h"
+#include "listjoin.h"
 /****Gestion des threads users *******/
 #include "list.h"
 #include "synch.h"
@@ -27,7 +27,7 @@ extern const int nbThreadsMax;
 extern Semaphore * semaNumThreads;
 //extern  Semaphore *semJoinThreads[TAILLEMAX];
 extern Semaphore *semNumProcess;
-extern Tabjoin* tabThJoin;
+extern ListJoin* listThJoin;
 
 //class Tabjoin;
 /************************************/

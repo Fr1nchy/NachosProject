@@ -7,7 +7,7 @@
 
 #include "copyright.h"
 #include "system.h"
-#include "tabjoin.h"
+#include "listjoin.h"
 
 // This defines *all* of the global data structures used by Nachos.
 // These are all initialized and de-allocated by this file.
@@ -20,7 +20,7 @@ int nbProcess;
 Semaphore * semaNumThreads;
 //Semaphore *semJoinThreads[nbThreadsMax];
 Semaphore *semNumProcess;
-Tabjoin* tabThJoin;
+ListJoin* listThJoin;
 /************************************/
 
 Thread *currentThread;		// the thread we are running now
@@ -174,7 +174,7 @@ Initialize (int argc, char **argv)
     	semJoinThreads[i] = new Semaphore("joinThreads",0);
     }*/
     semNumProcess = new Semaphore("numProcess",1);
-    tabThJoin = new Tabjoin(nbThreadsMax);
+    listThJoin = new ListJoin();
     /************************************/
 
     interrupt->Enable ();

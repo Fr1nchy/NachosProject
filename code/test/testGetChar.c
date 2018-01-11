@@ -12,7 +12,7 @@ void print(char c, int n)
 
 int main()
 {
-    PutString("ss_getchar\n");
+    //PutString("ss_getchar\n");
 	print(GetChar(), 3);
 	//Halt();
     return 0;

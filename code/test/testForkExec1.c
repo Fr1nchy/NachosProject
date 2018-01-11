@@ -4,7 +4,7 @@ int main(){
 //PutString("testint\n");
     ForkExec("./makethreads");
     //PutString("testint\n");
-    //ForkExec("./getint");
+    ForkExec("./testGetInt");
     PutString("Fin test\n");
    // Halt();
     return 0;

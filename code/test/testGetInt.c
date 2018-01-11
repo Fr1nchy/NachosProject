@@ -21,9 +21,9 @@ void print(char c, int n)
 int main()
 {
 	int n;
-    PutString("ss_getchar\n");
+    PutString("getchar:\n");
 	print(GetChar(), 3);
-
+    
     PutInt(256);
     PutChar('\n');
 

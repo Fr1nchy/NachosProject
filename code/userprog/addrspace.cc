@@ -230,7 +230,7 @@ AddrSpace::incrementIdNbThread(){
 		
 	semaNumThreads->P();
 	bid = bitmap->Find(); //if(nbThreads < nbThreadsMax) -1
-	//printf("bid:%d\n",bid);
+	//printf("bid:%d\n",bid); 
 	if(bid != -1){
 		nbThreads++;
 	}
@@ -249,12 +249,8 @@ void
 AddrSpace::decrementNbThreadResetSpace(){
 	semaNumThreads->P();
 	nbThreads--;
-    printf("BID %d\n", currentThread->getBid());
 	bitmap->Clear(currentThread->getBid());
-    //semJoinThreads[currentThread->getBid()]->V();
-    printf("TID %d\n", currentThread->getBid());
-    tabThJoin->Suppr(currentThread->getTid());
-    printf("SUPPR\n");
+    listThJoin->Suppr(currentThread->getTid());
 	semaNumThreads->V();
 }
 int

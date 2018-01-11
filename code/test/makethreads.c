@@ -39,7 +39,7 @@ int main()
 	UserThreadJoin(t5);
 	PutChar('f');
 	UserThreadJoin(t6);*/
-        Halt();
+    //Halt();
 	return 0;
 }
 
