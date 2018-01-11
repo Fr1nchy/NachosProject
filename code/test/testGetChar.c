@@ -7,13 +7,14 @@ void print(char c, int n)
 	PutChar(c+i);
 	}
 
-	PutChar('\n');
+	//PutChar('\n');
 }
 
 int main()
 {
     //PutString("ss_getchar\n");
 	print(GetChar(), 3);
+    print(GetChar(), 3);
 	//Halt();
     return 0;
 }

@@ -11,7 +11,6 @@
 
 static void StartUserThread(int f) {  
     Parametre p = *((Parametre*)f);
-
     currentThread->space->InitRegisters ();
     currentThread->space->RestoreState ();
     
@@ -38,6 +37,7 @@ int do_UserThreadCreate(int f, int arg) {
   
     int bid = currentThread->space->incrementIdNbThread();
     int tid = currentThread->space->getIdThread();
+
     if(bid!=-1){
     	p->f = f;
     	p->arg = arg;

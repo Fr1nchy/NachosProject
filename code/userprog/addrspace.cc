@@ -240,8 +240,8 @@ AddrSpace::incrementIdNbThread(){
 int
 AddrSpace::getIdThread(){
 	semaNumThreads->P();
+    idThread++;
 	int res = idThread;
-	idThread++;
 	semaNumThreads->V();
 	return res;
 }
