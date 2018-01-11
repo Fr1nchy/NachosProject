@@ -25,8 +25,11 @@ extern int nbProcess;
 #define TAILLEMAX 20
 extern const int nbThreadsMax;
 extern Semaphore * semaNumThreads;
-extern  Semaphore *semJoinThreads[TAILLEMAX];
+//extern  Semaphore *semJoinThreads[TAILLEMAX];
 extern Semaphore *semNumProcess;
+extern Tabjoin* tabThJoin;
+
+//class Tabjoin;
 /************************************/
 
 // Initialization and cleanup routines
@@ -43,10 +46,12 @@ extern Interrupt *interrupt;	// interrupt status
 extern Statistics *stats;	// performance metrics
 extern Timer *timer;		// the hardware alarm clock
 
+
 #ifdef USER_PROGRAM
 #include "machine.h"
 extern Machine *machine;	// user program memory and registers
 #include "synchconsole.h"
+
 extern SynchConsole *synchconsole;
 extern FrameProvider * frameprovider;
 #define MAX_STRING_SIZE	1000

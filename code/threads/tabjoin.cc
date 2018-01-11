@@ -41,14 +41,19 @@ Tabjoin::~Tabjoin(){
 Couple *
 Tabjoin::Find(int tid){
     int i = 0;
-    while (i < size && tab[i]->getTid() != tid) //check tab[i].getTid() does not segfault
-    {
+    //PROCHAINE LIGNE BUGUEE
+    //check tab[i].getTid() does not segfault
+    while (i < size && tab[i] != NULL && tab[i]->getTid() != tid){
         i++;
     }
-    if (i == size)
-    {
+    printf("smthing %d,%s \n", i,(char*)tab[i]);
+    if (i == size){
+        printf("trace\n");
         return NULL;
     }
+    else if (tab[i] == NULL)
+        //printf("trace2\n");
+        return NULL;
     return tab[i];
 }
 
@@ -73,6 +78,7 @@ Tabjoin::Suppr(int tid){
     if (c == NULL)
         return -1;
     else
+        c->V();
         delete c;
     return 0;
 }

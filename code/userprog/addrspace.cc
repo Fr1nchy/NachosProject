@@ -249,8 +249,12 @@ void
 AddrSpace::decrementNbThreadResetSpace(){
 	semaNumThreads->P();
 	nbThreads--;
+    printf("BID %d\n", currentThread->getBid());
 	bitmap->Clear(currentThread->getBid());
-    semJoinThreads[currentThread->getBid()]->V();
+    //semJoinThreads[currentThread->getBid()]->V();
+    printf("TID %d\n", currentThread->getBid());
+    tabThJoin->Suppr(currentThread->getTid());
+    printf("SUPPR\n");
 	semaNumThreads->V();
 }
 int
