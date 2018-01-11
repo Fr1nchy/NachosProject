@@ -10,7 +10,7 @@ int main()
 {
 	char c = '0';
 	int t1 = UserThreadCreate(printChar, &c);
-	PutChar('0');
+	/*PutChar('0');
 	char d = '1';
 	int t2 = UserThreadCreate(printChar, &d);
 	PutChar('1');
@@ -25,11 +25,11 @@ int main()
 	PutChar('4');
 	char h = '5';
 	int t6 = UserThreadCreate(printChar, &h);
-	PutChar('5');
+	PutChar('5');*/
 
 	PutChar('a');
 	UserThreadJoin(t1);
-	PutChar('b');
+	/*PutChar('b');
 	UserThreadJoin(t2);
 	PutChar('c');
 	UserThreadJoin(t3);
@@ -38,7 +38,7 @@ int main()
 	PutChar('e');
 	UserThreadJoin(t5);
 	PutChar('f');
-	UserThreadJoin(t6);
+	UserThreadJoin(t6);*/
         Halt();
 	return 0;
 }

@@ -46,7 +46,7 @@ Tabjoin::Find(int tid){
     while (i < size && tab[i] != NULL && tab[i]->getTid() != tid){
         i++;
     }
-    printf("smthing %d,%s \n", i,(char*)tab[i]);
+    //printf("smthing %d,%s \n", i,(char*)tab[i]);
     if (i == size){
         printf("trace\n");
         return NULL;
@@ -78,8 +78,10 @@ Tabjoin::Suppr(int tid){
     if (c == NULL)
         return -1;
     else
+    {
         c->V();
         delete c;
+    }
     return 0;
 }
 
