@@ -87,6 +87,9 @@ FileSystem::FileSystem(bool format)
         Directory *directory = new Directory(NumDirEntries);
 	    FileHeader *mapHdr = new FileHeader;
 	    FileHeader *dirHdr = new FileHeader;
+        FileHeader *rootHdr = new FileHeader;
+        int sector;
+        OpenFile *rootFile;
 
         DEBUG('f', "Formatting the file system.\n");
         
@@ -99,7 +102,7 @@ FileSystem::FileSystem(bool format)
     // of the directory and bitmap files.  There better be enough space!
 
 	    ASSERT(mapHdr->Allocate(freeMap, FreeMapFileSize));
-	    ASSERT(dirHdr->Allocate(freeMap, DirectoryFileSize));
+        ASSERT(dirHdr->Allocate(freeMap, DirectoryFileSize));
 
     // Flush the bitmap and directory FileHeaders back to disk
     // We need to do this before we can "Open" the file, since open
@@ -116,8 +119,10 @@ FileSystem::FileSystem(bool format)
 
         freeMapFile = new OpenFile(FreeMapSector);
         directoryFile = new OpenFile(DirectorySector);
+        sector = freeMap->Find();
+        printf("Sector = %d\n", sector);
 
-        directory->UpdateSpecialEntries(DirectorySector, 0);
+        directory->UpdateSpecialEntries(sector, 0);
      
     // Once we have the files "open", we can write the initial version
     // of each file back to disk.  The directory at this point is completely
@@ -126,8 +131,15 @@ FileSystem::FileSystem(bool format)
     // to hold the file data for the directory and bitmap.
 
         DEBUG('f', "Writing bitmap and directory back to disk.\n");
-	    freeMap->WriteBack(freeMapFile);	 // flush changes to disk
         directory->WriteBack(directoryFile);
+
+
+        ASSERT(rootHdr->Allocate(freeMap, DirectoryFileSize));
+        rootHdr->WriteBack(sector);
+        rootFile = new OpenFile(sector);
+        directory->WriteBack(rootFile);
+
+        freeMap->WriteBack(freeMapFile);     // flush changes to disk
 
 	    if (DebugIsEnabled('f')) {
 	        freeMap->Print();
@@ -137,14 +149,16 @@ FileSystem::FileSystem(bool format)
         delete freeMap; 
 	    delete directory; 
 	    delete mapHdr; 
+
 	    delete dirHdr;
+        delete rootHdr;
+        delete rootFile;
 
     } else {
     // if we are not formatting the disk, just open the files representing
     // the bitmap and directory; these are left open while Nachos is running
         freeMapFile = new OpenFile(FreeMapSector);
         directoryFile = new OpenFile(DirectorySector);
-//        directoryFile = new OpenFile(CurrentDirSector);
     }
 }
 
@@ -229,13 +243,14 @@ FileSystem::MakeDir(const char *name)
     Directory *directory, *newDir;
     BitMap *freeMap;
     FileHeader *hdr;
-    int sector;
+    int sector, currentSector;
     bool success;
-    OpenFile *newDirFile;
+    OpenFile *newDirFile, *currentFile;
 
 
     directory = new Directory(NumDirEntries);
     newDir = new Directory(NumDirEntries);
+
     directory->FetchFrom(directoryFile);
 
 
@@ -249,6 +264,7 @@ FileSystem::MakeDir(const char *name)
         freeMap = new BitMap(NumSectors);
         freeMap->FetchFrom(freeMapFile);
         sector = freeMap->Find();   // find a sector to hold the dir header
+        currentSector = directory->Find(".", false);
         if (sector == -1)       
             success = FALSE;        // no free block for dir header 
         else if (!directory->Add(name, sector, false))
@@ -267,13 +283,16 @@ FileSystem::MakeDir(const char *name)
 
 
             newDirFile = new OpenFile(sector);
+            currentFile = new OpenFile(currentSector);
+
 
             //newDir->FetchFrom(newDirFile); //We open the directory newly created
 
-            newDir->AddSpecialEntries(sector, DirectorySector);
+            newDir->AddSpecialEntries(sector, currentSector);
 
             newDir->WriteBack(newDirFile);          
             directory->WriteBack(directoryFile);
+            directory->WriteBack(currentFile);
             freeMap->WriteBack(freeMapFile);       
         }
             delete hdr;
@@ -330,11 +349,13 @@ bool FileSystem::ChangeDir(const char *name)
     Directory *directory = new Directory(NumDirEntries);
     Directory *newDir = new Directory(NumDirEntries);
     OpenFile *openFile = NULL;
-    int sector;
+    int sector, currentSector;
 
     directory->FetchFrom(directoryFile);
     
     sector = directory->Find(name, false); 
+    currentSector = directory->Find(".", false);
+    currentSector++;
     
     DEBUG('f', "Opening directory %s in sector %d\n", name, sector);
 
@@ -349,13 +370,13 @@ bool FileSystem::ChangeDir(const char *name)
     }
     newDir->FetchFrom(openFile);
 
+    printf("ChangeDir sector = %d\n", sector);
 
-    //directory->UpdateSpecialEntries(sector, DirectorySector);
-    directory->UpdateSelfEntry(sector); directory->UpdateParentEntry(DirectorySector);
+    //directory->UpdateSelfEntry(sector); directory->UpdateParentEntry(DirectorySector);
 
-    newDir->UpdateSpecialEntries(DirectorySector, sector);
+    //newDir->UpdateSelfEntry(sector); newDir->UpdateParentEntry(currentSector);
 
-    directory->WriteBack(openFile); //we save the current repertory before changing
+    //directory->WriteBack(openFile); //we save the current repertory before changing
     newDir->WriteBack(directoryFile);
 
     delete newDir;

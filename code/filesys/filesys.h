@@ -96,7 +96,6 @@ class FileSystem {
 					// represented as a file
    OpenFile* directoryFile;		// "Root" directory -- list of 
 					// file names, represented as a file
-   OpenFile* parentDirectory;
 
 };
 
