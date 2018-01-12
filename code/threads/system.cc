@@ -7,6 +7,7 @@
 
 #include "copyright.h"
 #include "system.h"
+#include "listjoin.h"
 
 // This defines *all* of the global data structures used by Nachos.
 // These are all initialized and de-allocated by this file.
@@ -17,8 +18,9 @@ const int nbThreadsMax = TAILLEMAX;
 int idThread;
 int nbProcess;
 Semaphore * semaNumThreads;
-Semaphore *semJoinThreads[nbThreadsMax];
+//Semaphore *semJoinThreads[nbThreadsMax];
 Semaphore *semNumProcess;
+ListJoin* listThJoin;
 /************************************/
 
 Thread *currentThread;		// the thread we are running now
@@ -40,6 +42,7 @@ SynchDisk *synchDisk;
 #ifdef USER_PROGRAM		// requires either FILESYS or FILESYS_STUB
 Machine *machine;		// user program memory and registers
 SynchConsole *synchconsole;
+FrameProvider * frameprovider;
 #endif
 
 #ifdef NETWORK
@@ -167,10 +170,11 @@ Initialize (int argc, char **argv)
     nbProcess = 0;
     idThread = 0;
     semaNumThreads = new Semaphore("numThreads", 1);
-    for(int i = 0; i < nbThreadsMax; i++){
+    /*for(int i = 0; i < nbThreadsMax; i++){
     	semJoinThreads[i] = new Semaphore("joinThreads",0);
-    }
+    }*/
     semNumProcess = new Semaphore("numProcess",1);
+    listThJoin = new ListJoin();
     /************************************/
 
     interrupt->Enable ();
@@ -179,6 +183,7 @@ Initialize (int argc, char **argv)
 #ifdef USER_PROGRAM
     machine = new Machine (debugUserProg);	// this must come first
     // synchconsole = new SynchConsole(NULL,NULL);
+    frameprovider = new FrameProvider(NumPhysPages);
 #endif
 
 #ifdef FILESYS

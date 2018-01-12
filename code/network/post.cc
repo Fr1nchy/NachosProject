@@ -344,3 +344,8 @@ PostOffice::PacketSent()
     messageSent->V();
 }
 
+NetworkAddress 
+PostOffice::GetNetworkAddress(){
+    return netAddr;
+}
+

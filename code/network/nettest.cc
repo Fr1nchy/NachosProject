@@ -39,10 +39,12 @@ MailTest(int farAddr)
     const char *ack = "Got it!";
     char buffer[MaxMailSize];
 
+    for (int i = 0; i < 10; i++)
+    {
     // construct packet, mail header for original message
     // To: destination machine, mailbox 0
     // From: our machine, reply to: mailbox 1
-    outPktHdr.to = farAddr;		
+    outPktHdr.to = farAddr;     
     outMailHdr.to = 0;
     outMailHdr.from = 1;
     outMailHdr.length = strlen(data) + 1;
@@ -66,7 +68,57 @@ MailTest(int farAddr)
     postOffice->Receive(1, &inPktHdr, &inMailHdr, buffer);
     printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
     fflush(stdout);
+    }
+
 
     // Then we're done!
+    interrupt->Halt();
+}
+
+    // Test constitué de n machines reliées par un anneau logique
+void
+AnneauLogiqueTest(int farAddr){
+    PacketHeader outPktHdr, inPktHdr;
+    MailHeader outMailHdr, inMailHdr;
+    char buffer[MaxMailSize];
+    const char *data = "Jeton de 0";
+
+    outPktHdr.to = farAddr;
+    if (postOffice->GetNetworkAddress() == 0)
+    {
+        outMailHdr.to = 0;
+        outMailHdr.from = 0;
+        outMailHdr.length = strlen(data) + 1;
+
+        // Envoyer le jeton
+        postOffice->Send(outPktHdr, outMailHdr, data);
+        printf("Sent \"%s\"\n", data);
+        fflush(stdout);
+
+        // Wait for the first message from the other machine
+        postOffice->Receive(0, &inPktHdr, &inMailHdr, buffer);
+        printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
+        fflush(stdout);
+
+    }else{
+        // Wait for the first message from the other machine
+        postOffice->Receive(0, &inPktHdr, &inMailHdr, buffer);
+        printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
+        fflush(stdout);
+
+        Delay(5);
+
+        // Transfer the message received
+        outMailHdr.to = 0;
+        outMailHdr.from = 0;
+        outMailHdr.length = strlen(buffer) + 1;
+
+         // Envoyer le jeton
+        postOffice->Send(outPktHdr, outMailHdr, buffer);
+        printf("Sent \"%s\"\n", buffer);
+        fflush(stdout);
+
+    }
+
     interrupt->Halt();
 }

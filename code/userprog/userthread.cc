@@ -6,10 +6,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "userfork.h"
+#include "listjoin.h"
 
 static void StartUserThread(int f) {  
     Parametre p = *((Parametre*)f);
-
     currentThread->space->InitRegisters ();
     currentThread->space->RestoreState ();
     
@@ -36,31 +37,38 @@ int do_UserThreadCreate(int f, int arg) {
   
     int bid = currentThread->space->incrementIdNbThread();
     int tid = currentThread->space->getIdThread();
+
     if(bid!=-1){
     	p->f = f;
     	p->arg = arg;
-	newThread->setBid(bid);
-	newThread->setTid(tid);
+	    newThread->setBid(bid);
+	    newThread->setTid(tid);
+        listThJoin->Add(tid);
     	newThread->Fork(StartUserThread, (int)p);
     }
-    return bid;
+
+    return tid;
 }    
 
 int do_UserThreadExit() {
-    //printf("fin:%d\n",currentThread->getBid());
-    if(currentThread->getBid()!=-1){
-	    semJoinThreads[currentThread->getBid()]->V();
-	    currentThread->Finish();
-	    currentThread->space->decrementNbThreadResetSpace();
+    //printf("fin_exitBid:%d Tid:%d\n",currentThread->getBid(),currentThread->getTid());
+    currentThread->space->decrementNbThreadResetSpace();
+    if(currentThread->space->ExitThread()==0){
+        do_UserForkExit();
     }else{
-    	interrupt->Halt();
+        //printf("finish\n");
+	    currentThread->Finish();        
     }
-    
     return 0;
 }
 
-void join_UserThread(int bid){
-	semJoinThreads[bid]->P();
-}
+void join_UserThread(int tid){
 
+    if(tid < nbThreadsMax){
+        Element * e = listThJoin->Find(tid);
+        if(e !=NULL){
+            e->s->P();
+        }
+    }
+}
 

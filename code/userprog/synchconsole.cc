@@ -6,7 +6,9 @@
 static Semaphore *readAvail;
 
 static Semaphore *writeDone;
-static Semaphore *monitor;
+
+static Semaphore *monitorWrite;
+static Semaphore *monitorRead;
 
 static void ReadAvail(int arg) { readAvail->V(); }
 
@@ -22,7 +24,8 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 {
 	readAvail = new Semaphore("read avail", 0);
 	writeDone = new Semaphore("write done", 0);
-    monitor = new Semaphore("putChar security", 1);
+    monitorWrite = new Semaphore("putChar security", 1);
+    monitorRead = new Semaphore("putChar security", 1);
 	console = new Console (readFile, writeFile, ReadAvail, WriteDone, 0);
 }
 	SynchConsole::~SynchConsole()
@@ -30,24 +33,26 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 	delete console;
 	delete writeDone;
 	delete readAvail;
-    delete monitor;
+    delete monitorWrite;
+    delete monitorRead;
 }
 
 void SynchConsole::SynchPutChar(const char ch)
 {
-    monitor->P();
-    console->PutChar (ch);    // echo it!
+    monitorWrite->P();
+    console->PutChar(ch);    // echo it!
 	writeDone->P();
-    monitor->V();
+    monitorWrite->V();
 }
 
 char SynchConsole::SynchGetChar()
 {
-    monitor->P();
+    
+    monitorRead->P();
 	char ch;
 	readAvail->P();
 	ch = console->GetChar();
-    monitor->V();
+    monitorRead->V();
 	return ch;
 }
 
@@ -86,11 +91,14 @@ void SynchConsole::SynchPutInt(const int n){
 
 void SynchConsole::SynchGetInt(int *n){
   char c;
-  char str[15];
-
+  char str[16];
+  int i = 0;
   c=SynchGetChar();
-  if (c=='-' || (c>='0' && c<='9') ) str[0] = c;
-  int i = 1;
+  if (c=='-' || (c>='0' && c<='9') ) 
+  {
+    str[i] = c;
+    i++;
+  }
   c = SynchGetChar();
   while(c>='0' && c<='9' && i<15) {
     str[i] = c;
@@ -99,5 +107,4 @@ void SynchConsole::SynchGetInt(int *n){
   }
   str[i] = '\0';
   sscanf(str,"%d",n);
-    
 }

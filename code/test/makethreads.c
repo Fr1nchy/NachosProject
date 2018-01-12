@@ -1,8 +1,8 @@
 #include "syscall.h"
 
 void printChar(void * c) {
-    char s = *((char*)c);
-    PutChar(s);
+    //char s = *((char*)c);
+    //PutChar(s);
     UserThreadExit();
 } 
 
@@ -14,7 +14,7 @@ int main()
 	char d = '1';
 	int t2 = UserThreadCreate(printChar, &d);
 	PutChar('1');
-	char e = '2';
+	/*char e = '2';
 	int t3 = UserThreadCreate(printChar, &e);
 	PutChar('2');
 	char f = '3';
@@ -25,21 +25,21 @@ int main()
 	PutChar('4');
 	char h = '5';
 	int t6 = UserThreadCreate(printChar, &h);
-	PutChar('5');
+	PutChar('5');*/
 
 	PutChar('a');
 	UserThreadJoin(t1);
 	PutChar('b');
 	UserThreadJoin(t2);
-	PutChar('c');
+	/*PutChar('c');
 	UserThreadJoin(t3);
 	PutChar('d');
 	UserThreadJoin(t4);
 	PutChar('e');
 	UserThreadJoin(t5);
 	PutChar('f');
-	UserThreadJoin(t6);
-        Halt();
+	UserThreadJoin(t6);*/
+    //Halt();
 	return 0;
 }
 
