@@ -19,6 +19,8 @@ static void StartUserThread(int f) {
     machine->WriteRegister(NextPCReg,p.f+4);
     machine->WriteRegister(4,p.arg);
 
+    machine->WriteRegister(31,p.fin);
+
     machine->WriteRegister(StackReg,currentThread->space->ThreadSpace());
     //printf("stack:%d\n",machine->ReadRegister(StackReg));
     
@@ -29,12 +31,12 @@ static void StartUserThread(int f) {
     }
 }
 
-int do_UserThreadCreate(int f, int arg) {
+int do_UserThreadCreate(int f, int arg, int fin) {
     Thread* newThread = new Thread("User thread");
     Parametre * p = new Parametre();
     p->f = f;
     p->arg = arg;
-  
+    p->fin = fin;
     int bid = currentThread->space->incrementIdNbThread();
     int tid = currentThread->space->getIdThread();
 

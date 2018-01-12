@@ -157,7 +157,9 @@ ExceptionHandler (ExceptionType which)
         DEBUG('a', "Excep: UserThreadCreate\n");
         int f = machine->ReadRegister(4);
         int arg = machine->ReadRegister(5);
-        int res = do_UserThreadCreate(f, arg);
+        int fin = machine->ReadRegister(6);
+        int res = do_UserThreadCreate(f, arg,fin);
+
 	if(res!=-1) machine->WriteRegister(2,res);
         break;
       }
