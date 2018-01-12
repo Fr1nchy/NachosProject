@@ -44,11 +44,12 @@ ListJoin::Suppr(int tid){
     Element * ptr = first;
     Element * AC = NULL;
 
-    while((ptr != NULL) && (ptr->tid ==tid)){
+    while((ptr != NULL) && (ptr->tid !=tid)){
+        printf("tid:%d\n",ptr->tid);
         AC = ptr;
         ptr = ptr->next;
     }
-
+    printf("Suppr:%p\n",ptr);
     if(ptr == NULL){
         return -1;
     }else{

@@ -40,7 +40,7 @@ Directory::Directory(int size)
     table = new DirectoryEntry[size];
     tableSize = size;
     for (int i = 0; i < tableSize; i++)
-	table[i].inUse = FALSE;
+	   table[i].inUse = FALSE;
 }
 
 //----------------------------------------------------------------------
@@ -88,11 +88,14 @@ Directory::WriteBack(OpenFile *file)
 //----------------------------------------------------------------------
 
 int
-Directory::FindIndex(const char *name)
+Directory::FindIndex(const char *name, bool isFile)
 {
-    for (int i = 0; i < tableSize; i++)
-        if (table[i].inUse && !strncmp(table[i].name, name, FileNameMaxLen))
-	    return i;
+    for (int i = 0; i < tableSize; i++) {
+        if (table[i].inUse && !strncmp(table[i].name, name, FileNameMaxLen) && table[i].isFile == isFile) {
+            return i;
+        }
+    }
+    
     return -1;		// name not in directory
 }
 
@@ -106,9 +109,9 @@ Directory::FindIndex(const char *name)
 //----------------------------------------------------------------------
 
 int
-Directory::Find(const char *name)
+Directory::Find(const char *name, bool isFile)
 {
-    int i = FindIndex(name);
+    int i = FindIndex(name, isFile);
 
     if (i != -1)
 	return table[i].sector;
@@ -127,17 +130,20 @@ Directory::Find(const char *name)
 //----------------------------------------------------------------------
 
 bool
-Directory::Add(const char *name, int newSector)
+Directory::Add(const char *name, int newSector, bool isFile)
 { 
-    if (FindIndex(name) != -1)
+    if (FindIndex(name, isFile) != -1)
 	return FALSE;
 
-    for (int i = 0; i < tableSize; i++)
+    for (int i = 0; i < tableSize; i++) {
         if (!table[i].inUse) {
+            
             table[i].inUse = TRUE;
             strncpy(table[i].name, name, FileNameMaxLen); 
             table[i].sector = newSector;
-        return TRUE;
+            table[i].isFile = isFile;
+            return TRUE;
+        }
 	}
     return FALSE;	// no space.  Fix when we have extensible files.
 }
@@ -151,9 +157,9 @@ Directory::Add(const char *name, int newSector)
 //----------------------------------------------------------------------
 
 bool
-Directory::Remove(const char *name)
+Directory::Remove(const char *name, bool isFile)
 { 
-    int i = FindIndex(name);
+    int i = FindIndex(name, isFile);
 
     if (i == -1)
 	return FALSE; 		// name not in directory
@@ -163,21 +169,109 @@ Directory::Remove(const char *name)
 
 //----------------------------------------------------------------------
 // Directory::List
-// 	List all the file names in the directory. 
+//  List all the file names in the directory. 
 //----------------------------------------------------------------------
 
 void
 Directory::List()
 {
    for (int i = 0; i < tableSize; i++)
-	if (table[i].inUse)
-	    printf("%s\n", table[i].name);
+    if (table[i].inUse) {
+        printf("(%d) %s, sector %d ", i, table[i].name, table[i].sector);
+        if (table[i].isFile) {
+            printf("(fichier)\n");
+        }
+        else {
+            printf("(répertoire)\n");
+        }
+    }        
 }
 
 //----------------------------------------------------------------------
+// Directory::AddSpecialEntries
+//  Add the special entries . and .. 
+//----------------------------------------------------------------------
+
+void
+Directory::AddSpecialEntries(int sector, int parentSector) {
+    Add(".", sector, false);
+    Add("..", parentSector, false);        
+}
+//----------------------------------------------------------------------
+// Directory::UpdateSpecialEntries
+//  Update the special entries . and .. 
+//----------------------------------------------------------------------
+
+void
+Directory::UpdateSpecialEntries(int sector, int parentSector) {
+    DEBUG('f', "On échange les secteurs suivants : . devient %d (sector) et .. devient %d (parentSector)\n", sector, parentSector);
+    int i = FindIndex(".", false);
+    if (i >= 0 && i < tableSize)
+        table[i].sector = sector;  
+    else
+        Add(".", sector, false);  
+    int j = FindIndex("..", false);
+    if (j >= 0 && j < tableSize)
+        table[j].sector = parentSector;  
+    //else
+      //  Add("..", parentSector, false); 
+
+    //We need to update the link for all of [sector]'s children
+    /*OpenFile *file;
+    for (int k = 0; k < tableSize; k++) {
+        if (table[k].inUse && !table[k].isFile) {
+            if (strcmp(table[k].name, ".") && strcmp(table[k].name, "..") && table[k].sector != sector)
+                file = new OpenFile(table[k].sector);
+        }
+    }*/
+}
+
+//----------------------------------------------------------------------
+// Directory::UpdateSelfEntry
+//  Update the special entry . 
+//----------------------------------------------------------------------
+
+void
+Directory::UpdateSelfEntry(int sector) {
+    int i = FindIndex(".", false);
+    if (i >= 0 && i < tableSize) {
+        table[i].sector = sector;
+    }
+}
+
+//----------------------------------------------------------------------
+// Directory::UpdateSelfEntry
+//  Update the special entry . 
+//----------------------------------------------------------------------
+
+void
+Directory::UpdateParentEntry(int sector) {
+    int i = FindIndex("..", false);
+    if (i >= 0 && i < tableSize) {
+        table[i].sector = sector;
+    }   
+}
+
+
+//----------------------------------------------------------------------
+// Directory::IsEmpty
+// Return TRUE if the directory has no entry, except for . and ..
+// Return FALSE otherwise
+//----------------------------------------------------------------------
+
+bool Directory::IsEmpty() {
+    bool b = true;
+    for (int i = 0; i < tableSize; i++) {
+        if (strcmp(table[i].name, ".") && strcmp(table[i].name, ".."))
+            b = b && !table[i].inUse;
+    }
+    if (b) { DEBUG('f', "Directory is empty !\n");}
+    return b;
+}
+//----------------------------------------------------------------------
 // Directory::Print
-// 	List all the file names in the directory, their FileHeader locations,
-//	and the contents of each file.  For debugging.
+//  List all the file names in the directory, their FileHeader locations,
+//  and the contents of each file.  For debugging.
 //----------------------------------------------------------------------
 
 void

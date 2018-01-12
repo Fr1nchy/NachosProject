@@ -19,6 +19,8 @@ static void StartUserThread(int f) {
     machine->WriteRegister(NextPCReg,p.f+4);
     machine->WriteRegister(4,p.arg);
 
+    machine->WriteRegister(31,p.fin);
+
     machine->WriteRegister(StackReg,currentThread->space->ThreadSpace());
     //printf("stack:%d\n",machine->ReadRegister(StackReg));
     
@@ -29,12 +31,12 @@ static void StartUserThread(int f) {
     }
 }
 
-int do_UserThreadCreate(int f, int arg) {
+int do_UserThreadCreate(int f, int arg, int fin) {
     Thread* newThread = new Thread("User thread");
     Parametre * p = new Parametre();
     p->f = f;
     p->arg = arg;
-  
+    p->fin = fin;
     int bid = currentThread->space->incrementIdNbThread();
     int tid = currentThread->space->getIdThread();
 
@@ -51,24 +53,26 @@ int do_UserThreadCreate(int f, int arg) {
 }    
 
 int do_UserThreadExit() {
-    //printf("fin_exitBid:%d Tid:%d\n",currentThread->getBid(),currentThread->getTid());
+    printf("fin_exitBid:%d Tid:%d\n",currentThread->getBid(),currentThread->getTid());
     currentThread->space->decrementNbThreadResetSpace();
     if(currentThread->space->ExitThread()==0){
         do_UserForkExit();
     }else{
-        //printf("finish\n");
+        printf("finish\n");
 	    currentThread->Finish();        
     }
     return 0;
 }
 
 void join_UserThread(int tid){
-
+    printf("Join:%d\n",tid);
     if(tid < nbThreadsMax){
         Element * e = listThJoin->Find(tid);
+        printf("e:%p\n",e);
         if(e !=NULL){
             e->s->P();
         }
     }
+    printf("Fin_Join:%d\n",tid);
 }
 
