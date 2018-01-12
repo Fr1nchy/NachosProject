@@ -1,0 +1,5 @@
+SynchPutInt : 
+
+
+SynchGetInt : récupère un entier, caractère par caractère depuis l'entrée standard, signé sur 32 bits donc dans l'intervalle [-2^31; 2^31]
+Si l'entier en entrée est inférieur à -2147483648 il sera forcé à cette valeur et s'il est supérieur à 2147483647 il sera forcé à cette valeur également. Le nombre limite de caractères est de 16, au-delà les caractères ne seront pas pris en compte

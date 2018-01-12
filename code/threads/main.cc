@@ -142,6 +142,16 @@ main (int argc, char **argv)
 	    }
 #endif // USER_PROGRAM
 #ifdef FILESYS
+	  if (!strcmp (*argv, "-md")) {
+	  	ASSERT(argc > 1);
+	  	fileSystem->MakeDir(*(argv+1));
+	  	argCount = 2;
+	  }
+	  if (!strcmp (*argv, "-cd")) {
+	  	ASSERT(argc > 1);
+	  	fileSystem->ChangeDir(*(argv+1));
+	  	argCount = 2;
+	  }
 	  if (!strcmp (*argv, "-cp"))
 	    {			// copy from UNIX to Nachos
 		ASSERT (argc > 2);
@@ -158,6 +168,12 @@ main (int argc, char **argv)
 	    {			// remove Nachos file
 		ASSERT (argc > 1);
 		fileSystem->Remove (*(argv + 1));
+		argCount = 2;
+	    }
+	  else if (!strcmp (*argv, "-rd"))
+	    {			// remove Nachos file
+		ASSERT (argc > 1);
+		fileSystem->RemoveDir (*(argv + 1));
 		argCount = 2;
 	    }
 	  else if (!strcmp (*argv, "-l"))

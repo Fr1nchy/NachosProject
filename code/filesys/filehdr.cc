@@ -31,7 +31,7 @@
 // FileHeader::Allocate
 // 	Initialize a fresh file header for a newly created file.
 //	Allocate data blocks for the file out of the map of free disk blocks.
-//	Return FALSE if there are not enough free blocks to accomodate
+//	Return FALSE if there are not enough free   blocks to accomodate
 //	the new file.
 //
 //	"freeMap" is the bit map of free disk sectors
@@ -46,8 +46,9 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
     if (freeMap->NumClear() < numSectors)
 	return FALSE;		// not enough space
 
-    for (int i = 0; i < numSectors; i++)
-	dataSectors[i] = freeMap->Find();
+    for (int i = 0; i < numSectors; i++) {
+	   dataSectors[i] = freeMap->Find();
+    }   
     return TRUE;
 }
 
@@ -90,6 +91,7 @@ FileHeader::FetchFrom(int sector)
 void
 FileHeader::WriteBack(int sector)
 {
+    DEBUG('f', "FileHeader: Write back to sector %d\n", sector);
     synchDisk->WriteSector(sector, (char *)this); 
 }
 
@@ -137,13 +139,13 @@ FileHeader::Print()
 	printf("%d ", dataSectors[i]);
     printf("\nFile contents:\n");
     for (i = k = 0; i < numSectors; i++) {
-	synchDisk->ReadSector(dataSectors[i], data);
+	    synchDisk->ReadSector(dataSectors[i], data);
         for (j = 0; (j < SectorSize) && (k < numBytes); j++, k++) {
-	    if ('\040' <= data[j] && data[j] <= '\176')   // isprint(data[j])
-		printf("%c", data[j]);
+	        if ('\040' <= data[j] && data[j] <= '\176') // isprint(data[j]) 
+		        printf("%c", data[j]);
             else
-		printf("\\%x", (unsigned char)data[j]);
-	}
+		        printf("\\%x", (unsigned char)data[j]);
+	    }
         printf("\n"); 
     }
     delete [] data;

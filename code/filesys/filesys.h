@@ -77,9 +77,15 @@ class FileSystem {
     bool Create(const char *name, int initialSize);  	
 					// Create a file (UNIX creat)
 
+    bool MakeDir(const char* name);
+
+    bool ChangeDir(const char* name);
+
     OpenFile* Open(const char *name); 	// Open a file (UNIX open)
 
     bool Remove(const char *name); 	// Delete a file (UNIX unlink)
+
+    bool RemoveDir(const char *name); // Delete a directory
 
     void List();			// List all the files in the file system
 
@@ -90,6 +96,8 @@ class FileSystem {
 					// represented as a file
    OpenFile* directoryFile;		// "Root" directory -- list of 
 					// file names, represented as a file
+   OpenFile* parentDirectory;
+
 };
 
 #endif // FILESYS

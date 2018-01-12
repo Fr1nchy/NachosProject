@@ -30,6 +30,8 @@ OpenFile::OpenFile(int sector)
 { 
     hdr = new FileHeader;
     hdr->FetchFrom(sector);
+    /*printf("SECTOR : %d\n", sector);
+    hdr->Print();*/
     seekPosition = 0;
 }
 
@@ -118,13 +120,13 @@ OpenFile::ReadAt(char *into, int numBytes, int position)
     int fileLength = hdr->FileLength();
     int i, firstSector, lastSector, numSectors;
     char *buf;
+    DEBUG('f', "Reading %d bytes at %d, from file of length %d.\n",     
+            numBytes, position, fileLength);
 
     if ((numBytes <= 0) || (position >= fileLength))
     	return 0; 				// check request
     if ((position + numBytes) > fileLength)		
 	numBytes = fileLength - position;
-    DEBUG('f', "Reading %d bytes at %d, from file of length %d.\n", 	
-			numBytes, position, fileLength);
 
     firstSector = divRoundDown(position, SectorSize);
     lastSector = divRoundDown(position + numBytes - 1, SectorSize);
@@ -194,3 +196,4 @@ OpenFile::Length()
 { 
     return hdr->FileLength(); 
 }
+
