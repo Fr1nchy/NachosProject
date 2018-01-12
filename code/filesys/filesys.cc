@@ -254,7 +254,7 @@ FileSystem::MakeDir(const char *name)
     directory->FetchFrom(directoryFile);
 
 
-    DEBUG('f', "Creating repertory %s\n", name);
+    DEBUG('f', "Creating repertory %s..\n", name);
 
     if (directory->Find(name, false) != -1) {
       success = FALSE;          // directory already exists
@@ -277,16 +277,8 @@ FileSystem::MakeDir(const char *name)
         // everthing worked, flush all changes back to disk
             
             hdr->WriteBack(sector);    
-            DEBUG('f', "File header written\n"); 
-
-            DEBUG('f', "We're currently in the sector %d creating a directory in the sector %d\n", DirectorySector, sector);
-
-
             newDirFile = new OpenFile(sector);
             currentFile = new OpenFile(currentSector);
-
-
-            //newDir->FetchFrom(newDirFile); //We open the directory newly created
 
             newDir->AddSpecialEntries(sector, currentSector);
 
@@ -352,22 +344,46 @@ bool FileSystem::ChangeDir(const char *name)
     int sector, currentSector;
 
     directory->FetchFrom(directoryFile);
-    
-    sector = directory->Find(name, false); 
-    currentSector = directory->Find(".", false);
-    currentSector++;
-    
-    DEBUG('f', "Opening directory %s in sector %d\n", name, sector);
 
-    if (sector < 0) { 
-        printf("Directory %s does not exist!\n", name);
-        return FALSE;
+    char* str = (char*) malloc(sizeof(char)*50);
+    char* tok;
+    strcpy(str, name);
+    if (strchr(str, '/') != NULL) {
+        tok = strtok(str, "/");
+        while (tok != NULL) {
+            sector = directory->Find(tok, false);
+            if (sector <= 0) {
+                printf("Directory %s does not exist!\n", name);
+                return FALSE;
+            }            
+            openFile = new OpenFile(sector);
+            if (openFile == NULL) {
+                printf("Directory %s can't open!\n", name);
+                return FALSE;
+            }
+            directory->FetchFrom(openFile);
+            tok = strtok(NULL, "/");
+        }
     }
-    openFile = new OpenFile(sector);    // name was found in directory 
-    if (openFile == NULL) {
-        printf("Directory %s can't open!\n", name);
-        return FALSE;
+
+    else {
+        sector = directory->Find(name, false); 
+        currentSector = directory->Find(".", false);
+        currentSector++;
+    
+        DEBUG('f', "Opening directory %s in sector %d\n", name, sector);
+
+        if (sector < 0) { 
+            printf("Directory %s does not exist!\n", name);
+            return FALSE;
+        }
+        openFile = new OpenFile(sector);    // name was found in directory 
+        if (openFile == NULL) {
+            printf("Directory %s can't open!\n", name);
+            return FALSE;
+        }
     }
+
     newDir->FetchFrom(openFile);
 
     printf("ChangeDir sector = %d\n", sector);
@@ -381,6 +397,7 @@ bool FileSystem::ChangeDir(const char *name)
 
     delete newDir;
     delete directory;
+    delete openFile;
     return TRUE;                // return TRUE if ok
 }
 
