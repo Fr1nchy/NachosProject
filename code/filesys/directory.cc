@@ -132,13 +132,6 @@ Directory::Find(const char *name, bool isFile)
 bool
 Directory::Add(const char *name, int newSector, bool isFile)
 { 
-/*
-    if (isFile)
-        DEBUG('f', "Directory::Add : %s, %d, isFile\n", name, newSector);
-    else
-        DEBUG('f', "Directory::Add : %s, %d, !isFile\n", name, newSector);*/
-
-
     if (FindIndex(name, isFile) != -1)
 	return FALSE;
 
@@ -191,9 +184,7 @@ Directory::List()
         else {
             printf("(répertoire)\n");
         }
-
-    }
-        
+    }        
 }
 
 //----------------------------------------------------------------------

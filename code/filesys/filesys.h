@@ -96,6 +96,7 @@ class FileSystem {
 					// represented as a file
    OpenFile* directoryFile;		// "Root" directory -- list of 
 					// file names, represented as a file
+   OpenFileTable* oft; //this table contains the sectors with the header of the currently open files
 
 };
 

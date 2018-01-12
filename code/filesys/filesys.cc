@@ -56,6 +56,7 @@
 // sectors, so that they can be located on boot-up.
 #define FreeMapSector 		0
 #define DirectorySector 	1
+#define 
 
 // Initial file sizes for the bitmap and directory; until the file system
 // supports extensible files, the directory size sets the maximum number 
@@ -80,6 +81,8 @@
 FileSystem::FileSystem(bool format)
 { 
     DEBUG('f', "Initializing the file system.\n");
+
+
 
     if (format) {
 
@@ -160,6 +163,9 @@ FileSystem::FileSystem(bool format)
         freeMapFile = new OpenFile(FreeMapSector);
         directoryFile = new OpenFile(DirectorySector);
     }
+    oft = new OpenFileTable();
+    oft->Add(FreeMapSector);
+    oft->Add(DirectorySector);
 }
 
 //----------------------------------------------------------------------
@@ -278,7 +284,9 @@ FileSystem::MakeDir(const char *name)
             
             hdr->WriteBack(sector);    
             newDirFile = new OpenFile(sector);
+            oft->Add(sector);
             currentFile = new OpenFile(currentSector);
+            oft->Add(currentSector);
 
             newDir->AddSpecialEntries(sector, currentSector);
 
@@ -290,6 +298,9 @@ FileSystem::MakeDir(const char *name)
             delete hdr;
             delete newDir;
             delete newDirFile;
+            oft->Remove(sector);
+            delete currentFile;
+            oft->Remove(currentSector);
     }
         delete freeMap;
     }
@@ -384,6 +395,8 @@ bool FileSystem::ChangeDir(const char *name)
         }
     }
 
+    oft->Add(sector);
+
     newDir->FetchFrom(openFile);
 
     printf("ChangeDir sector = %d\n", sector);
@@ -398,6 +411,7 @@ bool FileSystem::ChangeDir(const char *name)
     delete newDir;
     delete directory;
     delete openFile;
+    oft->Remove(sector);
     return TRUE;                // return TRUE if ok
 }
 
@@ -485,6 +499,7 @@ FileSystem::RemoveDir(const char *name)
     }
 
     openFile = new OpenFile(sector);
+    oft->Add(openFile);
     dirToRemove = new Directory(NumDirEntries);
     dirToRemove->FetchFrom(openFile);
 
@@ -512,6 +527,8 @@ FileSystem::RemoveDir(const char *name)
     delete fileHdr;
     delete directory;
     delete freeMap;
+    delete openFile;
+    oft->Remove(openFile);
     return TRUE;
 } 
 
