@@ -51,12 +51,12 @@
 #include "filehdr.h"
 #include "filesys.h"
 
+
 // Sectors containing the file headers for the bitmap of free sectors,
 // and the directory of files.  These file headers are placed in well-known 
 // sectors, so that they can be located on boot-up.
 #define FreeMapSector 		0
 #define DirectorySector 	1
-#define 
 
 // Initial file sizes for the bitmap and directory; until the file system
 // supports extensible files, the directory size sets the maximum number 
@@ -164,8 +164,8 @@ FileSystem::FileSystem(bool format)
         directoryFile = new OpenFile(DirectorySector);
     }
     oft = new OpenFileTable();
-    oft->Add(FreeMapSector);
-    oft->Add(DirectorySector);
+    //oft->Add(FreeMapSector);
+    //oft->Add(DirectorySector);
 }
 
 //----------------------------------------------------------------------
@@ -284,9 +284,9 @@ FileSystem::MakeDir(const char *name)
             
             hdr->WriteBack(sector);    
             newDirFile = new OpenFile(sector);
-            oft->Add(sector);
+            //oft->Add(sector);
             currentFile = new OpenFile(currentSector);
-            oft->Add(currentSector);
+            //oft->Add(currentSector);
 
             newDir->AddSpecialEntries(sector, currentSector);
 
@@ -298,9 +298,9 @@ FileSystem::MakeDir(const char *name)
             delete hdr;
             delete newDir;
             delete newDirFile;
-            oft->Remove(sector);
+            //oft->Remove(sector);
             delete currentFile;
-            oft->Remove(currentSector);
+            //oft->Remove(currentSector);
     }
         delete freeMap;
     }
@@ -395,7 +395,7 @@ bool FileSystem::ChangeDir(const char *name)
         }
     }
 
-    oft->Add(sector);
+    // oft->Add(sector);
 
     newDir->FetchFrom(openFile);
 
@@ -411,7 +411,7 @@ bool FileSystem::ChangeDir(const char *name)
     delete newDir;
     delete directory;
     delete openFile;
-    oft->Remove(sector);
+    // oft->Remove(sector);
     return TRUE;                // return TRUE if ok
 }
 
@@ -499,7 +499,7 @@ FileSystem::RemoveDir(const char *name)
     }
 
     openFile = new OpenFile(sector);
-    oft->Add(openFile);
+    // oft->Add(sector);
     dirToRemove = new Directory(NumDirEntries);
     dirToRemove->FetchFrom(openFile);
 
@@ -528,7 +528,7 @@ FileSystem::RemoveDir(const char *name)
     delete directory;
     delete freeMap;
     delete openFile;
-    oft->Remove(openFile);
+    // oft->Remove(sector);
     return TRUE;
 } 
 

@@ -37,6 +37,7 @@
 
 #include "copyright.h"
 #include "openfile.h"
+#include "openfiletable.h"
 
 #ifdef FILESYS_STUB 		// Temporarily implement file system calls as 
 				// calls to UNIX, until the real file system
@@ -62,6 +63,7 @@ class FileSystem {
 
     bool Remove(char *name) { return Unlink(name) == 0; }
 
+  
 };
 
 #else // FILESYS

@@ -1,3 +1,4 @@
+
 #include "openfiletable.h"
 
 
@@ -9,6 +10,13 @@ OpenFileTableTable::OpenFileTable() {
 	}
 }
 
+void OpenFileTable::Add(int sector) {
+	int i = Find(-1);
+	if (i >= 0) {
+		openFileTable[i] = sector;
+	}
+}
+
 int OpenFileTable::Find(int sector) {
 	for (int i = 0; i < tableSize; i++) {
 		if (openFileTable[i] == sector) {
@@ -16,13 +24,6 @@ int OpenFileTable::Find(int sector) {
 		}
 	}	
 	return -1;
-}
-
-void OpenFileTable::Add(int sector) {
-	int i = Find(-1);
-	if (i >= 0) {
-		openFileTable[i] = sector;
-	}
 }
 
 void OpenFileTable::Remove(int sector) {
