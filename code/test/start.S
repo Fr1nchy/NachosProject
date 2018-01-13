@@ -210,6 +210,37 @@ ForkExec:
 	j	$31
 	.end ForkExec
 
+	.globl	Sem_init
+	.ent	Sem_init
+Sem_init:
+	addiu $2,$0,SC_Sem_init
+	syscall
+	j	$31
+	.end Sem_init
+	
+	.globl	Sem_wait
+	.ent	Sem_wait
+Sem_wait:
+	addiu $2,$0,SC_Sem_wait
+	syscall
+	j	$31
+	.end Sem_wait
+	
+	.globl	Sem_post
+	.ent	Sem_post
+Sem_post:
+	addiu $2,$0,SC_Sem_post
+	syscall
+	j	$31
+	.end Sem_post
+
+	.globl	Sem_destroy
+	.ent	Sem_destroy
+Sem_destroy:
+	addiu $2,$0,SC_Sem_destroy
+	syscall
+	j	$31
+	.end Sem_destroy
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main

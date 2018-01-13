@@ -184,6 +184,38 @@ ExceptionHandler (ExceptionType which)
 	    machine->WriteRegister(2,res);
         break;
       }
+      case SC_Sem_init: {
+        DEBUG('a', "Excep: Sem_init\n");
+	
+        int sem = machine->ReadRegister(4);
+        int val = machine->ReadRegister(5);
+
+	Semaphore * s = new Semaphore("sem",val);
+	machine->WriteMem(sem, 4,(int)s);	
+        break;
+      }
+      
+      case SC_Sem_post: {
+        DEBUG('a', "Excep: Sem_post\n");
+        int sem = machine->ReadRegister(4);
+	Semaphore * s = (Semaphore*)sem;
+	s->V();
+	break;
+      }
+      case SC_Sem_wait: {
+        DEBUG('a', "Excep: Sem_wait\n");
+        int sem = machine->ReadRegister(4);
+	Semaphore * s = (Semaphore*)sem;
+	s->P();
+        break;
+      }
+      case SC_Sem_destroy: {
+        DEBUG('a', "Excep: Sem_wait\n");
+        int sem = machine->ReadRegister(4);
+	Semaphore * s = (Semaphore*)sem;
+	delete s;
+        break;
+      }
       default: {
         printf("Unexpected user mode exception %d %d\n", which, type);
         ASSERT(FALSE); break;

@@ -39,15 +39,15 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 
 void SynchConsole::SynchPutChar(const char ch)
 {
-    printf("e\n");
+    //printf("e\n");
     monitorWrite->P();
-    printf("f\n");
+    //printf("f\n");
     console->PutChar(ch);    // echo it!
-    printf("k\n");
+    //printf("k\n");
 	writeDone->P();
-    printf("j\n");
+    //printf("j\n");
     monitorWrite->V();
-    printf("l\n");
+    //printf("l\n");
 }
 
 char SynchConsole::SynchGetChar()

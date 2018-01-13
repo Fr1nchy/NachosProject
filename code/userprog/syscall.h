@@ -39,6 +39,10 @@
 #define SC_UserThreadJoin 18
 #define SC_UserThreadExit	19
 #define SC_ForkExec 20
+#define SC_Sem_init 21
+#define SC_Sem_wait 22
+#define SC_Sem_post 23
+#define SC_Sem_destroy 24
 
 #ifdef IN_USER_MODE
 
@@ -161,6 +165,16 @@ void UserThreadJoin(int Idthread);
 void UserThreadExit ();
 
 int ForkExec(char * filename);
+
+typedef int Semaphore;
+
+void Sem_init(Semaphore * s, int val);
+
+void Sem_wait(Semaphore s);
+
+void Sem_post(Semaphore s);
+
+void Sem_destroy(Semaphore s);
 
 #endif // IN_USER_MODE
 
