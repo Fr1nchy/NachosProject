@@ -164,8 +164,8 @@ FileSystem::FileSystem(bool format)
         directoryFile = new OpenFile(DirectorySector);
     }
     oft = new OpenFileTable();
-    //oft->Add(FreeMapSector);
-    //oft->Add(DirectorySector);
+    oft->Add(FreeMapSector);
+    oft->Add(DirectorySector);
 }
 
 //----------------------------------------------------------------------
@@ -330,8 +330,9 @@ FileSystem::Open(const char *name)
     directory->FetchFrom(directoryFile);
     sector = directory->Find(name, true); 
     DEBUG('f', "Sector number %d\n", sector);
-    if (sector >= 0)        
-    openFile = new OpenFile(sector);    // name was found in directory 
+    if (sector >= 0)        // name was found in directory 
+    openFile = new OpenFile(sector);    
+    oft->Add(sector);
     delete directory;
     return openFile;                // return NULL if not found
 }
@@ -395,7 +396,7 @@ bool FileSystem::ChangeDir(const char *name)
         }
     }
 
-    // oft->Add(sector);
+    oft->Add(sector);
 
     newDir->FetchFrom(openFile);
 
@@ -423,6 +424,8 @@ bool FileSystem::ChangeDir(const char *name)
 //      Delete the space for its data blocks
 //      Write changes to directory, bitmap back to disk
 //
+//      Remove it from the openfiletable if it is open
+//
 //  Return TRUE if the file was deleted, FALSE if the file wasn't
 //  in the file system.
 //
@@ -444,6 +447,10 @@ FileSystem::Remove(const char *name)
        delete directory;
        return FALSE;             // file not found 
     }
+
+    if (oft->Find(sector) != -1)    // if file is open, remove it from openfiletable
+        oft->Remove(sector);
+
     fileHdr = new FileHeader;
     fileHdr->FetchFrom(sector);
 
@@ -499,7 +506,7 @@ FileSystem::RemoveDir(const char *name)
     }
 
     openFile = new OpenFile(sector);
-    // oft->Add(sector);
+    // oft->Add(sector);    
     dirToRemove = new Directory(NumDirEntries);
     dirToRemove->FetchFrom(openFile);
 
@@ -528,7 +535,6 @@ FileSystem::RemoveDir(const char *name)
     delete directory;
     delete freeMap;
     delete openFile;
-    // oft->Remove(sector);
     return TRUE;
 } 
 
