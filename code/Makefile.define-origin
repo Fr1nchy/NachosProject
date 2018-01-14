@@ -45,7 +45,7 @@ USERPROG_SRC    :=      addrspace.cc bitmap.cc exception.cc progtest.cc console.
                         machine.cc mipssim.cc translate.cc synchconsole.cc userthread.cc  frameprovider.cc userfork.cc
 VM_SRC          :=
 
-FILESYS_SRC     :=      directory.cc filehdr.cc filesys.cc fstest.cc openfile.cc \
+FILESYS_SRC     :=      directory.cc filehdr.cc openfiletable.cc filesys.cc fstest.cc openfile.cc \
                         synchdisk.cc disk.cc
 
 NETWORK_SRC     :=      nettest.cc post.cc network.cc

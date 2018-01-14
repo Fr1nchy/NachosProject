@@ -1,13 +1,15 @@
-
 #include "openfiletable.h"
 
-
-OpenFileTableTable::OpenFileTable() {
+OpenFileTable::OpenFileTable() {
 	tableSize = 10;
-	openFileTable = malloc(sizeof(int)*tableSize);
+	//openFileTable = malloc(sizeof(int)*tableSize);
 	for (int i = 0; i < tableSize; i++) {
 		openFileTable[i] = -1;
 	}
+}
+
+OpenFileTable::~OpenFileTable() {
+	delete[] openFileTable;
 }
 
 void OpenFileTable::Add(int sector) {
