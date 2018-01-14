@@ -42,6 +42,19 @@ SynchList::~SynchList ()
 }
 
 //----------------------------------------------------------------------
+// SynchList::IsEmpty
+//      Returns a boolean saying if the list is empty or not
+//----------------------------------------------------------------------
+
+
+bool
+SynchList::IsEmpty()
+{
+	return list.IsEmpty();	
+}
+
+
+//----------------------------------------------------------------------
 // SynchList::Append
 //      Append an "item" to the end of the list.  Wake up anyone
 //      waiting for an element to be appended.

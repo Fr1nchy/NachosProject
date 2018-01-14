@@ -55,6 +55,18 @@ MailBox::MailBox()
 }
 
 //----------------------------------------------------------------------
+// MailBox::IsEmpty()
+//		returns a boolean to know if the mailbox is empty or not
+//	returns the IsEmpty() method of the SynchList of messages	
+//----------------------------------------------------------------------
+
+
+MailBox::IsEmpty()
+{
+	return messages.IsEmpty();
+}
+
+//----------------------------------------------------------------------
 // MailBox::~MailBox
 //      De-allocate a single mail box within the post office.
 //
@@ -194,6 +206,16 @@ PostOffice::PostOffice(NetworkAddress addr, double reliability, int nBoxes)
     Thread *t = new Thread("postal worker");
 
     t->Fork(PostalHelper, (int) this);
+}
+
+//----------------------------------------------------------------------
+// PostOffice::IsThisMailboxEmpty(int box)
+// 	Return true or false respectively if the mailbox with the number box 
+//	is empty or not
+//----------------------------------------------------------------------
+
+PostOffice::IsThisMailboxEmpty(int box){
+	return boxes[box].IsEmpty();
 }
 
 //----------------------------------------------------------------------
@@ -342,6 +364,7 @@ void
 PostOffice::PacketSent()
 { 
     messageSent->V();
+	
 }
 
 NetworkAddress 

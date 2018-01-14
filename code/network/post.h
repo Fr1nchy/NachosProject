@@ -43,7 +43,9 @@ class MailHeader {
   public:
     MailBoxAddress to;		// Destination mail box
     MailBoxAddress from;	// Mail box to reply to
-    unsigned length;		// Bytes of message data (excluding the 
+    unsigned length;		// Bytes of message data (excluding the
+	bool ACK;
+	bool SYN;
 				// mail header)
 };
 
@@ -51,6 +53,8 @@ class MailHeader {
 // Excluding the MailHeader and the PacketHeader
 
 #define MaxMailSize 	(MaxPacketSize - sizeof(MailHeader))
+#define MAXREEMISSIONS 3
+#define TEMPO 15
 
 
 // The following class defines the format of an incoming/outgoing 
@@ -80,6 +84,9 @@ class MailBox {
     MailBox();			// Allocate and initialize mail box
     ~MailBox();			// De-allocate mail box
 
+	bool IsEmpty()
+				//return a boolean to know if the list is empty or not
+
     void Put(PacketHeader pktHdr, MailHeader mailHdr, char *data);
    				// Atomically put a message into the mailbox
     void Get(PacketHeader *pktHdr, MailHeader *mailHdr, char *data); 
@@ -106,6 +113,10 @@ class PostOffice {
 				//   "reliability" is how many packets
 				//   get dropped by the underlying network
     ~PostOffice();		// De-allocate Post Office data
+	
+	bool IsThisMailboxEmpty(int box);
+					//Check if the Mailbox box is empty and 
+					//return true or false whether the Mailbox is empty or not
     
     void Send(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
     				// Send a message to a mailbox on a remote 
@@ -139,5 +150,27 @@ class PostOffice {
     Semaphore *messageSent;	// V'ed when next message can be sent to network
     Lock *sendLock;		// Only one outgoing message at a time
 };
+
+class ReseauFiable {
+  public:	
+	ReseauFiable(NetworkAddress addr, double reliability, int nBoxes)
+				// Allocate and initialize Post Office
+				//   "reliability" is how many packets
+				//   get dropped by the underlying network
+	~ReseauFiable();
+	void Send(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
+    			// Send a message to a mailbox on a remote 
+				// machine.  The fromBox in the MailHeader is 
+				// the return box for ack's.
+
+    void ReceiveAck(int box, PacketHeader *pktHdr, 
+		MailHeader *mailHdr, char *data);
+    			//Verify that the mailbox isn't empty before calling Receive
+
+    void Receive(int box, PacketHeader *pktHdr, 
+		MailHeader *mailHdr, char *data);
+    			// Retrieve a message from "box".  Wait if
+				// there is no message in the box.
+}
 
 #endif

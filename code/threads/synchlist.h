@@ -27,6 +27,8 @@ class SynchList
     SynchList ();		// initialize a synchronized list
     ~SynchList ();		// de-allocate a synchronized list
 
+	bool IsEmpty(); //return a boolean to know if the list is empty or not.	
+	
     void Append (void *item);	// append item to the end of the list,
     // and wake up any thread waiting in remove
     void *Remove ();		// remove the first item from the front of
