@@ -19,7 +19,6 @@
 /****Gestion des threads users *******/
 #include "list.h"
 #include "synch.h"
-#include "post.h"
 extern int nbThreads;
 extern int idThread;
 extern int nbProcess;
@@ -30,7 +29,6 @@ extern Semaphore * semaNumThreads;
 extern Semaphore *semNumProcess;
 extern ListJoin* listThJoin;
 
-//class Tabjoin;
 /************************************/
 
 // Initialization and cleanup routines
@@ -70,6 +68,7 @@ extern SynchDisk *synchDisk;
 
 #ifdef NETWORK
 #include "post.h"
+extern ReseauFiable *reseauFiable;
 extern PostOffice *postOffice;
 #endif
 

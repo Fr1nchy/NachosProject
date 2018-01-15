@@ -195,6 +195,8 @@ Initialize (int argc, char **argv)
 #endif
 
 #ifdef NETWORK
+    /****** Network ******/
+    //postOffice = new PostOffice(1, 1.0, 0);
     reseauFiable = new ReseauFiable (netname, rely, 10);
 #endif
 }

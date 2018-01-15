@@ -34,7 +34,7 @@
 # List of NachOS user programs initially present
 ORIG_USERPROGS=halt matmult shell sort
 
-###########################################################################
+###########################################################################	
 # Group of files used to defined initial flavors
 #
 THREAD_SRC      :=      main.cc list.cc scheduler.cc synch.cc synchlist.cc \
@@ -48,8 +48,8 @@ VM_SRC          :=
 FILESYS_SRC     :=      directory.cc filehdr.cc openfiletable.cc filesys.cc fstest.cc openfile.cc \
                         synchdisk.cc disk.cc
 
-NETWORK_SRC     :=      post.cc nettest.cc network.cc reseaufiable.cc
-#
+NETWORK_SRC     :=      post.cc network.cc reseaufiable.cc nettest.cc
+
 ###########################################################################
 
 FEATURE_LIST=base thread-test userprog filesys filesys-stub network vm
