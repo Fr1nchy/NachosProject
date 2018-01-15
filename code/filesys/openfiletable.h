@@ -14,7 +14,7 @@ class OpenFileTable {
 		void Remove(int sector);
 	private:
 		int tableSize;
-		int* openFileTable = new int[10];
+		int* openFileTable;
 };
 
 #endif

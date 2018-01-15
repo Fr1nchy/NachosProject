@@ -1,7 +1,8 @@
 #include "openfiletable.h"
 
 OpenFileTable::OpenFileTable() {
-	tableSize = 10;
+	tableSize = 10; 
+	openFileTable = new int[10];
 	//openFileTable = malloc(sizeof(int)*tableSize);
 	for (int i = 0; i < tableSize; i++) {
 		openFileTable[i] = -1;
