@@ -61,9 +61,9 @@ MailBox::MailBox()
 //----------------------------------------------------------------------
 
 
-MailBox::IsEmpty()
+bool MailBox::IsEmpty()
 {
-	return messages.IsEmpty();
+	return messages->IsEmpty();
 }
 
 //----------------------------------------------------------------------
@@ -214,7 +214,7 @@ PostOffice::PostOffice(NetworkAddress addr, double reliability, int nBoxes)
 //	is empty or not
 //----------------------------------------------------------------------
 
-PostOffice::IsThisMailboxEmpty(int box){
+bool PostOffice::IsThisMailboxEmpty(int box){
 	return boxes[box].IsEmpty();
 }
 

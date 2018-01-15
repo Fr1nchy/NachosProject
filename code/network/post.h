@@ -84,7 +84,7 @@ class MailBox {
     MailBox();			// Allocate and initialize mail box
     ~MailBox();			// De-allocate mail box
 
-	bool IsEmpty()
+	bool IsEmpty();
 				//return a boolean to know if the list is empty or not
 
     void Put(PacketHeader pktHdr, MailHeader mailHdr, char *data);
@@ -152,25 +152,32 @@ class PostOffice {
 };
 
 class ReseauFiable {
-  public:	
-	ReseauFiable(NetworkAddress addr, double reliability, int nBoxes)
-				// Allocate and initialize Post Office
-				//   "reliability" is how many packets
-				//   get dropped by the underlying network
-	~ReseauFiable();
-	void Send(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
-    			// Send a message to a mailbox on a remote 
-				// machine.  The fromBox in the MailHeader is 
-				// the return box for ack's.
+    private:
+        PostOffice* postOffice;
 
-    void ReceiveAck(int box, PacketHeader *pktHdr, 
-		MailHeader *mailHdr, char *data);
-    			//Verify that the mailbox isn't empty before calling Receive
+    public:	
+        ReseauFiable(NetworkAddress addr, double reliability, int nBoxes);
+        		// Allocate and initialize Post Office
+        		//   "reliability" is how many packets
+        		//   get dropped by the underlying network
+        ~ReseauFiable();
+        void Send(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
+        		// Send a message to a mailbox on a remote 
+        		// machine.  The fromBox in the MailHeader is 
+        		// the return box for ack's.
 
-    void Receive(int box, PacketHeader *pktHdr, 
-		MailHeader *mailHdr, char *data);
-    			// Retrieve a message from "box".  Wait if
-				// there is no message in the box.
-}
+        void ReceiveAck(int box, PacketHeader *pktHdr, 
+        MailHeader *mailHdr, char *data);
+        		//Verify that the mailbox isn't empty before calling Receive
+
+        void Receive(int box, PacketHeader *pktHdr, 
+        MailHeader *mailHdr, char *data);
+        		// Retrieve a message from "box".  Wait if
+        		// there is no message in the box.
+
+        void StartTimer(unsigned int tempo);
+
+        PostOffice* getPostOffice();
+};
 
 #endif

@@ -50,7 +50,7 @@ SynchList::~SynchList ()
 bool
 SynchList::IsEmpty()
 {
-	return list.IsEmpty();	
+	return list->IsEmpty();	
 }
 
 
