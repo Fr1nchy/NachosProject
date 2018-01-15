@@ -164,8 +164,8 @@ FileSystem::FileSystem(bool format)
         directoryFile = new OpenFile(DirectorySector);
     }
     oft = new OpenFileTable();
-    oft->Add(FreeMapSector);
-    oft->Add(DirectorySector);
+    // oft->Add(FreeMapSector);
+    // oft->Add(DirectorySector);
 }
 
 //----------------------------------------------------------------------
