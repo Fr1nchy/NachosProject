@@ -329,7 +329,6 @@ FileSystem::Open(const char *name)
     DEBUG('f', "Opening file %s\n", name);
     directory->FetchFrom(directoryFile);
     sector = directory->Find(name, true); 
-    DEBUG('f', "Sector number %d\n", sector);
     if (sector >= 0)        // name was found in directory 
     openFile = new OpenFile(sector);    
     oft->Add(sector);

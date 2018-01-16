@@ -43,12 +43,51 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 { 
     numBytes = fileSize;
     numSectors  = divRoundUp(fileSize, SectorSize);
+    unsigned numIndSectors = 0;
+    unsigned numDirectSectors = numSectors;    
+
+
+    if ((unsigned) numSectors > NumDirect) { //if we need indirection
+        numIndSectors = divRoundUp(numSectors - NumDirect, NumDirect - 1); //For every (NumDirect-1) sectors, we have one less direct sector
+        numDirectSectors = NumDirect - numIndSectors;
+    }
+
+    //unsigned indirectDataSize = numBytes - SectorSize * numDirectSectors;
+
+    DEBUG('f', "numSectors = %d\n", numSectors);
+    DEBUG('f', "Nb secteurs d'indirection : %d\n", numIndSectors);
+    DEBUG('f', "Nb secteurs directs : %d\n\n", numDirectSectors);
+
     if (freeMap->NumClear() < numSectors)
 	return FALSE;		// not enough space
 
-    for (int i = 0; i < numSectors; i++) {
+
+    for (int i = 0; (unsigned)i < numDirectSectors; i++) {
 	   dataSectors[i] = freeMap->Find();
     }   
+    
+    FileHeader *hdr;
+    unsigned size = numBytes - numDirectSectors * SectorSize;
+
+
+    for (unsigned i = numDirectSectors; i < NumDirect && (int) i < numSectors; i++) {
+        hdr = new FileHeader;
+        dataSectors[i] = freeMap->Find();  
+
+        
+        if (size > MaxFileSize) {
+            hdr->Allocate(freeMap, MaxFileSize);
+        }
+        else
+            hdr->Allocate(freeMap, size);
+        
+        hdr->WriteBack(dataSectors[i]);
+        size -= MaxFileSize;
+
+        /*Indirection *indir = new Indirection(indirectData);
+        indir->WriteBack(dataSectors[i]);*/
+        delete hdr;
+    }
     return TRUE;
 }
 
@@ -91,7 +130,6 @@ FileHeader::FetchFrom(int sector)
 void
 FileHeader::WriteBack(int sector)
 {
-    DEBUG('f', "FileHeader: Write back to sector %d\n", sector);
     synchDisk->WriteSector(sector, (char *)this); 
 }
 
@@ -108,7 +146,42 @@ FileHeader::WriteBack(int sector)
 int
 FileHeader::ByteToSector(int offset)
 {
-    return(dataSectors[offset / SectorSize]);
+    unsigned numIndSectors = 0;
+    unsigned numDirectSectors = numSectors;
+    int index = offset/SectorSize;
+    int r;
+    int k = dataSectors[index];
+
+   DEBUG('f', "offset = %d, numSectors = %d\n", (unsigned) offset, numSectors);
+ 
+    if ((unsigned) numSectors > NumDirect) { //if we need indirection
+        numIndSectors = divRoundUp(numSectors - NumDirect, NumDirect - 1); //For every (NumDirect-1) sectors, we have one less direct sector
+        numDirectSectors = NumDirect - numIndSectors;
+
+
+        if ((unsigned)offset >= SectorSize*numDirectSectors) {
+            DEBUG('f', "offset %d >= SectorSize*numDirectSectors %d\n", offset, SectorSize*numDirectSectors);
+            r = (offset - numDirectSectors*SectorSize +1) / MaxFileSize;
+
+            index = numDirectSectors + r;
+
+            FileHeader *hdr = new FileHeader;
+
+            hdr->FetchFrom(dataSectors[index]); 
+
+            return hdr->ByteToSector(offset - numDirectSectors*SectorSize - MaxFileSize*r);
+        }
+    }
+
+//    DEBUG('f', "k = %d\n", k);
+
+    
+    
+    /*DEBUG('f', "ByteToSector: offset = %d, k = %d, numIndirectSectors = %d, numDirectSectors = %d, taille totale = %d, index = %d\n"
+        , offset, k, 
+        numIndSectors, numDirectSectors, FileLength(), index);*/
+    
+    return(k);
 }
 
 //----------------------------------------------------------------------
@@ -131,21 +204,79 @@ FileHeader::FileLength()
 void
 FileHeader::Print()
 {
-    int i, j, k;
-    char *data = new char[SectorSize];
+    unsigned i;
+    unsigned numIndSectors = 0;
+    unsigned numDirectSectors = numSectors;    
 
+
+    if ((unsigned) numSectors > NumDirect) { //if we need indirection
+        numIndSectors = divRoundUp(numSectors - NumDirect, NumDirect - 1); //For every (NumDirect-1) sectors, we have one less direct sector
+        numDirectSectors = NumDirect - numIndSectors;
+    }
+/*
     printf("FileHeader contents.  File size: %d.  File blocks:\n", numBytes);
-    for (i = 0; i < numSectors; i++)
-	printf("%d ", dataSectors[i]);
+    for (i = 0; i < numDirectSectors; i++)
+	printf("%d ", dataSectors[i]);*/
+    printf("FileHeader contents.  File size: %d.  File blocks:\n", numBytes);
+    PrintSectors();
+
+    for (i = 0; i < numIndSectors; i++) {
+        FileHeader *hdr = new FileHeader;
+        hdr->FetchFrom(dataSectors[i+numDirectSectors]);
+        DEBUG('f', "FetchFrom(%d)\n", dataSectors[i+numDirectSectors]);
+        hdr->PrintSectors();
+        delete hdr;
+    }
+
+
     printf("\nFile contents:\n");
-    for (i = k = 0; i < numSectors; i++) {
-	    synchDisk->ReadSector(dataSectors[i], data);
+    PrintContent();
+    for (i = 0; i < numIndSectors; i++) {
+        FileHeader *hdr = new FileHeader;
+        hdr->FetchFrom(dataSectors[i+numDirectSectors]);
+        DEBUG('f', "FetchFrom(%d)\n", dataSectors[i+numDirectSectors]);
+        hdr->PrintContent();
+        delete hdr;
+    }
+}
+
+void FileHeader::PrintSectors() {
+    unsigned i;
+    unsigned numDirectSectors = numSectors; 
+    unsigned numIndSectors = 0;
+
+
+
+    if ((unsigned) numSectors > NumDirect) { //if we need indirection
+        numIndSectors = divRoundUp(numSectors - NumDirect, NumDirect - 1); //For every (NumDirect-1) sectors, we have one less direct sector
+        numDirectSectors = NumDirect - numIndSectors;
+    }
+   
+    for (i = 0; i < numDirectSectors; i++)
+    printf("%d ", dataSectors[i]);
+
+}
+
+void FileHeader::PrintContent() {    
+    unsigned i;
+    int j, k;
+    char *data = new char[SectorSize];
+    unsigned numDirectSectors = numSectors; 
+    unsigned numIndSectors = 0;
+
+    if ((unsigned) numSectors > NumDirect) { //if we need indirection
+        numIndSectors = divRoundUp(numSectors - NumDirect, NumDirect - 1); //For every (NumDirect-1) sectors, we have one less direct sector
+        numDirectSectors = NumDirect - numIndSectors;
+    }
+
+    for (i = k = 0; i < numDirectSectors; i++) {
+        synchDisk->ReadSector(dataSectors[i], data);
         for (j = 0; (j < SectorSize) && (k < numBytes); j++, k++) {
-	        if ('\040' <= data[j] && data[j] <= '\176') // isprint(data[j]) 
-		        printf("%c", data[j]);
+            if ('\040' <= data[j] && data[j] <= '\176') // isprint(data[j]) 
+                printf("%c", data[j]);
             else
-		        printf("\\%x", (unsigned char)data[j]);
-	    }
+                printf("\\%x", (unsigned char)data[j]);
+        }
         printf("\n"); 
     }
     delete [] data;

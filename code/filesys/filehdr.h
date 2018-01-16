@@ -16,6 +16,7 @@
 
 #include "disk.h"
 #include "bitmap.h"
+#include "indirection.h"
 
 #define NumDirect 	((SectorSize - 2 * sizeof(int)) / sizeof(int))
 #define MaxFileSize 	(NumDirect * SectorSize)
@@ -55,6 +56,9 @@ class FileHeader {
 					// in bytes
 
     void Print();			// Print the contents of the file.
+
+    void PrintSectors();
+    void PrintContent();
 
   private:
     int numBytes;			// Number of bytes in the file

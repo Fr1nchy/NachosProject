@@ -30,8 +30,6 @@ OpenFile::OpenFile(int sector)
 { 
     hdr = new FileHeader;
     hdr->FetchFrom(sector);
-    /*printf("SECTOR : %d\n", sector);
-    hdr->Print();*/
     seekPosition = 0;
 }
 
@@ -120,8 +118,8 @@ OpenFile::ReadAt(char *into, int numBytes, int position)
     int fileLength = hdr->FileLength();
     int i, firstSector, lastSector, numSectors;
     char *buf;
-    DEBUG('f', "Reading %d bytes at %d, from file of length %d.\n",     
-            numBytes, position, fileLength);
+    //DEBUG('f', "Reading %d bytes at %d, from file of length %d.\n",     
+     //       numBytes, position, fileLength);
 
     if ((numBytes <= 0) || (position >= fileLength))
     	return 0; 				// check request
@@ -156,8 +154,8 @@ OpenFile::WriteAt(const char *from, int numBytes, int position)
 	return 0;				// check request
     if ((position + numBytes) > fileLength)
 	numBytes = fileLength - position;
-    DEBUG('f', "Writing %d bytes at %d, from file of length %d.\n", 	
-			numBytes, position, fileLength);
+    //DEBUG('f', "OpenFile::WriteAt: Writing %d bytes at %d, from file of length %d.\n", 	
+	//		numBytes, position, fileLength);
 
     firstSector = divRoundDown(position, SectorSize);
     lastSector = divRoundDown(position + numBytes - 1, SectorSize);
@@ -179,6 +177,7 @@ OpenFile::WriteAt(const char *from, int numBytes, int position)
     bcopy(from, &buf[position - (firstSector * SectorSize)], numBytes);
 
 // write modified sectors back
+    //DEBUG('f', "firstSector = %d, lastSector = %d\n", firstSector, lastSector);
     for (i = firstSector; i <= lastSector; i++)	
         synchDisk->WriteSector(hdr->ByteToSector(i * SectorSize), 
 					&buf[(i - firstSector) * SectorSize]);
