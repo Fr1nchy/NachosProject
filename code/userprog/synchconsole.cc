@@ -2,6 +2,7 @@
 #include "system.h"
 #include "synchconsole.h"
 #include "synch.h"
+#include "stdio.h"
 
 static Semaphore *readAvail;
 
@@ -76,12 +77,11 @@ void SynchConsole::SynchGetString(char *s, int n)
 	for(int i = 0; i< n; i++){
 		ch = SynchGetChar();
 		if (ch == EOF){
-			s[i] = '\0';
 			break;
 		}
-		else if(ch 	== '\n'){
-			s[i] = '\n';
-			s[i+1] = '\0';
+		//Condition permettant d'éviter de quitter tout de suite
+		//Si l'appel à SynchGetString sui un appel à SynchGetChar
+		else if(ch 	== '\n' && i>0){
 			break;
 		}
 		s[i] = ch;

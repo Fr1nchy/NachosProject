@@ -53,26 +53,21 @@ int do_UserThreadCreate(int f, int arg, int fin) {
 }    
 
 int do_UserThreadExit() {
-    printf("fin_exitBid:%d Tid:%d\n",currentThread->getBid(),currentThread->getTid());
     currentThread->space->decrementNbThreadResetSpace();
     if(currentThread->space->ExitThread()==0){
         do_UserForkExit();
     }else{
-        printf("finish\n");
 	    currentThread->Finish();        
     }
     return 0;
 }
 
 void join_UserThread(int tid){
-    printf("Join:%d\n",tid);
     if(tid < nbThreadsMax){
         Element * e = listThJoin->Find(tid);
-        printf("e:%p\n",e);
         if(e !=NULL){
             e->s->P();
         }
     }
-    printf("Fin_Join:%d\n",tid);
 }
 
