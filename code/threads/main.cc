@@ -60,7 +60,8 @@ extern void ThreadTest (void), Copy (const char *unixFile, const char *nachosFil
 extern void Print (char *file), PerformanceTest (void);
 extern void StartProcess (char *file), ConsoleTest (char *in, char *out);
 extern void SynchConsoleTest (char *in, char *out);
-extern void MailTest (int networkID);
+extern void MailTestClient (int networkID);
+extern void MailTestServeur (int networkID);
 extern void AnneauLogiqueTest(int networkID);
 extern void UserThreadCreate(void f(void *a), void *b);
 
@@ -194,11 +195,20 @@ main (int argc, char **argv)
 	  if (!strcmp (*argv, "-o"))
 	    {
 		ASSERT (argc > 1);
-		Delay (2);	// delay for 2 seconds
+		Delay (2);	
+        int res = atoi(*(argv + 1));
+        if(res==1){
+            printf("Client\n");
+            MailTestClient (res);
+        }else{
+            printf("Serveur\n");
+            MailTestServeur (res);
+        }
+        // delay for 2 seconds
 		// to give the user time to 
 		// start up another nachos
-		//MailTest (atoi (*(argv + 1)));
-		AnneauLogiqueTest(atoi (*(argv + 1)));
+		//MailTest ());
+		//AnneauLogiqueTest(atoi (*(argv + 1)));
 		argCount = 2;
 	    }
 #endif // NETWORK

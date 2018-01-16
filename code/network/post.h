@@ -43,10 +43,11 @@ class MailHeader {
   public:
     MailBoxAddress to;		// Destination mail box
     MailBoxAddress from;	// Mail box to reply to
-    unsigned length;		// Bytes of message data (excluding the
-	bool ACK;
-	bool SYN;
-				// mail header)
+    unsigned length;		// Bytes of message data (excluding the mail header)
+
+	int Num_ACK;
+    bool ACK;
+    bool FIN;
 };
 
 // Maximum "payload" -- real data -- that can included in a single message
@@ -54,7 +55,7 @@ class MailHeader {
 
 #define MaxMailSize 	(MaxPacketSize - sizeof(MailHeader))
 #define MAXREEMISSIONS 3
-#define TEMPO 15
+#define TEMPO 1
 
 
 // The following class defines the format of an incoming/outgoing 
@@ -152,32 +153,21 @@ class PostOffice {
 };
 
 class ReseauFiable {
-    private:
-        PostOffice* postOffice;
-
     public:	
-        ReseauFiable(NetworkAddress addr, double reliability, int nBoxes);
-        		// Allocate and initialize Post Office
-        		//   "reliability" is how many packets
-        		//   get dropped by the underlying network
-        ~ReseauFiable();
-        void Send(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
+        int Send(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
         		// Send a message to a mailbox on a remote 
         		// machine.  The fromBox in the MailHeader is 
         		// the return box for ack's.
-
-        void ReceiveAck(int box, PacketHeader *pktHdr, 
-        MailHeader *mailHdr, char *data);
+        bool AckFinReceived(int box,bool b);
         		//Verify that the mailbox isn't empty before calling Receive
 
-        void Receive(int box, PacketHeader *pktHdr, 
-        MailHeader *mailHdr, char *data);
+        int Receive(int box, PacketHeader *pktHdr,  MailHeader *mailHdr, char *data);
         		// Retrieve a message from "box".  Wait if
         		// there is no message in the box.
+        int currentACK;
+        
+        bool isExitACK();
 
-        void StartTimer(unsigned int tempo);
-
-        PostOffice* getPostOffice();
 };
 
 #endif

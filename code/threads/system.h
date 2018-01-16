@@ -68,7 +68,6 @@ extern SynchDisk *synchDisk;
 
 #ifdef NETWORK
 #include "post.h"
-extern ReseauFiable *reseauFiable;
 extern PostOffice *postOffice;
 #endif
 

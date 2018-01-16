@@ -46,7 +46,7 @@ FrameProvider * frameprovider;
 #endif
 
 #ifdef NETWORK
-ReseauFiable *reseauFiable;
+PostOffice *postOffice;
 #endif
 
 
@@ -196,8 +196,7 @@ Initialize (int argc, char **argv)
 
 #ifdef NETWORK
     /****** Network ******/
-    //postOffice = new PostOffice(1, 1.0, 0);
-    reseauFiable = new ReseauFiable (netname, rely, 10);
+    postOffice = new PostOffice (netname, rely, 10);
 #endif
 }
 
@@ -210,7 +209,7 @@ Cleanup ()
 {
     printf ("\nCleaning up...\n");
 #ifdef NETWORK
-    delete reseauFiable;
+    delete postOffice;
 #endif
 
 #ifdef USER_PROGRAM
