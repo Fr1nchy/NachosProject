@@ -205,11 +205,14 @@ FileSystem::Create(const char *name, int initialSize)
     FileHeader *hdr;
     int sector;
     bool success;
+    OpenFile *currentDirFile;
 
     DEBUG('f', "Creating file %s, size %d\n", name, initialSize);
 
     directory = new Directory(NumDirEntries);
     directory->FetchFrom(directoryFile);
+
+    currentDirFile = new OpenFile(directory->Find(".", false));
 
     if (directory->Find(name, true) != -1)
       success = FALSE;          // file is already in directory
@@ -230,6 +233,7 @@ FileSystem::Create(const char *name, int initialSize)
         // everthing worked, flush all changes back to disk
                 hdr->WriteBack(sector);         
                 directory->WriteBack(directoryFile);
+                directory->WriteBack(currentDirFile);
                 freeMap->WriteBack(freeMapFile);
         }
             delete hdr;
@@ -352,7 +356,7 @@ bool FileSystem::ChangeDir(const char *name)
     Directory *directory = new Directory(NumDirEntries);
     Directory *newDir = new Directory(NumDirEntries);
     OpenFile *openFile = NULL;
-    int sector, currentSector;
+    int sector;
 
     directory->FetchFrom(directoryFile);
 
@@ -379,8 +383,6 @@ bool FileSystem::ChangeDir(const char *name)
 
     else {
         sector = directory->Find(name, false); 
-        currentSector = directory->Find(".", false);
-        currentSector++;
     
         DEBUG('f', "Opening directory %s in sector %d\n", name, sector);
 
@@ -399,13 +401,6 @@ bool FileSystem::ChangeDir(const char *name)
 
     newDir->FetchFrom(openFile);
 
-    printf("ChangeDir sector = %d\n", sector);
-
-    //directory->UpdateSelfEntry(sector); directory->UpdateParentEntry(DirectorySector);
-
-    //newDir->UpdateSelfEntry(sector); newDir->UpdateParentEntry(currentSector);
-
-    //directory->WriteBack(openFile); //we save the current repertory before changing
     newDir->WriteBack(directoryFile);
 
     delete newDir;
@@ -438,9 +433,13 @@ FileSystem::Remove(const char *name)
     BitMap *freeMap;
     FileHeader *fileHdr;
     int sector;
-    
+    OpenFile *currentDirFile;
+
     directory = new Directory(NumDirEntries);
     directory->FetchFrom(directoryFile);
+    
+    currentDirFile = new OpenFile(directory->Find(".", false));
+
     sector = directory->Find(name, true);
     if (sector == -1) {
        delete directory;
@@ -462,11 +461,13 @@ FileSystem::Remove(const char *name)
 
     freeMap->WriteBack(freeMapFile);        // flush to disk
     directory->WriteBack(directoryFile);        // flush to disk
+    directory->WriteBack(currentDirFile);
     delete fileHdr;
     delete directory;
     delete freeMap;
     return TRUE;
-} //----------------------------------------------------------------------
+} 
+//----------------------------------------------------------------------
 // FileSystem::RemoveDir
 //  Delete an empty directory from the file system.  This requires:
 //      Remove it from the directory
@@ -491,13 +492,17 @@ FileSystem::RemoveDir(const char *name)
         return FALSE;
     }
     Directory *directory, *dirToRemove;
-    OpenFile *openFile;
+    OpenFile *openFile, *currentDirFile;
     BitMap *freeMap;
     FileHeader *fileHdr;
     int sector;
     
     directory = new Directory(NumDirEntries);
+
     directory->FetchFrom(directoryFile);
+
+    currentDirFile = new OpenFile(directory->Find(".", false));
+
     sector = directory->Find(name, false);
     if (sector == -1) {
        delete directory;
@@ -510,7 +515,7 @@ FileSystem::RemoveDir(const char *name)
     dirToRemove->FetchFrom(openFile);
 
     if (!dirToRemove->IsEmpty()) {
-        DEBUG('f', "Dir to remove is not empty\n");
+        printf("%s can't be removed, it is not empty!\n", name);
         delete directory;
         delete openFile;
         delete dirToRemove;
@@ -530,6 +535,7 @@ FileSystem::RemoveDir(const char *name)
 
     freeMap->WriteBack(freeMapFile);        // flush to disk
     directory->WriteBack(directoryFile);        // flush to disk
+    directory->WriteBack(currentDirFile);
     delete fileHdr;
     delete directory;
     delete freeMap;

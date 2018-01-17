@@ -137,6 +137,7 @@ Directory::Add(const char *name, int newSector, bool isFile)
 
     for (int i = 0; i < tableSize; i++) {
         if (!table[i].inUse) {
+            DEBUG('f', "%s set in use at %d\n", name, i);
             
             table[i].inUse = TRUE;
             strncpy(table[i].name, name, FileNameMaxLen); 
@@ -262,6 +263,9 @@ Directory::UpdateParentEntry(int sector) {
 bool Directory::IsEmpty() {
     bool b = true;
     for (int i = 0; i < tableSize; i++) {
+        if (table[i].inUse) {
+            DEBUG('f', "%s in use\n", table[i].name);
+        }
         if (strcmp(table[i].name, ".") && strcmp(table[i].name, ".."))
             b = b && !table[i].inUse;
     }
