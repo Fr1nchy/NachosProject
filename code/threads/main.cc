@@ -173,7 +173,7 @@ main (int argc, char **argv)
 		argCount = 2;
 	    }
 	  else if (!strcmp (*argv, "-rd"))
-	    {			// remove Nachos file
+	    {			// remove Nachos directory
 		ASSERT (argc > 1);
 		fileSystem->RemoveDir (*(argv + 1));
 		argCount = 2;

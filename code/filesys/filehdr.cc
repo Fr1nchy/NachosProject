@@ -56,7 +56,7 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 
     DEBUG('f', "numSectors = %d\n", numSectors);
     DEBUG('f', "Nb secteurs d'indirection : %d\n", numIndSectors);
-    DEBUG('f', "Nb secteurs directs : %d\n\n", numDirectSectors);
+    DEBUG('f', "Nb secteurs de données : %d\n\n", numDirectSectors);
 
     if (freeMap->NumClear() < numSectors)
 	return FALSE;		// not enough space
@@ -66,11 +66,11 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 	   dataSectors[i] = freeMap->Find();
     }   
     
-    FileHeader *hdr;
     unsigned size = numBytes - numDirectSectors * SectorSize;
 
 
     for (unsigned i = numDirectSectors; i < NumDirect && (int) i < numSectors; i++) {
+        FileHeader *hdr;
         hdr = new FileHeader;
         dataSectors[i] = freeMap->Find();  
 
@@ -100,11 +100,29 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 
 void 
 FileHeader::Deallocate(BitMap *freeMap)
-{
-    for (int i = 0; i < numSectors; i++) {
-	ASSERT(freeMap->Test((int) dataSectors[i]));  // ought to be marked!
-	freeMap->Clear((int) dataSectors[i]);
+{   
+    unsigned numIndSectors = 0;
+    unsigned numDirectSectors = numSectors;    
+    unsigned i;
+
+
+    if ((unsigned) numSectors > NumDirect) { //if we need indirection
+        numIndSectors = divRoundUp(numSectors - NumDirect, NumDirect - 1); //For every (NumDirect-1) sectors, we have one less direct sector
+        numDirectSectors = NumDirect - numIndSectors;
     }
+
+    for (i = 0; i < numIndSectors; i++) {
+        FileHeader *hdr = new FileHeader;
+        hdr->FetchFrom(dataSectors[i+numDirectSectors]);
+        hdr->Deallocate(freeMap);
+        delete hdr;
+    }
+
+    for (int j = 0; j < numSectors; j++) {
+	   ASSERT(freeMap->Test((int) dataSectors[j]));  // ought to be marked!
+	   freeMap->Clear((int) dataSectors[j]);
+    }
+
 }
 
 //----------------------------------------------------------------------
@@ -152,7 +170,6 @@ FileHeader::ByteToSector(int offset)
     int r;
     int k = dataSectors[index];
 
-   DEBUG('f', "offset = %d, numSectors = %d\n", (unsigned) offset, numSectors);
  
     if ((unsigned) numSectors > NumDirect) { //if we need indirection
         numIndSectors = divRoundUp(numSectors - NumDirect, NumDirect - 1); //For every (NumDirect-1) sectors, we have one less direct sector
@@ -160,7 +177,6 @@ FileHeader::ByteToSector(int offset)
 
 
         if ((unsigned)offset >= SectorSize*numDirectSectors) {
-            DEBUG('f', "offset %d >= SectorSize*numDirectSectors %d\n", offset, SectorSize*numDirectSectors);
             r = (offset - numDirectSectors*SectorSize +1) / MaxFileSize;
 
             index = numDirectSectors + r;
@@ -223,7 +239,6 @@ FileHeader::Print()
     for (i = 0; i < numIndSectors; i++) {
         FileHeader *hdr = new FileHeader;
         hdr->FetchFrom(dataSectors[i+numDirectSectors]);
-        DEBUG('f', "FetchFrom(%d)\n", dataSectors[i+numDirectSectors]);
         hdr->PrintSectors();
         delete hdr;
     }
@@ -234,7 +249,6 @@ FileHeader::Print()
     for (i = 0; i < numIndSectors; i++) {
         FileHeader *hdr = new FileHeader;
         hdr->FetchFrom(dataSectors[i+numDirectSectors]);
-        DEBUG('f', "FetchFrom(%d)\n", dataSectors[i+numDirectSectors]);
         hdr->PrintContent();
         delete hdr;
     }
