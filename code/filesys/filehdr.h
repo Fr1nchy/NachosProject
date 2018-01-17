@@ -16,7 +16,7 @@
 
 #include "disk.h"
 #include "bitmap.h"
-#include "indirection.h"
+//#include "indirection.h"
 
 #define NumDirect 	((SectorSize - 2 * sizeof(int)) / sizeof(int))
 #define MaxFileSize 	(NumDirect * SectorSize)
