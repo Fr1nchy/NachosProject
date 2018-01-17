@@ -12,6 +12,7 @@ int do_UserForkCreate (char *filename){
 	if(space == NULL){
 	    delete space;
 	    delete executable;
+		DEBUG('t',"space == null\n");
 	    return -1;
 	}
 	Thread* newThread = new Thread(filename);
@@ -24,10 +25,12 @@ int do_UserForkCreate (char *filename){
 void StartUserFork (int arg){
     currentThread->space->InitRegisters ();
     currentThread->space->RestoreState ();
+	DEBUG('t',"start user fork\n");
     machine->Run();
 }
 
 void do_UserForkExit(){
+	DEBUG('t',"user fork exit\n");
     interrupt->Halt();
 }
 
