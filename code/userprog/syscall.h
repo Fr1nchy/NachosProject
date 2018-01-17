@@ -150,7 +150,7 @@ char GetChar();
 
 void GetString(char *s, int n);
 
-int PutInt(int n);
+void PutInt(int n);
 
 void GetInt(int * n);
 
