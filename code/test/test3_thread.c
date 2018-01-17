@@ -15,21 +15,19 @@ int main()
 {
     int i = 5;
     int t1 = UserThreadCreate(printChar, &i);
-	PutString("test3_thread t n°");
-	PutInt(t1);
-	PutString(" \n");
+	PutString("test3_thread t n°1\n");
+	/*PutInt(t1);
+	PutString(" \n");*/
     int j = 10;
     int t2 = UserThreadCreate(printChar, &j);
-	PutString("test3_thread t n°");
-	PutInt(t2);
-	PutString(" \n");
-
-    PutString("wait main\n");
+	PutString("test3_thread t n°2\n");
+	/*PutInt(t2);
+	PutString(" \n");*/
 
     UserThreadJoin(t1);
     UserThreadJoin(t2);
-    PutString("Fin prog\n");
-	Halt();
+//	Halt();
+	return 0;
 }
 
 //Test:

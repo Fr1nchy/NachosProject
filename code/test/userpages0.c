@@ -21,6 +21,5 @@ int main(){
   char c2 = 'z';
   UserThreadCreate(characterInterleaved, (void *) &c1);
   UserThreadCreate(characterInterleaved2, (void *) &c2);
-  Halt();
   return 0;
 }
