@@ -76,6 +76,7 @@ int main(){
 	//ATTENTION LA VALEUR EST À CHANGER MANUELLEMENT
 	writeSomeChars();
 	PutChar('\n');
+    return 0;
 }
 
 /*Partie 6: return 0 ; puis  recupération erreur pour traiter

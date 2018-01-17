@@ -11,7 +11,8 @@ void producteur(void *p)
 	// PutString("producteur");
 	Sem_wait(mutex);
 	char c = 'a';
-	for (int i = 0; i < N; i++)
+    int i = 0;
+	for (i = 0; i < N; i++)
 	{
 		buffer[i] = c+i;
 		if (i==N-1)
@@ -29,7 +30,8 @@ void consommateur(void *p)
 {
 	char bufferConsommateur[N];
 	Sem_wait(plein);
-	for (int i = 0; i < N; i++)
+    int i = 0;
+	for (i = 0; i < N; i++)
 	{
 		Sem_wait(mutex);
 		if (buffer[i] != 'x')
