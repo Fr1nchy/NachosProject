@@ -5,7 +5,9 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \renewcommand{\thechapter}{}
-
+%\renewcommand{\thesection}{}
+\renewcommand*\thesection{\arabic{section}}
+\setcounter{chapter}{1}
 \addto\captionsfrench{
   \renewcommand\chaptername{}}
 \title{Rapport de projet NachOS}
@@ -37,18 +39,24 @@ est un système d'exploitation basé sur le fonctionnement du système Unix. Il 
 \chapter{Spécifications}
 \section{Entrées/Sorties}
 
-\textbf{char GetChar()}
+\textbf{char GetChar():}
 
 Retourne le caractère lu sur l'entrée standard.\\
 
 
-\textbf{void PutChar(char c)}
+\textbf{void PutChar(char c):}
 
 Écrit le caractère c sur la sortie standard.\\
 
 
 \textbf{void GetString(char* s, int n)}
-Récupère n caractères de la chaîne de caractères via l’entrée définie précédemment et les stocke dans la chaîne s stockée en paramètre. La lecture s’arrête lorsqu’un ‘\textbackslash n’ ou EOF est rencontré.
+\color{red} FONCTION DE LA MORT ! GROS BORDEL
+Récupère n caractères depuis l'entrée standard et les stocke dans la  variable s. Si le caractère de saut de ligne '\textbackslash n' se trouve dans la chaîne à lire, alors seuls les caractères lus jusqu'ici, '\textbackslash n' exclus, sont stockés dans s. Les caractères restants sont stockés dans \color{black}
+
+
+
+
+ n premiers caractères est le caractère de saut de ligne '\textbackslash n', alors la lecture s'arrête et s contient tous les le reste de la chaîne est ignorélecture s’arrête lorsqu’un ‘\textbackslash n’ ou EOF est rencontré.
 ‘\textbackslash 0’ est stocké après le dernier caractère dans le tampon s.
 ‘\textbackslash 0’ est stocké à l’indice 0 du tampon quand la fin du fichier est détectée alors qu’aucun caractère n’a été lu.
 
@@ -64,16 +72,53 @@ Lit un entier depuis l'entrée standard, si la valeur n'est pas dans [$-2^{31}$;
 
 Récupère la valeur de l’entrée définie précédemment puis l’écrit à l’adresse pointée par n. Le comportement est indéfini si la valeur n'est pas dans [$-2^{31}$; $2^{31}-1$].
 
-\section{Threads, processus et synchronisation}
-int do\_UserThreadCreate(int f, int arg)
-Initialise un thread utilisateur, l’ajoute à la liste de threads et exécute la fonction f. Au niveau des arguments, f pointe vers la fonction que devra exécuter le thread et arg correspond au paramètre passé à la fonction f. Renvoie l’identifiant du thread.
-int do\_UserThreadExit()
-Enlève le thread courant de la liste des thread et termine son exécution.
-static void StartUserThread(int f)
-Initialise les registres MIPS et exécute la fonction f.
-static int getIndexThreadById(int id)
-Récupère l’index du thread ayant l’identifiant id dans la liste de threads.
 
+
+\section{Threads, processus et synchronisation}
+
+\textbf{int UserThreadCreate(int f, int arg):}
+
+Initialise un thread utilisateur qui appelle la fonction f avec l'argument arg.
+Retourne l’identifiant du thread.\\
+
+
+\textbf{void UserThreadJoin(int tid):}
+
+Interrompt l'exécution du thread appelant jusqu'à la terminaison du thread identifié par tid.\\
+
+
+\textbf{void UserThreadExit():}
+
+Termine l'exécution du thread appelant. L'appel à UserThreadExit() est facultatif puisqu'il est systématiquement réalisé lorsqu'un thread a terminé l'exécution de la fonction qui lui a été attribuée. Il peut néanmoins être utilisé pour forcer l'arrêt du thread avant la fin de sa tâche.\\
+
+
+\textbf{void Sem\_init(Semaphore* sem, int val):}
+
+Initialise la valeur du sémaphore sem à val.\\	
+
+
+\textbf{void Sem\_wait(Semaphore sem):}
+
+Décrémente la valeur du sémaphore sem. Sem\_wait est bloquant tant que la valeur de sem est égale à zéro, empêchant ainsi la décrémentation.
+L'appel à Sem\_wait nécessite que le sémaphore sem ait été initialisé avec la fonction Sem\_init.\\
+
+
+\textbf{void Sem\_post(Semaphore sem):}
+
+Incrémente la valeur du sémaphore sem. Si, une fois incrémentée, la valeur de sem vaut un alors qu'un fil d'exécution est bloqué par Sem\_wait sur le même sémaphore sem, alors ce fil d'exécution reprend son activité.
+L'appel à Sem\_post nécessite que le sémaphore sem ait été initialisé avec la fonction Sem\_init.\\
+
+
+\textbf{void Sem\_destroy(Semaphore sem):}
+
+Détruit le sémaphore sem. Si sem est détruit alors que des fils d'exécution ont été suspendus par un appel à Sem\_wait sur ce même sémaphore sem, ces fils d'exécution ne se termineront pas avant l'arrêt complet du système.\\
+\color{red}Potentiellement à tester mais devrait être le comportement logique\color{black}
+
+\section{Système de fichiers}
+
+
+\section{Réseau}
+\color{red}PAS DE RESEAU PUISQUE PAS DU COTE USER ?\color{black}
 
 
 \chapter{Tests utilisateur}
@@ -108,6 +153,22 @@ Lit une chaîne de caractères depuis l'entrée standard grâce à la fonction S
 void SynchPutInt(const int n) : 
 Convertit l'entier n au format chaîne de caractères et l'affiche sur la sortie standard en appelant la fonction SynchPutString().
 Étape 3
+
+
+
+int UserThreadCreate(int f, int arg, int fin)
+Initialise un thread utilisateur, l’ajoute à la liste de threads et exécute la fonction f. Au niveau des arguments, f pointe vers la fonction que devra exécuter le thread et arg correspond au paramètre passé à la fonction f. Renvoie l’identifiant du thread.
+
+
+int do\_UserThreadExit()
+Enlève le thread courant de la liste des thread et termine son exécution.
+static void StartUserThread(int f)
+Initialise les registres MIPS et exécute la fonction f.
+static int getIndexThreadById(int id)
+Récupère l’index du thread ayant l’identifiant id dans la liste de threads.
+
+
+
 
 \chapter{Organisation du travail en équipe}
 Répartition des tâches
