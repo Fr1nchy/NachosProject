@@ -4,6 +4,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{graphicx}
 \renewcommand{\thechapter}{}
 %\renewcommand{\thesection}{}
 \renewcommand*\thesection{\arabic{section}}
@@ -72,47 +73,61 @@ Lit un entier depuis l'entrée standard, si la valeur n'est pas dans [$-2^{31}$;
 
 Récupère la valeur de l’entrée définie précédemment puis l’écrit à l’adresse pointée par n. Le comportement est indéfini si la valeur n'est pas dans [$-2^{31}$; $2^{31}-1$].
 
-
+\bigskip
 
 \section{Threads, processus et synchronisation}
+\bigskip
 
 \textbf{int UserThreadCreate(int f, int arg):}
 
-Initialise un thread utilisateur qui appelle la fonction f avec l'argument arg.
-Retourne l’identifiant du thread.\\
-
+Initialise un thread utilisateur qui appelle la fonction f avec l'argument arg. Bien que UserThreadCreate autorise un seul argument pour la fonction f, il est possible de lui transmettre plusieurs arguments en les définissant comme paramètres d'une structure.
+Retourne l’identifiant du thread créé.
+\bigskip
 
 \textbf{void UserThreadJoin(int tid):}
 
-Interrompt l'exécution du thread appelant jusqu'à la terminaison du thread identifié par tid.\\
+Interrompt l'exécution du thread appelant jusqu'à la terminaison du thread identifié par tid.
+\bigskip
 
 
 \textbf{void UserThreadExit():}
 
-Termine l'exécution du thread appelant. L'appel à UserThreadExit() est facultatif puisqu'il est systématiquement réalisé lorsqu'un thread a terminé l'exécution de la fonction qui lui a été attribuée. Il peut néanmoins être utilisé pour forcer l'arrêt du thread avant la fin de sa tâche.\\
+Termine l'exécution du thread appelant. L'appel à UserThreadExit() est facultatif puisqu'il est systématiquement réalisé lorsqu'un thread a terminé l'exécution de la fonction qui lui a été attribuée. Il peut néanmoins être utilisé pour forcer l'arrêt du thread avant la fin de sa tâche.
+\bigskip
 
 
 \textbf{void Sem\_init(Semaphore* sem, int val):}
 
-Initialise la valeur du sémaphore sem à val.\\	
+Initialise la valeur du sémaphore sem à val.
+\bigskip	
 
 
 \textbf{void Sem\_wait(Semaphore sem):}
 
 Décrémente la valeur du sémaphore sem. Sem\_wait est bloquant tant que la valeur de sem est égale à zéro, empêchant ainsi la décrémentation.
-L'appel à Sem\_wait nécessite que le sémaphore sem ait été initialisé avec la fonction Sem\_init.\\
+L'appel à Sem\_wait nécessite que le sémaphore sem ait été initialisé avec la fonction Sem\_init.
+\bigskip
 
 
 \textbf{void Sem\_post(Semaphore sem):}
 
 Incrémente la valeur du sémaphore sem. Si, une fois incrémentée, la valeur de sem vaut un alors qu'un fil d'exécution est bloqué par Sem\_wait sur le même sémaphore sem, alors ce fil d'exécution reprend son activité.
-L'appel à Sem\_post nécessite que le sémaphore sem ait été initialisé avec la fonction Sem\_init.\\
+L'appel à Sem\_post nécessite que le sémaphore sem ait été initialisé avec la fonction Sem\_init.
+\bigskip
 
 
 \textbf{void Sem\_destroy(Semaphore sem):}
 
 Détruit le sémaphore sem. Si sem est détruit alors que des fils d'exécution ont été suspendus par un appel à Sem\_wait sur ce même sémaphore sem, ces fils d'exécution ne se termineront pas avant l'arrêt complet du système.\\
 \color{red}Potentiellement à tester mais devrait être le comportement logique\color{black}
+\bigskip
+
+
+\textbf{void ForkExec(char* filename):}
+
+Crée un nouveau processus qui exécute le programme passé en paramètre. \'A sa création, le nouveau processus contient un seul fil d'exécution. Les valeurs des registres de ce fil d'exécution sont identiques à celles des registres du fil d'exécution qui a appelé ForkExec.
+\bigskip
+
 
 \section{Système de fichiers}
 
@@ -133,42 +148,70 @@ getstring.c : Demande le nom de l’utilisateur (une chaîne de caractères) pui
 
 \chapter{Implémentation}
 
-\'Etape 2
+\section{Entrées/Sorties}
 
-char SynchGetChar() :
-Fait appel à la fonction GetChar() de Console pour récupérer un caractère depuis l'entrée standard grâce un mécanisme d'interruption.
-
-void SynchPutChar(const char ch) : 
-Fait appel à la fonction PutChar() de Console pour écrire un caractère ch sur la sortie standard déclenchant une interruption.
-
-void SynchGetString() : 
-Effectue des appels à la fonction SynchGetChar() dans une boucle bornée par le nombre de caractères lus. Le caractère de fin de chaîne est concaténé à la chaîne obtenue.
-
-void SynchPutString(const char s[]) : 
-Fait appel à la fonction SynchPutChar() dans une boucle pour afficher des caractères sur la sortie standard. La boucle s'arrête lorsque le caractère de fin de chaîne est détecté ou lorsque la nombre maximum de caractères est atteint.  
-
-void SynchGetInt(int *n) : 
-Lit une chaîne de caractères depuis l'entrée standard grâce à la fonction SynchGetChar(). Le premier caractère est testé pour pouvoir considérer les nombres négatifs. Ensuite tant qu'un caractère dont le code ASCII correspond à un chiffre est détecté, ce chiffre est ajouté à la chaîne. La chaîne est terminée par le caractère de fin de chaîne et est stockée dans l’entier pointé par n.
-
-void SynchPutInt(const int n) : 
-Convertit l'entier n au format chaîne de caractères et l'affiche sur la sortie standard en appelant la fonction SynchPutString().
-Étape 3
-
+%char SynchGetChar() :
+%Fait appel à la fonction GetChar() de Console pour récupérer un caractère depuis l'entrée standard grâce un mécanisme d'interruption.
+%
+%void SynchPutChar(const char ch) : 
+%Fait appel à la fonction PutChar() de Console pour écrire un caractère ch sur la sortie standard déclenchant une interruption.
+%
+%void SynchGetString() : 
+%Effectue des appels à la fonction SynchGetChar() dans une boucle bornée par le nombre de caractères lus. Le caractère de fin de chaîne est concaténé à la chaîne obtenue.
+%
+%void SynchPutString(const char s[]) : 
+%Fait appel à la fonction SynchPutChar() dans une boucle pour afficher des caractères sur la sortie standard. La boucle s'arrête lorsque le caractère de fin de chaîne est détecté ou lorsque la nombre maximum de caractères est atteint.  
+%
+%void SynchGetInt(int *n) : 
+%Lit une chaîne de caractères depuis l'entrée standard grâce à la fonction SynchGetChar(). Le premier caractère est testé pour pouvoir considérer les nombres négatifs. Ensuite tant qu'un caractère dont le code ASCII correspond à un chiffre est détecté, ce chiffre est ajouté à la chaîne. La chaîne est terminée par le caractère de fin de chaîne et est stockée dans l’entier pointé par n.
+%
+%void SynchPutInt(const int n) : 
+%Convertit l'entier n au format chaîne de caractères et l'affiche sur la sortie standard en appelant la fonction SynchPutString().
 
 
-int UserThreadCreate(int f, int arg, int fin)
-Initialise un thread utilisateur, l’ajoute à la liste de threads et exécute la fonction f. Au niveau des arguments, f pointe vers la fonction que devra exécuter le thread et arg correspond au paramètre passé à la fonction f. Renvoie l’identifiant du thread.
-
-
-int do\_UserThreadExit()
-Enlève le thread courant de la liste des thread et termine son exécution.
-static void StartUserThread(int f)
-Initialise les registres MIPS et exécute la fonction f.
-static int getIndexThreadById(int id)
-Récupère l’index du thread ayant l’identifiant id dans la liste de threads.
+\section{Threads}
 
 
 
+%int UserThreadCreate(int f, int arg, int fin)
+%Initialise un thread utilisateur, l’ajoute à la liste de threads et exécute la fonction f. Au niveau des arguments, f pointe vers la fonction que devra exécuter le thread et arg correspond au paramètre passé à la fonction f. Renvoie l’identifiant du thread.
+%
+%
+%int do\_UserThreadExit()
+%Enlève le thread courant de la liste des thread et termine son exécution.
+%static void StartUserThread(int f)
+%Initialise les registres MIPS et exécute la fonction f.
+%static int getIndexThreadById(int id)
+%Récupère l’index du thread ayant l’identifiant id dans la liste de threads.
+
+\section{Processus}
+
+
+
+\section{Pagination}
+
+
+Stratégies d’allocation des pages physiques géré par un tirage aléatoire via la méthode « GetEmptyFrame » . Utilisation d’une bitmap pour vérifier si la frame est déjà allouer ou non.\color{red}WHAT ?\color{black}
+
+La fins des processus et des threads est gérée automatiquement via un compteur pour déterminer s'il est nécessaire d'effectuer une interruption machine ou une terminaison de thread.
+
+\section{Système de fichiers}
+
+
+\section{Réseau}
+
+La partie réseau du système fonctionne grâce à un protocole de communication qui a été créé en se basant sur le fonctionnement du protocole TCP/IP. L'échange d'information s'effectue comme indiqué ci-dessous.
+
+\begin{center}
+\includegraphics[scale=0.6]{protocoleReseau}
+\end{center}
+
+\bigskip
+
+
+Les longs messages dépassant la taille d’une trame sont gérés par
+un séquencement et l’ajout d'une taille totale dans l’en-tête de la classe MailHeader. \color{red}SEQUENCEMENT ?\color{black}
+La vérification des messages via leur numéro acquittement et par leur type ACK, FIN ou donnée.\color{red}Vérification de l'authenticité de l'émetteur ? De leur ordre d'envoi ?\color{black}
 
 \chapter{Organisation du travail en équipe}
 Répartition des tâches
