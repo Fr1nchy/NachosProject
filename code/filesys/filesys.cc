@@ -356,7 +356,7 @@ bool FileSystem::ChangeDir(const char *name)
     Directory *directory = new Directory(NumDirEntries);
     Directory *newDir = new Directory(NumDirEntries);
     OpenFile *openFile = NULL;
-    int sector, currentSector;
+    int sector;
 
     directory->FetchFrom(directoryFile);
 
@@ -383,8 +383,6 @@ bool FileSystem::ChangeDir(const char *name)
 
     else {
         sector = directory->Find(name, false); 
-        currentSector = directory->Find(".", false);
-        currentSector++;
     
         DEBUG('f', "Opening directory %s in sector %d\n", name, sector);
 
@@ -402,8 +400,6 @@ bool FileSystem::ChangeDir(const char *name)
     oft->Add(sector);
 
     newDir->FetchFrom(openFile);
-
-    printf("ChangeDir sector = %d\n", sector);
 
     newDir->WriteBack(directoryFile);
 
@@ -470,7 +466,8 @@ FileSystem::Remove(const char *name)
     delete directory;
     delete freeMap;
     return TRUE;
-} //----------------------------------------------------------------------
+} 
+//----------------------------------------------------------------------
 // FileSystem::RemoveDir
 //  Delete an empty directory from the file system.  This requires:
 //      Remove it from the directory

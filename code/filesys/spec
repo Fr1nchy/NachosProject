@@ -1,0 +1,38 @@
+Commande d'exécution : 
+
+./nachos-filesys
+
+Options disponibles (natives Nachos) :
+-l [Liste le contenu du répertoire courant (équivalent de ls sur Unix)]
+-D [Affiche le contenu du disque et les blocs occupés utilisés par chaque fichier]
+-cp (nom1) (nom2) [Copie le fichier de nom nom1 dans le système de fichiers Nachos, sous le nom nom2]
+-p (nom) [Affiche le contenu du fichier nom. Échoue si le fichier n'existe pas]
+
+Options disponibles (implémentées) :
+-md (nom) [Crée un répertoire de nom nom. Échoue si le répertoire existe déjà ou si l'espace disque est insuffisant]
+-rd (nom) [Supprime le répertoire de nom nom. Échoue si le répertoire n'existe pas ou s'il n'est pas vide]
+-cd (nom) [Se déplace sur le répertoire de nom nom qui devient le répertoire courant. Fonctionne également avec un chemin relatif. Échoue si le répertoire n'existe pas]
+
+Création de fichier :
+La taille maximale d'un fichier est de 30*30*128 octets soit 112,5ko.
+
+
+
+Extensions possibles : 
+-Ajout d'une option "-mv (nom) (rep)"" [Déplacer un fichier ou un répertoire de nom nom vers le répertoire rep.]
+
+-En utilisant une classe similaire à FileHeader mais permettant le stockage de 32 entiers (soit 128 octets) au lieu de 30, on peut étendre la taille maximale d'un fichier à 30*32*128 octets soit 120ko.
+
+-Permettre l'utilisation de chemins pour le mkdir et le rmdir
+
+
+Implémentation :
+Pour permettre la création de répertoires, il a fallu distinguer les répertoires des fichiers "normaux". Ainsi dans la classe DirectoryEntry (qui représente une entrée de répertoire, quelle qu'elle soit) on ajoute un champ "isFile" de type booléen. On ajoute également un booléen en paramètre des fonctions Find, Add et Remove de la classe Directory qui sont notamment utilisées lors de la création et suppression de fichiers ou de répertoires.
+De plus, un répertoire racine, ne contenant qu'une entrée spéciale "." doit être crée, et défini comme répertoire courant au formatage.
+
+MakeDir : de la même manière que pour la fonction Create, cette fonction prend une chaîne "name" en paramètre. On charge le répertoire courant à partir du secteur DirectorySector (constante fixée à 1) dans un objet de type Directory. On s'assure qu'un répertoire de nom "name" n'existe pas déjà (auquel cas on renvoie faux). On charge également le BitMap qui nous donne un secteur de données disponible (s'il n'y en a pas, on renvoie faux également). 
+On crée un nouveau répertoire contenant deux entrées spéciales (. et ..) et le FileHeader associé, qu'on écrit sur le secteur libre défini précédemment. Enfin sur le répertoire courant on ajoute une nouvelle entrée qui redirige vers ce secteur, et on réécrit toutes ces modifications sur le disque.
+
+ChangeDir : Cette fonction va chercher le répertoire dont le nom (ou le chemin relatif) est passé en paramètre et, s'il existe, en faire la copie sur le répertoire courant situé sur le secteur DirectorySector = 1.
+
+RemoveDir : Si le répertoire dont le nom est passé en paramètre se trouve sur le répertoire courant (sauf . et ..), on vérifie si le répertoire est vide et, dans le cas échéant, on désalloue tous les secteurs qu'il utilise et le supprime des entrées du répertoire courant, puis on valide les modifications en réécrivant le répertoire courant sur le disque.
