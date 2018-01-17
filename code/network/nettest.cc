@@ -22,6 +22,9 @@
 #include "network.h"
 #include "post.h"
 #include "interrupt.h"
+#include <string.h>
+
+
 
 // Test out message delivery, by doing the following: 
 //	1. send a message to the machine with ID "farAddr", at mail box #0
@@ -36,7 +39,7 @@ MailTestClient(int farAddr)
     PacketHeader outPktHdr, inPktHdr;
     MailHeader outMailHdr, inMailHdr;
     ReseauFiable *reseauFiable = new ReseauFiable();
-
+    reseauFiable->currentACK = -1;
     const char *data = "Hello client!";
     char buffer[MaxMailSize];
 
@@ -49,7 +52,7 @@ MailTestClient(int farAddr)
     outMailHdr.length = strlen(data) + 1;
 
     // Send the first message
-    reseauFiable->Send(outPktHdr, outMailHdr,  data); 
+    if(0)reseauFiable->Send(outPktHdr, outMailHdr,  data); 
     fflush(stdout);
 
     // Wait for the ack from the other machine to the first message we sent.
@@ -58,77 +61,81 @@ MailTestClient(int farAddr)
     fflush(stdout);
    
     // Then we're done!
-    interrupt->Halt();
+    //interrupt->Halt();
 }
 
 void
 MailTestServeur(int farAddr)
 {
     ReseauFiable *reseauFiable = new ReseauFiable();
+    reseauFiable->currentACK = -1;
     PacketHeader outPktHdr, inPktHdr;
     MailHeader outMailHdr, inMailHdr;
     const char *data = "Hello serveur!";
     char buffer[MaxMailSize];
 
-    reseauFiable->Receive(1, &inPktHdr, &inMailHdr, buffer);
+    
+    if(0)reseauFiable->Receive(0, &inPktHdr, &inMailHdr, buffer);
     printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
 
     outPktHdr.to = farAddr;     
-    outMailHdr.to = 0;
-    outMailHdr.from = 1;
+    outMailHdr.to = 1;
+    outMailHdr.from = 0;
     outMailHdr.length = strlen(data) + 1;
-
+    
     reseauFiable->Send(outPktHdr, outMailHdr,  data); 
     
     fflush(stdout);
-    interrupt->Halt();
+    //interrupt->Halt();
 }
 
 
     // Test constitué de n machines reliées par un anneau logique
 void
 AnneauLogiqueTest(int farAddr){
-    /*PacketHeader outPktHdr, inPktHdr;
+    ReseauFiable *reseauFiable = new ReseauFiable();
+    PacketHeader outPktHdr, inPktHdr;
     MailHeader outMailHdr, inMailHdr;
     char buffer[MaxMailSize];
-    const char *data = "Jeton de 0";
+    char data[30];
 
     outPktHdr.to = farAddr;
-    if (reseauFiable->getPostOffice()->GetNetworkAddress() == 0)
-    {
-        outMailHdr.to = 0;
-        outMailHdr.from = 0;
-        outMailHdr.length = strlen(data) + 1;
 
-        // Envoyer le jeton
-        reseauFiable->getPostOffice()->Send(outPktHdr, outMailHdr, data);
-        printf("Sent \"%s\"\n", data);
-        fflush(stdout);
+    switch(farAddr){
+        case 0:
+            strcpy(data,"A:Salut B,10");
+            outMailHdr.to = 0;
+            outMailHdr.from = 1;
+            outMailHdr.length = strlen(data) + 1;
+            reseauFiable->Send(outPktHdr, outMailHdr,data);
+            
+            reseauFiable->Receive(1, &inPktHdr, &inMailHdr, buffer);
+            printf("A: Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
+            fflush(stdout);
+        break;
 
-        // Wait for the first message from the other machine
-        reseauFiable->getPostOffice()->Receive(0, &inPktHdr, &inMailHdr, buffer);
-        printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
-        fflush(stdout);
+        case 1:
+            reseauFiable->Receive(0, &inPktHdr, &inMailHdr, buffer);
+            printf("B: Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
 
-    }else{
-        // Wait for the first message from the other machine
-        reseauFiable->getPostOffice()->Receive(0, &inPktHdr, &inMailHdr, buffer);
-        printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
-        fflush(stdout);
+            strcpy(data,"B:Salut B,10 réponse de A");
+            outMailHdr.to = 2;
+            outMailHdr.from = 0;
+            outMailHdr.length = strlen(data) + 1;
+            reseauFiable->Send(outPktHdr, outMailHdr,data); 
+        break;
 
-        Delay(5);
+        case 2:
+            reseauFiable->Receive(2, &inPktHdr, &inMailHdr, buffer);
+            printf("C: Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
 
-        // Transfer the message received
-        outMailHdr.to = 0;
-        outMailHdr.from = 0;
-        outMailHdr.length = strlen(buffer) + 1;
-
-         // Envoyer le jeton
-        reseauFiable->getPostOffice()->Send(outPktHdr, outMailHdr, buffer);
-        printf("Sent \"%s\"\n", buffer);
-        fflush(stdout);
-
+            strcpy(data,"C:Salut A,10 réponse ?");
+            outMailHdr.to = 1;
+            outMailHdr.from = 2;
+            outMailHdr.length = strlen(data) + 1;
+            reseauFiable->Send(outPktHdr, outMailHdr,data); 
+        break;
     }
 
-    interrupt->Halt();*/
+    interrupt->Halt();
 }
