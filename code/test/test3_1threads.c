@@ -16,6 +16,9 @@ int main()
 
     for(i = 0 ; i < TAILLE; i++){
         tab[i] = UserThreadCreate(printChar,&str[i]);
+		PutString("test3_1thread t n°");
+		PutInt(tab[i]);
+		PutString(" \n");
     }
 
     for(i = 0; i < TAILLE; i++){
