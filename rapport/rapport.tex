@@ -50,29 +50,6 @@ Retourne le caractère lu sur l'entrée standard.\\
 Écrit le caractère c sur la sortie standard.\\
 
 
-\textbf{void GetString(char* s, int n)}
-\color{red} FONCTION DE LA MORT ! GROS BORDEL
-Récupère n caractères depuis l'entrée standard et les stocke dans la  variable s. Si le caractère de saut de ligne '\textbackslash n' se trouve dans la chaîne à lire, alors seuls les caractères lus jusqu'ici, '\textbackslash n' exclus, sont stockés dans s. Les caractères restants sont stockés dans \color{black}
-
-
-
-
- n premiers caractères est le caractère de saut de ligne '\textbackslash n', alors la lecture s'arrête et s contient tous les le reste de la chaîne est ignorélecture s’arrête lorsqu’un ‘\textbackslash n’ ou EOF est rencontré.
-‘\textbackslash 0’ est stocké après le dernier caractère dans le tampon s.
-‘\textbackslash 0’ est stocké à l’indice 0 du tampon quand la fin du fichier est détectée alors qu’aucun caractère n’a été lu.
-
-\textbf{void PutString(const char s*)}
-
-Parcourt la chaîne de caractères s et écrit caractère par caractère sur la sortie définie précédemment jusqu’à la rencontre du caractère ‘\textbackslash 0’ ou jusqu’à ce que MAX\_STRING\_SIZE soit atteinte. Le comportement est indéfini dans le cas où s ne contient pas de ‘\textbackslash 0’.
-
-\textbf{void GetInt(int* n)}
-
-Lit un entier depuis l'entrée standard, si la valeur n'est pas dans [$-2^{31}$; $2^{31}-1$] elle sera forcée à une de ces valeurs (la limite est de 16 caractères pour les entiers, au-delà les caractères ne seront pas comptés). SI un utilisateur entre le signe ‘-’ sans le faire suivre de chiffres, la valeur 0 est stockée.
-
-\textbf{void PutInt(int n)}
-
-Récupère la valeur de l’entrée définie précédemment puis l’écrit à l’adresse pointée par n. Le comportement est indéfini si la valeur n'est pas dans [$-2^{31}$; $2^{31}-1$].
-
 \bigskip
 
 \section{Threads, processus et synchronisation}
@@ -132,18 +109,16 @@ Crée un nouveau processus qui exécute le programme passé en paramètre. \'A s
 \section{Système de fichiers}
 
 Les commandes du système de fichiers doivent être exécutées de la manière suivante :
-
-
-\textit{./nachos-filesys command}
+\textit{./nachos-filesys command}\\
 
 Options disponibles :\\
 \begin{itemize}\renewcommand{\labelitemi}{$\bullet$}
 \item -l  : Liste le contenu du répertoire courant (équivalent de ls sur Unix).
-\item -D  : Affiche le contenu du disque et les blocs occupés utilisés par chaque fichier.
-\item -cp (nom1) (nom2) : Copie le fichier de nom nom1 dans le système de fichiers Nachos, sous le nom nom2.
-\item -p (nom) : Affiche le contenu du fichier nom. Échoue si le fichier n'existe pas.
-\item -md (nom) : Crée un répertoire de nom nom. Échoue si le répertoire existe déjà ou si l'espace disque est insuffisant.
-\item -rd (nom) : Supprime le répertoire de nom nom. Échoue si le répertoire n'existe pas, n'est pas vide, ou s'il s'agit du répertoire . ou ..
+\item  -D  : Affiche le contenu du disque et les blocs occupés utilisés par chaque fichier.
+\item  -cp (nom1) (nom2) : Copie le fichier de nom nom1 dans le système de fichiers Nachos, sous le nom nom2.
+\item  -p (nom) : Affiche le contenu du fichier nom. Échoue si le fichier n'existe pas.
+\item  -md (nom) : Crée un répertoire de nom nom. Échoue si le répertoire existe déjà ou si l'espace disque est insuffisant.
+\item  -rd (nom) : Supprime le répertoire de nom nom. Échoue si le répertoire n'existe pas, n'est pas vide, ou s'il s'agit du répertoire . ou ..
 \item -cd (nom) : Se déplace sur le répertoire de nom nom qui devient le répertoire courant. Fonctionne avec un chemin relatif. Échoue si le répertoire n'existe pas.
 \end{itemize}
 
@@ -158,13 +133,6 @@ Options disponibles :\\
 Pour la création de fichiers, la taille maximale d'un fichier est de 30*30*128 octets soit 112,5ko.
 
 
-
-
-
-
-
-\section{Réseau}
-\color{red}PAS DE RESEAU PUISQUE PAS DU COTE USER ?\color{black}
 
 
 
@@ -194,7 +162,7 @@ Pour la création de fichiers, la taille maximale d'un fichier est de 30*30*128 
 %Convertit l'entier n au format chaîne de caractères et l'affiche sur la sortie standard en appelant la fonction SynchPutString().
 
 
-\section{Threads, processus et pagination}
+\section{Threads, processus}
 
 Un thread contient des champs entiers TID et BID.
 
@@ -269,24 +237,12 @@ Les messages sont vérifiés grâce à leur numéro d'acquittement et par leur t
 
 \chapter{Tests utilisateur}
 \section{Test sur la console :}
-Pour l’instant, les tests fonctionnent à l’aide de l’entrée/sortie standard et les types de données pouvant être entrés sont testés manuellement (tentative de dépasser la taille que peut stocker un int pour getint.c par exemple).
 
-%putchar.c : Programme donné dans le sujet de l’étape 2 permettant de tester l’appel système PutChar et d’afficher une série de caractères.
-%putstring.c : Affiche la chaîne de caractères passé en paramètre de PutString sur la sortie. En cas de chaîne ayant une taille plus grande que MAX\_STRING\_SIZE, PutString n’envoie que les  MAX\_STRING\_SIZE premiers caractères.
-getchar.c : Récupère un caractère sur l’entrée puis l’affiche, lui et les deux caractères le suivant dans l’ordre alphabétique.
-getstring.c : Demande le nom de l’utilisateur (une chaîne de caractères) puis l’affiche précédé de « Bonjour Monsieur ».
- getint.c : Demande un entier à l’utilisateur, le borne afin de le faire rentrer dans un int, puis l’affiche (Ce test sert à la fois pour SynchGetInt() que pour SynchPutInt()).
 
 
 \chapter{Organisation du travail en équipe}
 Répartition des tâches
 
-%Cédric : Conception et implémentation, rédaction des tests.
-%Florian : Conception et implémentation.
-%Hosseim : Conception et implémentation.
-%Thaqif : Implémentation, rédaction des tests.
-Peio : Compte rendu et exécution des tests.
-Les tâches assignées à chacun montrent l’organisation générale du groupe. Cependant, toute l’équipe se tient au courant de ce que chacun fait et peut ponctuellement travailler sur la même tâche (par exemple lors de la rédaction du premier compte rendu et de la compréhension du fonctionnement des piles de thread NachOS).
 
 
 \chapter{Retour global sur le projet}
