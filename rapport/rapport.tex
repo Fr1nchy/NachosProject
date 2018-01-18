@@ -6,9 +6,9 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \renewcommand{\thechapter}{}
-%\renewcommand{\thesection}{}
 \renewcommand*\thesection{\arabic{section}}
 \setcounter{chapter}{1}
+\setlength{\parindent}{0pt}
 \addto\captionsfrench{
   \renewcommand\chaptername{}}
 \title{Rapport de projet NachOS}
@@ -25,31 +25,59 @@ Peio RIGAUX\\
 \maketitle
 
 
-\chapter{Présentation de \color{red}notre nom badass\color{black}}
+\chapter{Présentation de DesperadOS}
 
-\color{red}NOM BADASS\color{black} est un système d'exploitation basé sur le fonctionnement du système Unix. Il propose ainsi une version simplifiée des fonctionnalités de ce dernier, à savoir :
+DesperadOS est un système d'exploitation basé sur le fonctionnement du système Unix. Il propose ainsi une version simplifiée des fonctionnalités de ce dernier, à savoir :
 \begin{itemize}\renewcommand{\labelitemi}{$\bullet$}
 \item Un système synchronisé d'entrées/sorties;
-\item La gestion de plusieurs processus utilisateurs multithreadés \color{red}SI ON ARRIVE A FAIRE FONCTIONNER LES TESTS !\color{black}
-\item Un système de fichiers permettant la manipulation de fichiers et la navigation à travers les répertoires \color{red}GERANT LES FICHIERS OUVERTS ??\color{black} et dont la taille des fichiers peut atteindre 112,5Ko.
-\item La possibilité de communiquer en réseau...\color{red}DETAILS\color{black}
+\item La gestion de plusieurs processus utilisateurs multithreadés.
+\item Un système de fichiers permettant la manipulation de fichiers et la navigation à travers les répertoires et dont la taille des fichiers peut atteindre 112,5Ko.
+\item La possibilité de communiquer en réseau.
 
 \end{itemize}
 
 
 \chapter{Spécifications}
 \section{Entrées/Sorties}
-
+\bigskip
 \textbf{char GetChar():}
 
 Retourne le caractère lu sur l'entrée standard.\\
 
-
+\bigskip
 \textbf{void PutChar(char c):}
 
 Écrit le caractère c sur la sortie standard.\\
 
 
+\bigskip
+\textbf{void GetString(char* buf, int n):}
+ 
+Récupère n caractères à partir de l'entrée standard. Cette récupération peut-être interrompue par un '\textbackslash n',
+auquel cas seuls les caractères avant le '\textbackslash n' sont pris en compte dans le tampon d'arrivée.
+Si le nombre de caractères demandé est inférieur au nombre de caractères dans l'entrée standard, les caractères
+restants sont mis en attente dans le tampon d'entrée. Ils seront récupérés lors du prochain appel à GetString().
+Si le premier caractère présent dans le tampon d'entrée est '\textbackslash n', il est ignoré.
+
+
+\bigskip
+\textbf{void PutString(const char s*):}
+
+Parcourt la chaîne de caractères s et écrit caractère par caractère sur la
+sortie standard jusqu'à la rencontre du caractère `\textbackslash 0' ou jusqu'à
+ce que MAX\_STRING\_SIZE soit atteinte.
+
+
+\bigskip
+\textbf{void GetInt(int* n):}
+
+Lit un entier depuis l'entrée standard. La limite est fixée à 16 caractères. Si la valeur n'est pas comprise dans l'intervalle [$-2^{31}$;
+$2^{31}-1$],  elle prend la valeur de la borne la plus proche de cet intervalle. Si l'utilisateur entre uniquement le signe `-', le nombre stocké est zéro.\\
+
+
+\textbf{void PutInt(int n):}
+
+Affiche l'entier sur la sortie standard.\\
 \bigskip
 
 \section{Threads, processus et synchronisation}
@@ -69,7 +97,7 @@ Interrompt l'exécution du thread appelant jusqu'à la terminaison du thread ide
 
 \textbf{void UserThreadExit():}
 
-Termine l'exécution du thread appelant. L'appel à UserThreadExit() est facultatif puisqu'il est systématiquement réalisé lorsqu'un thread a terminé l'exécution de la fonction qui lui a été attribuée. Il peut néanmoins être utilisé pour forcer l'arrêt du thread avant la fin de sa tâche.
+Termine l'exécution du thread appelant. L'appel à UserThreadExit est facultatif puisqu'il est systématiquement réalisé lorsqu'un thread a terminé l'exécution de la fonction qui lui a été attribuée. Il peut néanmoins être utilisé pour forcer l'arrêt du thread avant la fin de sa tâche.
 \bigskip
 
 
@@ -95,8 +123,7 @@ L'appel à Sem\_post nécessite que le sémaphore sem ait été initialisé avec
 
 \textbf{void Sem\_destroy(Semaphore sem):}
 
-Détruit le sémaphore sem. Si sem est détruit alors que des fils d'exécution ont été suspendus par un appel à Sem\_wait sur ce même sémaphore sem, ces fils d'exécution ne se termineront pas avant l'arrêt complet du système.\\
-\color{red}Potentiellement à tester mais devrait être le comportement logique\color{black}
+Détruit le sémaphore sem. Si sem est détruit alors que des fils d'exécution ont été suspendus par un appel à Sem\_wait sur ce même sémaphore sem, ces fils d'exécution ne se termineront pas avant l'arrêt complet du système.
 \bigskip
 
 
@@ -123,43 +150,52 @@ Options disponibles :\\
 \end{itemize}
 
 
-
-
-
-
-
-
-
-Pour la création de fichiers, la taille maximale d'un fichier est de 30*30*128 octets soit 112,5ko.
-
-
-
+Pour la création de fichiers, la taille maximale autorisée est de 112,5Ko.
 
 
 \chapter{Implémentation}
 
-
-
-
 \section{Entrées/Sorties}
 
-%char SynchGetChar() :
-%Fait appel à la fonction GetChar() de Console pour récupérer un caractère depuis l'entrée standard grâce un mécanisme d'interruption.
-%
-%void SynchPutChar(const char ch) : 
-%Fait appel à la fonction PutChar() de Console pour écrire un caractère ch sur la sortie standard déclenchant une interruption.
-%
-%void SynchGetString() : 
-%Effectue des appels à la fonction SynchGetChar() dans une boucle bornée par le nombre de caractères lus. Le caractère de fin de chaîne est concaténé à la chaîne obtenue.
-%
-%void SynchPutString(const char s[]) : 
-%Fait appel à la fonction SynchPutChar() dans une boucle pour afficher des caractères sur la sortie standard. La boucle s'arrête lorsque le caractère de fin de chaîne est détecté ou lorsque la nombre maximum de caractères est atteint.  
-%
-%void SynchGetInt(int *n) : 
-%Lit une chaîne de caractères depuis l'entrée standard grâce à la fonction SynchGetChar(). Le premier caractère est testé pour pouvoir considérer les nombres négatifs. Ensuite tant qu'un caractère dont le code ASCII correspond à un chiffre est détecté, ce chiffre est ajouté à la chaîne. La chaîne est terminée par le caractère de fin de chaîne et est stockée dans l’entier pointé par n.
-%
-%void SynchPutInt(const int n) : 
-%Convertit l'entier n au format chaîne de caractères et l'affiche sur la sortie standard en appelant la fonction SynchPutString().
+\textbf{char GetChar():} 
+
+Utilise une version synchronisée de console->PutChar(const char ch)
+afin de récupérer un caractère à partir de l'entrée standard.
+
+\bigskip
+
+\textbf{void PutChar(char c):} 
+
+Utilise une version synchronisée de console->PutChar(const char ch)
+afin d'afficher le caractère ch sur la sortie standard.
+\bigskip
+
+
+\textbf{void GetString(char * buf, int n):} 
+
+Effectue n appels à GetChar afin de remplir un tampon de caractères.
+À chaque itération, des conditions permettent d'ignorer le caractère courant si
+il correspond à EOF ou '\textbackslash n'.
+
+\bigskip
+
+\textbf{void PutString(const char s*):}
+
+Parcourt la chaîne de caractères s à l'aide d'une boucle et appel PutChar pour chaque caractère.
+\bigskip	
+	
+
+\textbf{void GetInt(int* n):}	
+	
+Récupère les caractères entrés un par puis vérifie que le nombre demandé ne dépasse pas la taille d'un int.
+La chaîne de caractères résultante est convertie en int.
+\bigskip
+
+
+\textbf{void PutInt(int n):}
+
+Convertit n en chaîne de 15 caractères avant de l'afficher sur la sortie standard.
+\bigskip	
 
 
 \section{Threads, processus}
@@ -170,7 +206,7 @@ Le BID correspond à l'indice du BitMap auquel le thread est référencé. Il es
 
 \bigskip
 
-L'implémentation des processus est différente de celle d'Unix. Dans \color{red}NOM BADASS\color{black}, il n'existe pas de "lien de parenté" entre les processus. En conséquence, par exemple, un processus p2 créé suite à un ForkExec effectué par un thread d'un processus p1 peut appeler UserThreadJoin sur p1 et attendre qu'il termine, pour ensuite continuer son exécution normalement.
+L'implémentation des processus est différente de celle d'Unix. Dans DesperadOS, il n'existe pas de "lien de parenté" entre les processus. En conséquence, par exemple, un processus p2 créé suite à un ForkExec effectué par un thread d'un processus p1 peut appeler UserThreadJoin sur p1 et attendre qu'il termine, pour ensuite continuer son exécution normalement.
 \bigskip
 
 La pile est gérée de la manière suivante :
@@ -186,9 +222,11 @@ Enfin, un nouvel argument pointant sur la fonction UserThreadExit a été ajout�
 \section{Pagination}
 
 
-Stratégies d’allocation des pages physiques géré par un tirage aléatoire via la méthode « GetEmptyFrame » . Utilisation d’une bitmap pour vérifier si la frame est déjà allouer ou non.\color{red}WHAT ?\color{black}
+Notre stratégie d’allocation des pages physiques consiste en un tirage aléatoire via la méthode « GetEmptyFrame » . Un BitMap est utilisé pour vérifier si la frame est déjà allouée ou non.
+\bigskip
 
-La fins des processus et des threads est gérée automatiquement via un compteur pour déterminer s'il est nécessaire d'effectuer une interruption machine ou une terminaison de thread.
+La fin des processus et des threads est gérée automatiquement via un compteur pour déterminer s'il est nécessaire d'effectuer une interruption machine ou une terminaison de thread.
+\bigskip
 
 \section{Système de fichiers}
 
@@ -200,7 +238,7 @@ Un nouveau répertoire est crée. Il contient deux entrées spéciales (. et ..)
 \bigskip
 
 
-\textbf{bool ChangeDir(const char *name):} Cette fonction va chercher le répertoire dont le nom (ou le chemin relatif) est passé en paramètre et, s'il existe, en faire la copie sur le répertoire courant situé sur le secteur DirectorySector = 1.
+\textbf{bool ChangeDir(const char *name):} Cette fonction va chercher le répertoire dont le nom (ou le chemin relatif) est passé en paramètre et, s'il existe, elle en fait une copie sur le répertoire courant situé sur le secteur DirectorySector numéro 1.
 \bigskip
 
 \textbf{bool RemoveDir(const char *name):} Si le répertoire dont le nom est passé en paramètre se trouve sur le répertoire courant (sauf . et ..), on vérifie si le répertoire est vide et, le cas échéant, on libère tous les secteurs qu'il utilise et le supprime des entrées du répertoire courant, puis on valide les modifications en réécrivant le répertoire courant sur le disque.
