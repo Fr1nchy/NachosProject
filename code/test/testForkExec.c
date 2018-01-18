@@ -1,10 +1,7 @@
 #include "syscall.h"
 int main(){
-    //PutString("testchar\n");
-    ForkExec("./testGetChar");
-    //PutString("testint\n");
-    ForkExec("./testGetInt");
-    //PutString("Fin test\n");
-   // Halt();
+    PutString("Test:");
+    ForkExec("./testPutChar");
+    PutChar('\n');
     return 0;
 }

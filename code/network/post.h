@@ -54,7 +54,7 @@ class MailHeader {
 // Excluding the MailHeader and the PacketHeader
 
 #define MaxMailSize 	(MaxPacketSize - sizeof(MailHeader))
-#define MAXREEMISSIONS 3
+#define MAXREEMISSIONS 5
 #define TEMPO 1
 
 

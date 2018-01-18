@@ -50,17 +50,16 @@ void test_int(int n){
 
 int main()
 {
-	
+	PutChar('c');
+    PutChar('\n');
 	//test_nominal('a', 4);
 
 	//test_string("hello");
 
-	test_int(100);
+	//test_int(100);
 
 	//test_arabe();
 
 	//test_vide();
-
-
-	Halt();
+    return 0;
 }

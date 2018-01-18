@@ -94,6 +94,7 @@ MailTestServeur(int farAddr)
 void
 AnneauLogiqueTest(int farAddr){
     ReseauFiable *reseauFiable = new ReseauFiable();
+    reseauFiable->currentACK = -1;
     PacketHeader outPktHdr, inPktHdr;
     MailHeader outMailHdr, inMailHdr;
     char buffer[MaxMailSize];
@@ -102,34 +103,36 @@ AnneauLogiqueTest(int farAddr){
     outPktHdr.to = farAddr;
 
     switch(farAddr){
-        case 0:
-            strcpy(data,"A:Salut B,10");
+        case 1:
+            printf("A:\n");
+            strcpy(data,"Salut B,10");
             outMailHdr.to = 0;
             outMailHdr.from = 1;
             outMailHdr.length = strlen(data) + 1;
             reseauFiable->Send(outPktHdr, outMailHdr,data);
-            
+
             reseauFiable->Receive(1, &inPktHdr, &inMailHdr, buffer);
             printf("A: Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
             fflush(stdout);
         break;
-
-        case 1:
+        case 2:
+            printf("B:\n");
             reseauFiable->Receive(0, &inPktHdr, &inMailHdr, buffer);
             printf("B: Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
-
-            strcpy(data,"B:Salut B,10 réponse de A");
+            
+            strcpy(data,"Salut C,10 réponse de A");
             outMailHdr.to = 2;
             outMailHdr.from = 0;
             outMailHdr.length = strlen(data) + 1;
             reseauFiable->Send(outPktHdr, outMailHdr,data); 
         break;
 
-        case 2:
+        case 0:
+            printf("C:\n");
             reseauFiable->Receive(2, &inPktHdr, &inMailHdr, buffer);
             printf("C: Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
 
-            strcpy(data,"C:Salut A,10 réponse ?");
+            strcpy(data,"Salut A,10 réponse ?");
             outMailHdr.to = 1;
             outMailHdr.from = 2;
             outMailHdr.length = strlen(data) + 1;
@@ -137,5 +140,5 @@ AnneauLogiqueTest(int farAddr){
         break;
     }
 
-    interrupt->Halt();
+    //interrupt->Halt();
 }

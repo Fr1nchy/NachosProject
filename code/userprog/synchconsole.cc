@@ -55,6 +55,7 @@ void SynchConsole::SynchPutChar(const char ch)
 	writeDone->P();
     //printf("j\n");
     monitorWrite->V();
+    
     //printf("l\n");
 }
 
@@ -71,13 +72,14 @@ char SynchConsole::SynchGetChar()
 
 void SynchConsole::SynchPutString(const char s[])
 {
-  monitorWriteString->P();
+  monitorWrite->P();
 	int i = 0;
 	while((i < MAX_STRING_SIZE) && (s[i] != '\0')){
-		SynchPutChar(s[i]);
+		console->PutChar(s[i]);
+        writeDone->P();
 		i++;    
 	}
-  monitorWriteString->V();
+  monitorWrite->V();
 }
 
 void SynchConsole::SynchGetString(char *s, int n)

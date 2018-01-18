@@ -30,7 +30,7 @@ ReseauFiable::Send(PacketHeader pktHdr, MailHeader mailHdr, const char* data){ /
     unsigned cpt = 0;
     unsigned taille = MaxMailSize;
 //printf("sdata: %s\n",data);
-printf("sparametre b:%s,pk.to:%d,m.to:%d,m.from:%d,m.length:%d\n",data,pktHdr.to,mailHdr.to,mailHdr.from,mailHdr.length);
+//printf("sparametre b:%s,pk.to:%d,m.to:%d,m.from:%d,m.length:%d\n",data,pktHdr.to,mailHdr.to,mailHdr.from,mailHdr.length);
 
     while(i < res && (j!=MAXREEMISSIONS)){
         if((taille+cpt)>mailHdr.length) taille = mailHdr.length-cpt; 
@@ -41,7 +41,7 @@ printf("ssend1: %s,%d,%d\n",buffer,mailHdr.Num_ACK,currentACK);
         while(j<MAXREEMISSIONS && !AckFinReceived(mailHdr.from,taille+cpt==mailHdr.length)){
             Delay(TEMPO);
             postOffice->Send(pktHdr, mailHdr, buffer);
-printf("ssendn: %s,%d\n",buffer,mailHdr.Num_ACK);
+printf("ssendn: %s,%d,%d\n",buffer,mailHdr.Num_ACK,currentACK);
 //printf("j:%d ",j);
             j++;
         }
@@ -63,7 +63,7 @@ printf("ssendn: %s,%d\n",buffer,mailHdr.Num_ACK);
     mailHdr.FIN = TRUE;
     mailHdr.length = 8;
     currentACK = currentACK+1;
-printf("ssend: ACK_FIN\n");
+printf("ssend1: %s,%d,%d\n","ACK_FIN",mailHdr.Num_ACK,currentACK);
 
     postOffice->Send(pktHdr, mailHdr,"ACK_FIN");
 
@@ -78,10 +78,10 @@ ReseauFiable::AckFinReceived(int box,bool b){
     char data[MaxMailSize];
     inMailHdr.Num_ACK = -1;
 
-
+printf("ackfin: %d\n",postOffice->IsThisMailboxEmpty(box));
     while(!postOffice->IsThisMailboxEmpty(box) && ( (currentACK+1) != inMailHdr.Num_ACK) ){
         postOffice->Receive(box, &inPktHdr, &inMailHdr, data);//erreur allocation
-        printf("ackreceive:%s,num:%d,ack:%d,fin:%d\n",data,inMailHdr.Num_ACK,inMailHdr.ACK,inMailHdr.FIN);
+        printf("ackreceive:%s,num:%d,ack:%d,fin:%d,current:%d\n",data,inMailHdr.Num_ACK,inMailHdr.ACK,inMailHdr.FIN,currentACK);
     }
     if(currentACK+1 == inMailHdr.Num_ACK){
         if(inMailHdr.FIN && b){
@@ -109,7 +109,7 @@ ReseauFiable::Receive(int box, PacketHeader *pktHdr, MailHeader *mailHdr, char* 
     while((i < res)){
 
         postOffice->Receive(box, pktHdr, mailHdr, data+(MaxMailSize*(res-1))); // tempo
-        printf("receive: %s,Fin:%d,ACk:%d\n",data,mailHdr->FIN,mailHdr->ACK);
+        printf("receive: %s,Fin:%d,ACk:%d,current%d\n",data,mailHdr->FIN,mailHdr->ACK,currentACK);
         if(cpt==0){
             res = divRoundUp(mailHdr->length,MaxMailSize);
         }
@@ -119,7 +119,7 @@ ReseauFiable::Receive(int box, PacketHeader *pktHdr, MailHeader *mailHdr, char* 
             printf("current init\n");
         }
         
-printf("rACK: %d==%d\n",currentACK,mailHdr->Num_ACK );
+//printf("rACK: %d==%d\n",currentACK,mailHdr->Num_ACK );
         if((currentACK+1) == mailHdr->Num_ACK ){
            currentACK  = currentACK +1 ;
            ackPktHdr.to = pktHdr->from;
@@ -127,31 +127,31 @@ printf("rACK: %d==%d\n",currentACK,mailHdr->Num_ACK );
            ackMailHdr.length = 4;
            ackMailHdr.Num_ACK = currentACK +1 ;
            
-printf("cpt:%d == %d \n",cpt,mailHdr->length);
+//printf("cpt:%d == %d \n",cpt,mailHdr->length);
 char str[10];
            if(cpt == mailHdr->length){
                 ackMailHdr.FIN = TRUE;
 	            ackMailHdr.ACK = FALSE;
                 strcpy(str,"Fin");
-printf("rsend FIN\n");
+//printf("rsend FIN\n");
            }else{     
                 ackMailHdr.FIN = FALSE;
 	            ackMailHdr.ACK = TRUE; 
                 strcpy(str,"Ack");
-printf("rsend ACK\n");
+//printf("rsend ACK\n");
            }
            j =0;
            postOffice->Send(ackPktHdr, ackMailHdr,str);
-printf("send:%s,%d\n",str,ackMailHdr.Num_ACK);     
+printf("rsend:%s,ack:%d,current:%d\n",str,ackMailHdr.Num_ACK,currentACK);     
            while(j<MAXREEMISSIONS && postOffice->IsThisMailboxEmpty(box)){ // Moyen securité
                Delay(TEMPO);
                postOffice->Send(ackPktHdr, ackMailHdr,str);
-printf("send:%s,%d\n",str,ackMailHdr.Num_ACK);     
+printf("rsend:%s,ack:%d,current:%d\n",str,ackMailHdr.Num_ACK,currentACK);     
                j++;
            } 
-        }else if(!postOffice->IsThisMailboxEmpty(box)){
-            printf("aaaaaa\n");
-            i--;
+        }else{
+                i--;
+            
         }
         i++;
     }
@@ -160,7 +160,8 @@ printf("send:%s,%d\n",str,ackMailHdr.Num_ACK);
 
     if(ackMailHdr.FIN){
 
-        while((!mailHdr->ACK) && (!mailHdr->FIN)&& ((currentACK+1)!= mailHdr->Num_ACK)){
+        while((!mailHdr->ACK) && (!mailHdr->FIN)&& ((currentACK+1)!= mailHdr->Num_ACK)
+        && !postOffice->IsThisMailboxEmpty(box)){
             postOffice->Receive(box, pktHdr, mailHdr, buffer);
             printf("Finreceive:%s\n",buffer);
         }    

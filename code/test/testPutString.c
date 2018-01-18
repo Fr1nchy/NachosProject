@@ -19,19 +19,19 @@ int main(){
 	//PutString(150);
 
 	//Écriture d'une chaîne de caractères
-	PutString("Ceci est un test\n");
+	//PutString("Ceci est un test\n");
 
 	//Écriture d'une chaîne de caractères vide
-	PutString("");
+	//PutString("");
 
 	//Écriture d'un caractère non ascii
-	PutString("橫\n");
+	//PutString("橫\n");
 
 	//Écriture de plusieurs caractères en dépassant MAX_STRING_SIZE
 	//ATTENTION LA VALEUR EST À CHANGER MANUELLEMENT
-	writeSomeChars();
-
-	Halt();
+	//writeSomeChars();
+    PutString("Test:\n");
+    return 0;
 }
 
 /*Partie 6: return 0 ; puis  recupération erreur pour traiter
