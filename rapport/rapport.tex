@@ -27,8 +27,8 @@ Peio RIGAUX\\
 
 \chapter{Présentation de \color{red}notre nom badass\color{black}}
 
-est un système d'exploitation basé sur le fonctionnement du système Unix. Il propose ainsi une version simplifiée des fonctionnalités de ce dernier, à savoir :
-\begin{itemize}%[label=\textbullet,font=\color{black}]
+\color{red}NOM BADASS\color{black} est un système d'exploitation basé sur le fonctionnement du système Unix. Il propose ainsi une version simplifiée des fonctionnalités de ce dernier, à savoir :
+\begin{itemize}\renewcommand{\labelitemi}{$\bullet$}
 \item Un système synchronisé d'entrées/sorties;
 \item La gestion de plusieurs processus utilisateurs multithreadés \color{red}SI ON ARRIVE A FAIRE FONCTIONNER LES TESTS !\color{black}
 \item Un système de fichiers permettant la manipulation de fichiers et la navigation à travers les répertoires \color{red}GERANT LES FICHIERS OUVERTS ??\color{black} et dont la taille des fichiers peut atteindre 112,5Ko.
@@ -131,22 +131,47 @@ Crée un nouveau processus qui exécute le programme passé en paramètre. \'A s
 
 \section{Système de fichiers}
 
+Les commandes du système de fichiers doivent être exécutées de la manière suivante :
+
+
+\textit{./nachos-filesys command}
+
+Options disponibles :\\
+\begin{itemize}\renewcommand{\labelitemi}{$\bullet$}
+\item -l  : Liste le contenu du répertoire courant (équivalent de ls sur Unix).
+\item -D  : Affiche le contenu du disque et les blocs occupés utilisés par chaque fichier.
+\item -cp (nom1) (nom2) : Copie le fichier de nom nom1 dans le système de fichiers Nachos, sous le nom nom2.
+\item -p (nom) : Affiche le contenu du fichier nom. Échoue si le fichier n'existe pas.
+\item -md (nom) : Crée un répertoire de nom nom. Échoue si le répertoire existe déjà ou si l'espace disque est insuffisant.
+\item -rd (nom) : Supprime le répertoire de nom nom. Échoue si le répertoire n'existe pas, n'est pas vide, ou s'il s'agit du répertoire . ou ..
+\item -cd (nom) : Se déplace sur le répertoire de nom nom qui devient le répertoire courant. Fonctionne avec un chemin relatif. Échoue si le répertoire n'existe pas.
+\end{itemize}
+
+
+
+
+
+
+
+
+
+Pour la création de fichiers, la taille maximale d'un fichier est de 30*30*128 octets soit 112,5ko.
+
+
+
+
+
+
 
 \section{Réseau}
 \color{red}PAS DE RESEAU PUISQUE PAS DU COTE USER ?\color{black}
 
 
-\chapter{Tests utilisateur}
-\section{Test sur la console :}
-Pour l’instant, les tests fonctionnent à l’aide de l’entrée/sortie standard et les types de données pouvant être entrés sont testés manuellement (tentative de dépasser la taille que peut stocker un int pour getint.c par exemple).
-
-%putchar.c : Programme donné dans le sujet de l’étape 2 permettant de tester l’appel système PutChar et d’afficher une série de caractères.
-%putstring.c : Affiche la chaîne de caractères passé en paramètre de PutString sur la sortie. En cas de chaîne ayant une taille plus grande que MAX\_STRING\_SIZE, PutString n’envoie que les  MAX\_STRING\_SIZE premiers caractères.
-getchar.c : Récupère un caractère sur l’entrée puis l’affiche, lui et les deux caractères le suivant dans l’ordre alphabétique.
-getstring.c : Demande le nom de l’utilisateur (une chaîne de caractères) puis l’affiche précédé de « Bonjour Monsieur ».
- getint.c : Demande un entier à l’utilisateur, le borne afin de le faire rentrer dans un int, puis l’affiche (Ce test sert à la fois pour SynchGetInt() que pour SynchPutInt()).
 
 \chapter{Implémentation}
+
+
+
 
 \section{Entrées/Sorties}
 
@@ -169,22 +194,24 @@ getstring.c : Demande le nom de l’utilisateur (une chaîne de caractères) pui
 %Convertit l'entier n au format chaîne de caractères et l'affiche sur la sortie standard en appelant la fonction SynchPutString().
 
 
-\section{Threads}
+\section{Threads, processus et pagination}
 
+Un thread contient des champs entiers TID et BID.
 
+Le BID correspond à l'indice du BitMap auquel le thread est référencé. Il est propre à l'espace d'adressage. Plusieurs threads peuvent donc posséder la même valeur de BID s'ils ne font pas partie du même processus. La gestion des threads est ainsi effectuée grâce au TID qui lui est unique dans le système.
 
-%int UserThreadCreate(int f, int arg, int fin)
-%Initialise un thread utilisateur, l’ajoute à la liste de threads et exécute la fonction f. Au niveau des arguments, f pointe vers la fonction que devra exécuter le thread et arg correspond au paramètre passé à la fonction f. Renvoie l’identifiant du thread.
-%
-%
-%int do\_UserThreadExit()
-%Enlève le thread courant de la liste des thread et termine son exécution.
-%static void StartUserThread(int f)
-%Initialise les registres MIPS et exécute la fonction f.
-%static int getIndexThreadById(int id)
-%Récupère l’index du thread ayant l’identifiant id dans la liste de threads.
+\bigskip
 
-\section{Processus}
+L'implémentation des processus est différente de celle d'Unix. Dans \color{red}NOM BADASS\color{black}, il n'existe pas de "lien de parenté" entre les processus. En conséquence, par exemple, un processus p2 créé suite à un ForkExec effectué par un thread d'un processus p1 peut appeler UserThreadJoin sur p1 et attendre qu'il termine, pour ensuite continuer son exécution normalement.
+\bigskip
+
+La pile est gérée de la manière suivante :
+Un objet BitMap est utilisé pour déterminer le secteur de la pile lié au nouveau thread et définir le numéro BID de ce thread.
+
+Un type Semaphore a été défini pour procéder à l'implémentation des sémaphores utilisateur. 
+La gestion du UserThreadJoin a été réalisée grâce à l'utilisation d'une liste chainée contenant un couple <TID,Semaphore>.
+
+Enfin, un nouvel argument pointant sur la fonction UserThreadExit a été ajouté dans le fichier start.S lors de l'appel à UserThreadCreate. Ceci permet ainsi la terminaison automatique des threads lorsque ceux-ci ont terminé la tâche qui leur a été assignée.
 
 
 
@@ -196,6 +223,30 @@ Stratégies d’allocation des pages physiques géré par un tirage aléatoire v
 La fins des processus et des threads est gérée automatiquement via un compteur pour déterminer s'il est nécessaire d'effectuer une interruption machine ou une terminaison de thread.
 
 \section{Système de fichiers}
+
+Pour permettre la création de répertoires, il a fallu distinguer les répertoires des fichiers "normaux". Ainsi dans la classe DirectoryEntry (qui représente une entrée de répertoire, quelle qu'elle soit) on ajoute un champ "isFile" de type booléen. Un booléen a été ajouté en paramètre des fonctions Find, Add et Remove de la classe Directory qui sont notamment utilisées lors de la création et suppression de fichiers ou de répertoires.
+De plus, un répertoire racine, ne contenant qu'une entrée spéciale "." doit être créé, et défini comme répertoire courant au formatage.
+
+\textbf{bool MakeDir(const char *name):} de la même manière que pour la fonction Create, cette fonction prend une chaîne "name" en paramètre. On charge le répertoire courant à partir du secteur Directory	Sector (constante fixée à 1) dans un objet de type Directory. Un test a été mis en place afin de  s'assurer qu'un répertoire de nom "name" n'existe pas déjà (auquel cas on renvoie faux). On charge également le BitMap qui nous donne un secteur de données disponible (s'il n'y en a pas, on renvoie faux également). 
+Un nouveau répertoire est crée. Il contient deux entrées spéciales (. et ..) et le FileHeader associé, qui est écrit sur le secteur libre défini précédemment. Enfin sur le répertoire courant une nouvelle entrée qui redirige vers ce secteur est ajoutée, et toutes ces modifications sont réécrites sur le disque.
+\bigskip
+
+
+\textbf{bool ChangeDir(const char *name):} Cette fonction va chercher le répertoire dont le nom (ou le chemin relatif) est passé en paramètre et, s'il existe, en faire la copie sur le répertoire courant situé sur le secteur DirectorySector = 1.
+\bigskip
+
+\textbf{bool RemoveDir(const char *name):} Si le répertoire dont le nom est passé en paramètre se trouve sur le répertoire courant (sauf . et ..), on vérifie si le répertoire est vide et, le cas échéant, on libère tous les secteurs qu'il utilise et le supprime des entrées du répertoire courant, puis on valide les modifications en réécrivant le répertoire courant sur le disque.
+\bigskip
+
+
+Extensions possibles : 
+-Ajout d'une option "-mv (nom) (rep)"" [Déplacer un fichier ou un répertoire de nom nom vers le répertoire rep.
+- Extension de l'option "-cp (nom1) (nom2) : Effectuer une copie d'un fichier nom1 présent dans le système vers un nouveau fichier nom2 également dans le système.
+
+-En utilisant une classe similaire à FileHeader mais permettant le stockage de 32 entiers (soit 128 octets) au lieu de 30, on peut étendre la taille maximale d'un fichier à 30*32*128 octets soit 120ko.
+
+-Permettre l'utilisation de chemins pour le mkdir et le rmdir.
+
 
 
 \section{Réseau}
@@ -210,8 +261,22 @@ La partie réseau du système fonctionne grâce à un protocole de communication
 
 
 Les longs messages dépassant la taille d’une trame sont gérés par
-un séquencement et l’ajout d'une taille totale dans l’en-tête de la classe MailHeader. \color{red}SEQUENCEMENT ?\color{black}
-La vérification des messages via leur numéro acquittement et par leur type ACK, FIN ou donnée.\color{red}Vérification de l'authenticité de l'émetteur ? De leur ordre d'envoi ?\color{black}
+un séquencement et l’ajout d'une taille totale dans l’en-tête de la classe MailHeader. \\
+
+
+Les messages sont vérifiés grâce à leur numéro d'acquittement et par leur type ACK, FIN ou donnée, ceci dans le but de conserver l'ordre des messages et d'assurer une commmunication cohérente entre le récepteur et l'émetteur.
+
+
+\chapter{Tests utilisateur}
+\section{Test sur la console :}
+Pour l’instant, les tests fonctionnent à l’aide de l’entrée/sortie standard et les types de données pouvant être entrés sont testés manuellement (tentative de dépasser la taille que peut stocker un int pour getint.c par exemple).
+
+%putchar.c : Programme donné dans le sujet de l’étape 2 permettant de tester l’appel système PutChar et d’afficher une série de caractères.
+%putstring.c : Affiche la chaîne de caractères passé en paramètre de PutString sur la sortie. En cas de chaîne ayant une taille plus grande que MAX\_STRING\_SIZE, PutString n’envoie que les  MAX\_STRING\_SIZE premiers caractères.
+getchar.c : Récupère un caractère sur l’entrée puis l’affiche, lui et les deux caractères le suivant dans l’ordre alphabétique.
+getstring.c : Demande le nom de l’utilisateur (une chaîne de caractères) puis l’affiche précédé de « Bonjour Monsieur ».
+ getint.c : Demande un entier à l’utilisateur, le borne afin de le faire rentrer dans un int, puis l’affiche (Ce test sert à la fois pour SynchGetInt() que pour SynchPutInt()).
+
 
 \chapter{Organisation du travail en équipe}
 Répartition des tâches
