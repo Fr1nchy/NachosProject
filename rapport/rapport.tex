@@ -6,13 +6,15 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{titlesec}
-%\titlespacing{\chapter}{-20}{-20}{-20}
 \renewcommand{\thechapter}{}
 \renewcommand*\thesection{\arabic{section}}
 \setcounter{chapter}{1}
 \setlength{\parindent}{0pt}
 \addto\captionsfrench{
-  \renewcommand\chaptername{}}
+\renewcommand\chaptername{}}
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-100pt}{40pt}
 \title{Rapport de projet NachOS}
 \author{
 \'Equipe H\\\\
@@ -74,13 +76,13 @@ ce que MAX\_STRING\_SIZE soit atteinte.
 \textbf{void GetInt(int* n):}
 
 Lit un entier depuis l'entrée standard. La limite est fixée à 16 caractères. Si la valeur n'est pas comprise dans l'intervalle [$-2^{31}$;
-$2^{31}-1$],  elle prend la valeur de la borne la plus proche de cet intervalle. Si l'utilisateur entre uniquement le signe `-', le nombre stocké est zéro.\\
-
+$2^{31}-1$],  elle prend la valeur de la borne la plus proche de cet intervalle. Si l'utilisateur entre uniquement le signe `-', le nombre stocké est zéro.
+\bigskip
 
 \textbf{void PutInt(int n):}
 
 Affiche l'entier \textit{n} sur la sortie standard.\\
-\bigskip
+
 
 \section{Threads, processus et synchronisation}
 \bigskip
@@ -151,13 +153,14 @@ Options disponibles :\\
 \item -cd (nom) : Déplace l'utilisateur sur le répertoire de nom \textit{nom} qui devient le répertoire courant. Fonctionne avec un chemin relatif. Échoue si le répertoire n'existe pas.
 \end{itemize}
 
-
+\bigskip
 Pour la création de fichiers, la taille maximale autorisée est de 112,5Ko.
 
 
 \chapter{Implémentation}
 
 \section{Travail réalisé}
+\bigskip
 
 \subsection{Entrées/Sorties}
 
@@ -195,18 +198,19 @@ Récupère les caractères entrés un par puis vérifie que le nombre demandé n
 La chaîne de caractères résultante est convertie en int.
 \bigskip
 
-
 \textbf{void PutInt(int n):}
 
 Convertit \textit{n} en chaîne de 15 caractères avant de l'afficher sur la sortie standard.
-\bigskip	
+\newpage	
 
 
 \subsection{Threads, processus}
 
 Un thread contient des champs entiers TID et BID.
 
-Le BID correspond à l'indice du BitMap auquel le thread est référencé. Il est propre à l'espace d'adressage. Plusieurs threads peuvent donc posséder la même valeur de BID s'ils ne font pas partie du même processus. La gestion des threads est ainsi effectuée grâce au TID qui lui est unique dans le système.
+Le BID correspond à l'indice du BitMap auquel le thread est référencé. Il est propre à l'espace d'adressage. Plusieurs threads peuvent donc posséder la même valeur de BID s'ils ne font pas partie du même processus. La gestion des threads est ainsi effectuée grâce au TID qui lui est unique dans le système. \\
+
+Le nombre maximal de threads par espace d'adressage a été fixé à 16 car cette valeur nous a semblé suffisante pour une utilisation nominale du système par l'utilisateur et pour vérifier le bon fonctionnement du multithreading au sein du système.
 
 \bigskip
 
@@ -214,7 +218,7 @@ L'implémentation des processus est différente de celle d'Unix. Dans DesperadOS
 \bigskip
 
 La pile est gérée de la manière suivante :
-Un objet BitMap est utilisé pour déterminer le secteur de la pile lié au nouveau thread et définir le numéro BID de ce thread.
+un objet BitMap est utilisé pour déterminer le secteur de la pile lié au nouveau thread et définir le numéro BID de ce thread.
 
 Un type Semaphore a été défini pour procéder à l'implémentation des sémaphores utilisateur. 
 La gestion du UserThreadJoin a été réalisée grâce à l'utilisation d'une liste chainée contenant un couple <TID,Semaphore>.
@@ -235,6 +239,7 @@ La fin des processus et des threads est gérée automatiquement via un compteur 
 
 \subsection{Système de fichiers}
 
+\bigskip
 Pour permettre la création de répertoires, il a fallu distinguer les répertoires des fichiers "normaux". Ainsi dans la classe DirectoryEntry (qui représente une entrée de répertoire, quelle qu'elle soit) on ajoute un champ "isFile" de type booléen. Un booléen a été ajouté en paramètre des fonctions Find, Add et Remove de la classe Directory qui sont notamment utilisées lors de la création et suppression de fichiers ou de répertoires.
 De plus, un répertoire racine, ne contenant qu'une entrée spéciale "." doit être créé, et défini comme répertoire courant au formatage.
 \bigskip
@@ -250,7 +255,7 @@ Un nouveau répertoire est créé. Il contient deux entrées spéciales (. et ..
 
 
 \textbf{bool RemoveDir(const char *name):} Si le répertoire dont le nom est passé en paramètre se trouve sur le répertoire courant (sauf . et ..), on vérifie si le répertoire est vide et, le cas échéant, on libère tous les secteurs qu'il utilise et le supprime des entrées du répertoire courant, puis on valide les modifications en réécrivant le répertoire courant sur le disque.
-\bigskip
+\newpage
 
 
 \subsection{Réseau}
@@ -269,88 +274,133 @@ un séquencement et l’ajout d'une taille totale dans l’en-tête de la classe
 
 
 Les messages sont vérifiés grâce à leur numéro d'acquittement et par leur type ACK, FIN ou donnée, ceci dans le but de conserver l'ordre des messages et d'assurer une commmunication cohérente entre le récepteur et l'émetteur.
+\newpage
 
 \section{Extensions des fonctionnalités}
 
 D'autres fonctionnalités ont été étudiées et/ou implémentées mais ne sont pas fonctionnelles à ce jour.
 Parmi ces fonctionnalités on compte :
 \begin{itemize}\renewcommand{\labelitemi}{$\bullet$}
-\item L'ajout de l'option \textit{-mv (nom)(rep} servant à déplacer un fichier ou un répertoire de nom \textit{nom} vers le répertoire \textit{rep}.
-\item  
-\item 
-\item 
+\item L'ajout de l'option -mv (nom)(rep) servant à déplacer un fichier ou un répertoire de nom \textit{nom} vers le répertoire \textit{rep}.
+\item L'extension de l'option -cp (nom1) (nom2) : Effectuer une copie d'un fichier \textit{nom1} présent dans le système vers un nouveau fichier \textit{nom2} également dans le système.
+\item L'augmentation de la taille maximale des fichiers à 120ko, qui pourrait être réalisée en utilisant une classe similaire à FileHeader mais permettant le stockage de 32 entiers (soit 128 octets) au lieu de 30 actuellement.
+\item L'extension des commandes mkdir et rmdir afin de permettre l'utilisation de chemins (exemple : mkdir dir1/dir2/newdir).
+\item La gestion des fichiers ouverts à l'aide d'un tableau défini au niveau du système.
+\item La gestion concurrente de plusieurs threads accédant au système du fichiers. Ceci nécessiterait que chaque thread possède sa propre table des fichiers ouverts en plus de celle définie pour le système, ce qui permettrait le blocage des commandes interdites comme la modification ou la fermeture d'un fichier ouvert par thread différent du thread courant.
 \end{itemize}
-
-
-
--
-- Extension de l'option "-cp (nom1) (nom2) : Effectuer une copie d'un fichier nom1 présent dans le système vers un nouveau fichier nom2 également dans le système.
-
--En utilisant une classe similaire à FileHeader mais permettant le stockage de 32 entiers (soit 128 octets) au lieu de 30, on peut étendre la taille maximale d'un fichier à 30*32*128 octets soit 120ko.
-
--Permettre l'utilisation de chemins pour le mkdir et le rmdir.
 
 
 
 
 \chapter{Tests utilisateur}
-\section{Test sur la console :}
 
+\section{Entrées/Sorties}
+
+\textbf{testEtape2.c :} Programme mettant en place l'interaction avec l'utilisateur via les E/S standards. Ce programme utilise les appels système GetChar, PutChar, GetString, PutString, GetInt et PutInt. Comme détaillé dans les spécifications, si GetChar reçoit une chaîne de caractères, seul le premier caractère de la chaîne est stocké. Le prochain appel à GetString affiche alors le reste des caractères, ce qui montre un mauvais comportement. L'utilisateur doit donc entrer strictement un caractère lors de l'appel à GetChar.
+\bigskip
+
+\section{Threads utilisateur}
+
+\textbf{makethreads.c :}
+Crée 6 threads et leur demande d’afficher chacun un caractère qui sera aussi affiché par le thread principal. Le thread principal
+affiche un caractère puis attend chaque thread alternativement. Ce test permet de vérifier que les
+threads se lancent, exécutent une fonction et sont bien attendus par le main en cas d'appel à Join.\\
+
+\textbf{test3\_threads.c :} Crée deux threads affichant l’entier 44, le caractère ‘\_’ puis 5 ou 10 en
+fonction du thread 1 ou 2. Ce test permet de vérifier que l’on peut récupérer les informations
+concernant le thread et le non dépassement de pile.\\
+
+\textbf{test3\_1threads.c :} Crée des threads qui affichent chacun une valeur différente t[i] d’un
+tableau t suivie d’un retour à la ligne. Le thread principal fait ensuite un Join() pour tous les threads
+créés. Ce test simple permet de vérifier la validité du fonctionnement de UserThreadCreate(), sa
+valeur de retour, et UserThreadJoin().
+\newpage
+
+\textbf{testMultithreading.c :} Crée un grand nombre de threads afin de vérifier le nombre de threads maximal supporté. Notre système d'exploitation peut supporter au plus 16 threads. Le système bloque lorsque plus 16 threads sont exécutés dans un même processus en raison d'un dépassement de capacité mémoire.\\
+
+\textbf{testSemThreads.c :} Crée un producteur et 3 consommateurs. Le producteur initialise un buffer avec une suite de caractères ASCII puis signale aux consommateurs qui attendent que le buffer est plein. Le consommateur doit remplacer le caratère lu du buffer avec un caractère 'x' pour indiquer aux autres consommateurs que le caratère a été lu. Ce test permet de tester la bonne utilisation des sémaphores au niveau utilisateur.
+\bigskip
+
+\section{Processus}
+
+\textbf{testForkExec.c:} Crée seul processus monothreadé.
+\bigskip
+
+\textbf{testForkExec1.c:} Crée un seul processus multithreadé.
+\bigskip
+
+\textbf{testForkExec2.c:} Crée un processus monothreadé et un processus multithreadé.
+\bigskip
+
+\textbf{testForkExec3.c:} Crée deux processus multithreadés avec un affichage.
+\bigskip
+
+\textbf{testForkExec4.c:} Crée deux processus multithreadés gérés avec des entrées/sorties.
+\bigskip
+
+\section{Système de fichiers}
+
+Les commandes disponibles peuvent être testées directement dans le système de fichiers.
 
 
 \chapter{Organisation du travail en équipe}
-
-Organisation du travail en équipe :
-
-Au cours du projet, nous avons participé chacun à plusieurs parties afin d'avancer autant que possible tout en comprenant
-comment fonctionnent les fonctionnalités de nachOS.
+Au cours du projet, chacun a contribué à plusieurs parties afin d'avancer autant que possible tout en comprenant
+comment fonctionnent les différentes fonctionnalités de NachOS. L'intégration a été faite au fur et à mesure du développement des différents éléments. La première partie du projet sur les entrées/sorties a été développée en commun afin que tout le groupe acquière une bonne compréhension du système de base. Le travail a ensuite été réparti comme suit :
 \bigskip
 
-Jusqu'à l'étape 3 nous avons avancé ensemble. 
-Florian et Cédric se sont occcupés des étapes 3 et 4. 
-Cédric s'est occupé de l'étape 6 et Hosseim s'est occupé de l'étape 5.
-Peio et Thaqif se sont occupés du début du rapport, du début de l'étape 6 et des tests.
-Florian a écrit le rapport final
-\bigskip
 
-Thaqif
-Entrées/Sorties : Implémentation/Tests
-Threads : Debug
-Processus : Debug
-Réseau : Conception/Implémentation/Tests
+\textbf{Mohd Thaqif ABDULLAH HASIM :}
+
+Entrées/Sorties : Implémentation, tests\\
+Threads : Debug\\
+Processus : Debug\\
+Réseau : Conception, implémentation, tests
 \bigskip 
  
-Florian
-Entrées/Sorties : Tests
-Threads : Conception/Implémentation/Tests/Debug
-Processus : Concetpion/Test/Debug
-Système de fichiers : Conception/Implémentation
-Édition du rapport
+\textbf{Florian BARROIS:}
+
+Entrées/Sorties : Tests\\
+Threads : Conception, implémentation, tests, debug\\
+Processus : Conception, tests, debug\\
+Système de fichiers : Conception, implémentation\\
+Rédaction du rapport
 \bigskip 
 
-Hosseim
-Threads : Conception/Implémentation/Debug
-Système de fichiers : Conception/Implémentation/Tests/Debug
+\textbf{Hosseim NAHAL:}
+
+Threads : Conception, implémentation, debug\\
+Système de fichiers : Conception, implémentation, tests, debug
 \bigskip
 
-Cédric
-Entrées/Sorties : Conception/Implémentation
-Threads : Conception/Implémentation/Tests/Debug
-Processus : Conception/Implémentation/Tests/Debug
-Réseau : Conception/Implémentation/Tests/Debug
+\textbf{Cédric GARCIA:}
+
+Entrées/Sorties : Conception, implémentation\\
+Threads : Conception, implémentation, tests, debug\\
+Processus : Conception, implémentation, tests, debug\\
+Réseau : Conception, implémentation, tests, debug
 \bigskip
 
-Peio
-Entrées/Sorties : Débug/tests
-Processus : tests
-Réseau : Conception/Implémentation
-Édition du rapport
+\textbf{Peio RIGAUX:}
+
+Entrées/Sorties : Debug, tests\\
+Processus : Tests\\
+Réseau : Conception, implémentation\\
+Contribution au rapport
 
 
 
 
 \chapter{Retour global sur le projet}
 
-[à remplir à la fin]
+\'A la fin de la période de projet, notre système possède au moins une implémentation basique de chaque étape demandée. La rigueur du groupe lors du développement a permis d'intégrer facilement toutes les facettes du système entre elles et favorise la reprise du projet pour d'éventuelles améliorations futures.
+\bigskip
+
+Malgré une gestion du temps et la communication au sein du groupe qui auraient pu être améliorées, le système présente la plupart des fonctionnalités de base qu'un utilisateur peut attendre de nos jours.
+\bigskip
+
+De manière générale, la diversité des parties d'un système que nous avions à implémenter nous a apporté une meilleure compréhension des systèmes d'exploitation et nous a permis d'améliorer nos qualité de développement bas niveau.
+
+
+
 
 \end{document}
