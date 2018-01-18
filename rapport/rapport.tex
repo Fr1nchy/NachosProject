@@ -5,6 +5,8 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{titlesec}
+%\titlespacing{\chapter}{-20}{-20}{-20}
 \renewcommand{\thechapter}{}
 \renewcommand*\thesection{\arabic{section}}
 \setcounter{chapter}{1}
@@ -47,13 +49,13 @@ Retourne le caractère lu sur l'entrée standard.\\
 \bigskip
 \textbf{void PutChar(char c):}
 
-Écrit le caractère c sur la sortie standard.\\
+Écrit le caractère \textit{c} sur la sortie standard.\\
 
 
 \bigskip
 \textbf{void GetString(char* buf, int n):}
  
-Récupère n caractères à partir de l'entrée standard. Cette récupération peut-être interrompue par un '\textbackslash n',
+Récupère \textit{n} caractères à partir de l'entrée standard. Cette récupération peut-être interrompue par '\textbackslash n',
 auquel cas seuls les caractères avant le '\textbackslash n' sont pris en compte dans le tampon d'arrivée.
 Si le nombre de caractères demandé est inférieur au nombre de caractères dans l'entrée standard, les caractères
 restants sont mis en attente dans le tampon d'entrée. Ils seront récupérés lors du prochain appel à GetString().
@@ -63,7 +65,7 @@ Si le premier caractère présent dans le tampon d'entrée est '\textbackslash n
 \bigskip
 \textbf{void PutString(const char s*):}
 
-Parcourt la chaîne de caractères s et écrit caractère par caractère sur la
+Parcourt la chaîne de caractères \textit{n} et écrit caractère par caractère sur la
 sortie standard jusqu'à la rencontre du caractère `\textbackslash 0' ou jusqu'à
 ce que MAX\_STRING\_SIZE soit atteinte.
 
@@ -77,7 +79,7 @@ $2^{31}-1$],  elle prend la valeur de la borne la plus proche de cet intervalle.
 
 \textbf{void PutInt(int n):}
 
-Affiche l'entier sur la sortie standard.\\
+Affiche l'entier \textit{n} sur la sortie standard.\\
 \bigskip
 
 \section{Threads, processus et synchronisation}
@@ -85,13 +87,13 @@ Affiche l'entier sur la sortie standard.\\
 
 \textbf{int UserThreadCreate(int f, int arg):}
 
-Initialise un thread utilisateur qui appelle la fonction f avec l'argument arg. Bien que UserThreadCreate autorise un seul argument pour la fonction f, il est possible de lui transmettre plusieurs arguments en les définissant comme paramètres d'une structure.
+Initialise un thread utilisateur qui appelle la fonction \textit{f} avec l'argument \textit{arg}. Bien que UserThreadCreate autorise un seul argument pour la fonction f\textit{f}, il est possible de lui transmettre plusieurs arguments en les définissant comme paramètres d'une structure.
 Retourne l’identifiant du thread créé.
 \bigskip
 
 \textbf{void UserThreadJoin(int tid):}
 
-Interrompt l'exécution du thread appelant jusqu'à la terminaison du thread identifié par tid.
+Interrompt l'exécution du thread appelant jusqu'à la terminaison du thread identifié par \textit{tid}.
 \bigskip
 
 
@@ -103,27 +105,27 @@ Termine l'exécution du thread appelant. L'appel à UserThreadExit est facultati
 
 \textbf{void Sem\_init(Semaphore* sem, int val):}
 
-Initialise la valeur du sémaphore sem à val.
+Initialise la valeur du sémaphore \textit{sem} à \textit{val}.
 \bigskip	
 
 
 \textbf{void Sem\_wait(Semaphore sem):}
 
-Décrémente la valeur du sémaphore sem. Sem\_wait est bloquant tant que la valeur de sem est égale à zéro, empêchant ainsi la décrémentation.
-L'appel à Sem\_wait nécessite que le sémaphore sem ait été initialisé avec la fonction Sem\_init.
+Décrémente la valeur du sémaphore \textit{sem}. Sem\_wait est bloquant tant que la valeur de sem est égale à zéro, empêchant ainsi la décrémentation.
+L'appel à Sem\_wait nécessite que le sémaphore \textit{sem} ait été initialisé avec la fonction Sem\_init.
 \bigskip
 
 
 \textbf{void Sem\_post(Semaphore sem):}
 
-Incrémente la valeur du sémaphore sem. Si, une fois incrémentée, la valeur de sem vaut un alors qu'un fil d'exécution est bloqué par Sem\_wait sur le même sémaphore sem, alors ce fil d'exécution reprend son activité.
-L'appel à Sem\_post nécessite que le sémaphore sem ait été initialisé avec la fonction Sem\_init.
+Incrémente la valeur du sémaphore \textit{sem}. Si, une fois incrémentée, la valeur de sem vaut un alors qu'un fil d'exécution est bloqué par Sem\_wait sur le même sémaphore \textit{sem}, alors ce fil d'exécution reprend son activité.
+L'appel à Sem\_post nécessite que le sémaphore \textit{sem} ait été initialisé avec la fonction Sem\_init.
 \bigskip
 
 
 \textbf{void Sem\_destroy(Semaphore sem):}
 
-Détruit le sémaphore sem. Si sem est détruit alors que des fils d'exécution ont été suspendus par un appel à Sem\_wait sur ce même sémaphore sem, ces fils d'exécution ne se termineront pas avant l'arrêt complet du système.
+Détruit le sémaphore \textit{sem}. Si \textit{sem} est détruit alors que des fils d'exécution ont été suspendus par un appel à Sem\_wait sur ce même sémaphore \textit{sem}, le comportement du système est indéfini.
 \bigskip
 
 
@@ -142,11 +144,11 @@ Options disponibles :\\
 \begin{itemize}\renewcommand{\labelitemi}{$\bullet$}
 \item -l  : Liste le contenu du répertoire courant (équivalent de ls sur Unix).
 \item  -D  : Affiche le contenu du disque et les blocs occupés utilisés par chaque fichier.
-\item  -cp (nom1) (nom2) : Copie le fichier de nom nom1 dans le système de fichiers Nachos, sous le nom nom2.
-\item  -p (nom) : Affiche le contenu du fichier nom. Échoue si le fichier n'existe pas.
-\item  -md (nom) : Crée un répertoire de nom nom. Échoue si le répertoire existe déjà ou si l'espace disque est insuffisant.
-\item  -rd (nom) : Supprime le répertoire de nom nom. Échoue si le répertoire n'existe pas, n'est pas vide, ou s'il s'agit du répertoire . ou ..
-\item -cd (nom) : Se déplace sur le répertoire de nom nom qui devient le répertoire courant. Fonctionne avec un chemin relatif. Échoue si le répertoire n'existe pas.
+\item  -cp (nom1) (nom2) : Copie le fichier de nom \textit{nom1} dans le système de fichiers Nachos, sous le nom \textit{nom2}.
+\item  -p (nom) : Affiche le contenu du fichier \textit{nom}. Échoue si le fichier n'existe pas.
+\item  -md (nom) : Crée un répertoire de nom \textit{nom}. Échoue si le répertoire existe déjà ou si l'espace disque est insuffisant.
+\item  -rd (nom) : Supprime le répertoire de nom \textit{nom}. Échoue si le répertoire n'existe pas, n'est pas vide, ou s'il s'agit du répertoire . ou ..
+\item -cd (nom) : Déplace l'utilisateur sur le répertoire de nom \textit{nom} qui devient le répertoire courant. Fonctionne avec un chemin relatif. Échoue si le répertoire n'existe pas.
 \end{itemize}
 
 
@@ -155,7 +157,9 @@ Pour la création de fichiers, la taille maximale autorisée est de 112,5Ko.
 
 \chapter{Implémentation}
 
-\section{Entrées/Sorties}
+\section{Travail réalisé}
+
+\subsection{Entrées/Sorties}
 
 \textbf{char GetChar():} 
 
@@ -167,13 +171,13 @@ afin de récupérer un caractère à partir de l'entrée standard.
 \textbf{void PutChar(char c):} 
 
 Utilise une version synchronisée de console->PutChar(const char ch)
-afin d'afficher le caractère ch sur la sortie standard.
+afin d'afficher le caractère \textit{c} sur la sortie standard.
 \bigskip
 
 
 \textbf{void GetString(char * buf, int n):} 
 
-Effectue n appels à GetChar afin de remplir un tampon de caractères.
+Effectue \textit{n} appels à GetChar afin de remplir un tampon de caractères.
 À chaque itération, des conditions permettent d'ignorer le caractère courant si
 il correspond à EOF ou '\textbackslash n'.
 
@@ -181,7 +185,7 @@ il correspond à EOF ou '\textbackslash n'.
 
 \textbf{void PutString(const char s*):}
 
-Parcourt la chaîne de caractères s à l'aide d'une boucle et appel PutChar pour chaque caractère.
+Parcourt la chaîne de caractères \textit{s} à l'aide d'une boucle et appelle PutChar avec chaque caractère.
 \bigskip	
 	
 
@@ -194,11 +198,11 @@ La chaîne de caractères résultante est convertie en int.
 
 \textbf{void PutInt(int n):}
 
-Convertit n en chaîne de 15 caractères avant de l'afficher sur la sortie standard.
+Convertit \textit{n} en chaîne de 15 caractères avant de l'afficher sur la sortie standard.
 \bigskip	
 
 
-\section{Threads, processus}
+\subsection{Threads, processus}
 
 Un thread contient des champs entiers TID et BID.
 
@@ -219,7 +223,7 @@ Enfin, un nouvel argument pointant sur la fonction UserThreadExit a été ajout�
 
 
 
-\section{Pagination}
+\subsection{Pagination}
 
 
 Notre stratégie d’allocation des pages physiques consiste en un tirage aléatoire via la méthode « GetEmptyFrame » . Un BitMap est utilisé pour vérifier si la frame est déjà allouée ou non.
@@ -228,34 +232,28 @@ Notre stratégie d’allocation des pages physiques consiste en un tirage aléat
 La fin des processus et des threads est gérée automatiquement via un compteur pour déterminer s'il est nécessaire d'effectuer une interruption machine ou une terminaison de thread.
 \bigskip
 
-\section{Système de fichiers}
+
+\subsection{Système de fichiers}
 
 Pour permettre la création de répertoires, il a fallu distinguer les répertoires des fichiers "normaux". Ainsi dans la classe DirectoryEntry (qui représente une entrée de répertoire, quelle qu'elle soit) on ajoute un champ "isFile" de type booléen. Un booléen a été ajouté en paramètre des fonctions Find, Add et Remove de la classe Directory qui sont notamment utilisées lors de la création et suppression de fichiers ou de répertoires.
 De plus, un répertoire racine, ne contenant qu'une entrée spéciale "." doit être créé, et défini comme répertoire courant au formatage.
+\bigskip
 
-\textbf{bool MakeDir(const char *name):} de la même manière que pour la fonction Create, cette fonction prend une chaîne "name" en paramètre. On charge le répertoire courant à partir du secteur Directory	Sector (constante fixée à 1) dans un objet de type Directory. Un test a été mis en place afin de  s'assurer qu'un répertoire de nom "name" n'existe pas déjà (auquel cas on renvoie faux). On charge également le BitMap qui nous donne un secteur de données disponible (s'il n'y en a pas, on renvoie faux également). 
-Un nouveau répertoire est crée. Il contient deux entrées spéciales (. et ..) et le FileHeader associé, qui est écrit sur le secteur libre défini précédemment. Enfin sur le répertoire courant une nouvelle entrée qui redirige vers ce secteur est ajoutée, et toutes ces modifications sont réécrites sur le disque.
+
+\textbf{bool MakeDir(const char *name):} de la même manière que pour la fonction Create, cette fonction prend une chaîne \textit{name} en paramètre. On charge le répertoire courant à partir du secteur DirectorySector (constante fixée à 1) dans un objet de type Directory. Un test a été mis en place afin de  s'assurer qu'un répertoire de nom \textit{name} n'existe pas déjà (auquel cas la fonction renvoie false). On charge également le BitMap qui nous donne un secteur de données disponible (s'il n'y en a pas, la fonction renvoie false également). 
+Un nouveau répertoire est créé. Il contient deux entrées spéciales (. et ..) et le FileHeader associé, qui est écrit sur le secteur libre défini précédemment. Enfin sur le répertoire courant une nouvelle entrée qui redirige vers ce secteur est ajoutée, et toutes ces modifications sont réécrites sur le disque.
 \bigskip
 
 
 \textbf{bool ChangeDir(const char *name):} Cette fonction va chercher le répertoire dont le nom (ou le chemin relatif) est passé en paramètre et, s'il existe, elle en fait une copie sur le répertoire courant situé sur le secteur DirectorySector numéro 1.
 \bigskip
 
+
 \textbf{bool RemoveDir(const char *name):} Si le répertoire dont le nom est passé en paramètre se trouve sur le répertoire courant (sauf . et ..), on vérifie si le répertoire est vide et, le cas échéant, on libère tous les secteurs qu'il utilise et le supprime des entrées du répertoire courant, puis on valide les modifications en réécrivant le répertoire courant sur le disque.
 \bigskip
 
 
-Extensions possibles : 
--Ajout d'une option "-mv (nom) (rep)"" [Déplacer un fichier ou un répertoire de nom nom vers le répertoire rep.
-- Extension de l'option "-cp (nom1) (nom2) : Effectuer une copie d'un fichier nom1 présent dans le système vers un nouveau fichier nom2 également dans le système.
-
--En utilisant une classe similaire à FileHeader mais permettant le stockage de 32 entiers (soit 128 octets) au lieu de 30, on peut étendre la taille maximale d'un fichier à 30*32*128 octets soit 120ko.
-
--Permettre l'utilisation de chemins pour le mkdir et le rmdir.
-
-
-
-\section{Réseau}
+\subsection{Réseau}
 
 La partie réseau du système fonctionne grâce à un protocole de communication qui a été créé en se basant sur le fonctionnement du protocole TCP/IP. L'échange d'information s'effectue comme indiqué ci-dessous.
 
@@ -272,6 +270,28 @@ un séquencement et l’ajout d'une taille totale dans l’en-tête de la classe
 
 Les messages sont vérifiés grâce à leur numéro d'acquittement et par leur type ACK, FIN ou donnée, ceci dans le but de conserver l'ordre des messages et d'assurer une commmunication cohérente entre le récepteur et l'émetteur.
 
+\section{Extensions des fonctionnalités}
+
+D'autres fonctionnalités ont été étudiées et/ou implémentées mais ne sont pas fonctionnelles à ce jour.
+Parmi ces fonctionnalités on compte :
+\begin{itemize}\renewcommand{\labelitemi}{$\bullet$}
+\item L'ajout de l'option \textit{-mv (nom)(rep} servant à déplacer un fichier ou un répertoire de nom \textit{nom} vers le répertoire \textit{rep}.
+\item  
+\item 
+\item 
+\end{itemize}
+
+
+
+-
+- Extension de l'option "-cp (nom1) (nom2) : Effectuer une copie d'un fichier nom1 présent dans le système vers un nouveau fichier nom2 également dans le système.
+
+-En utilisant une classe similaire à FileHeader mais permettant le stockage de 32 entiers (soit 128 octets) au lieu de 30, on peut étendre la taille maximale d'un fichier à 30*32*128 octets soit 120ko.
+
+-Permettre l'utilisation de chemins pour le mkdir et le rmdir.
+
+
+
 
 \chapter{Tests utilisateur}
 \section{Test sur la console :}
@@ -279,7 +299,53 @@ Les messages sont vérifiés grâce à leur numéro d'acquittement et par leur t
 
 
 \chapter{Organisation du travail en équipe}
-Répartition des tâches
+
+Organisation du travail en équipe :
+
+Au cours du projet, nous avons participé chacun à plusieurs parties afin d'avancer autant que possible tout en comprenant
+comment fonctionnent les fonctionnalités de nachOS.
+\bigskip
+
+Jusqu'à l'étape 3 nous avons avancé ensemble. 
+Florian et Cédric se sont occcupés des étapes 3 et 4. 
+Cédric s'est occupé de l'étape 6 et Hosseim s'est occupé de l'étape 5.
+Peio et Thaqif se sont occupés du début du rapport, du début de l'étape 6 et des tests.
+Florian a écrit le rapport final
+\bigskip
+
+Thaqif
+Entrées/Sorties : Implémentation/Tests
+Threads : Debug
+Processus : Debug
+Réseau : Conception/Implémentation/Tests
+\bigskip 
+ 
+Florian
+Entrées/Sorties : Tests
+Threads : Conception/Implémentation/Tests/Debug
+Processus : Concetpion/Test/Debug
+Système de fichiers : Conception/Implémentation
+Édition du rapport
+\bigskip 
+
+Hosseim
+Threads : Conception/Implémentation/Debug
+Système de fichiers : Conception/Implémentation/Tests/Debug
+\bigskip
+
+Cédric
+Entrées/Sorties : Conception/Implémentation
+Threads : Conception/Implémentation/Tests/Debug
+Processus : Conception/Implémentation/Tests/Debug
+Réseau : Conception/Implémentation/Tests/Debug
+\bigskip
+
+Peio
+Entrées/Sorties : Débug/tests
+Processus : tests
+Réseau : Conception/Implémentation
+Édition du rapport
+
 
 
 
