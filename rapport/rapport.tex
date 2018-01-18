@@ -89,7 +89,7 @@ Affiche l'entier \textit{n} sur la sortie standard.\\
 
 \textbf{int UserThreadCreate(int f, int arg):}
 
-Initialise un thread utilisateur qui appelle la fonction \textit{f} avec l'argument \textit{arg}. Bien que UserThreadCreate autorise un seul argument pour la fonction f\textit{f}, il est possible de lui transmettre plusieurs arguments en les définissant comme paramètres d'une structure.
+Initialise un thread utilisateur qui appelle la fonction \textit{f} avec l'argument \textit{arg}. Bien que UserThreadCreate autorise un seul argument pour la fonction \textit{f}, il est possible de lui transmettre plusieurs arguments en les définissant comme paramètres d'une structure.
 Retourne l’identifiant du thread créé.
 \bigskip
 
@@ -120,14 +120,14 @@ L'appel à Sem\_wait nécessite que le sémaphore \textit{sem} ait été initial
 
 \textbf{void Sem\_post(Semaphore sem):}
 
-Incrémente la valeur du sémaphore \textit{sem}. Si, une fois incrémentée, la valeur de sem vaut un alors qu'un fil d'exécution est bloqué par Sem\_wait sur le même sémaphore \textit{sem}, alors ce fil d'exécution reprend son activité.
+Incrémente la valeur du sémaphore \textit{sem}. Si, une fois incrémentée, la valeur de \textit{sem} vaut 1 alors qu'un fil d'exécution est bloqué par Sem\_wait sur le même sémaphore \textit{sem}, alors ce fil d'exécution reprend son activité.
 L'appel à Sem\_post nécessite que le sémaphore \textit{sem} ait été initialisé avec la fonction Sem\_init.
 \bigskip
 
 
 \textbf{void Sem\_destroy(Semaphore sem):}
 
-Détruit le sémaphore \textit{sem}. Si \textit{sem} est détruit alors que des fils d'exécution ont été suspendus par un appel à Sem\_wait sur ce même sémaphore \textit{sem}, le comportement du système est indéfini.
+Détruit le sémaphore \textit{sem}. Si \textit{sem} est détruit alors que des fils d'exécution ont été suspendus par un appel à Sem\_wait sur ce même sémaphore \textit{sem}, le comportement du système est indéterminé.
 \bigskip
 
 
@@ -194,8 +194,8 @@ Parcourt la chaîne de caractères \textit{s} à l'aide d'une boucle et appelle 
 
 \textbf{void GetInt(int* n):}	
 	
-Récupère les caractères entrés un par puis vérifie que le nombre demandé ne dépasse pas la taille d'un int.
-La chaîne de caractères résultante est convertie en int.
+Récupère les caractères entrés un par un puis vérifie que le nombre demandé ne dépasse pas la taille d'un entier.
+La chaîne de caractères résultante est convertie en entier.
 \bigskip
 
 \textbf{void PutInt(int n):}
@@ -219,9 +219,11 @@ L'implémentation des processus est différente de celle d'Unix. Dans DesperadOS
 
 La pile est gérée de la manière suivante :
 un objet BitMap est utilisé pour déterminer le secteur de la pile lié au nouveau thread et définir le numéro BID de ce thread.
+\bigskip
 
 Un type Semaphore a été défini pour procéder à l'implémentation des sémaphores utilisateur. 
 La gestion du UserThreadJoin a été réalisée grâce à l'utilisation d'une liste chainée contenant un couple <TID,Semaphore>.
+\bigskip
 
 Enfin, un nouvel argument pointant sur la fonction UserThreadExit a été ajouté dans le fichier start.S lors de l'appel à UserThreadCreate. Ceci permet ainsi la terminaison automatique des threads lorsque ceux-ci ont terminé la tâche qui leur a été assignée.
 
@@ -280,13 +282,15 @@ Les messages sont vérifiés grâce à leur numéro d'acquittement et par leur t
 
 D'autres fonctionnalités ont été étudiées et/ou implémentées mais ne sont pas fonctionnelles à ce jour.
 Parmi ces fonctionnalités on compte :
+\bigskip
 \begin{itemize}\renewcommand{\labelitemi}{$\bullet$}
-\item L'ajout de l'option -mv (nom)(rep) servant à déplacer un fichier ou un répertoire de nom \textit{nom} vers le répertoire \textit{rep}.
-\item L'extension de l'option -cp (nom1) (nom2) : Effectuer une copie d'un fichier \textit{nom1} présent dans le système vers un nouveau fichier \textit{nom2} également dans le système.
-\item L'augmentation de la taille maximale des fichiers à 120ko, qui pourrait être réalisée en utilisant une classe similaire à FileHeader mais permettant le stockage de 32 entiers (soit 128 octets) au lieu de 30 actuellement.
-\item L'extension des commandes mkdir et rmdir afin de permettre l'utilisation de chemins (exemple : mkdir dir1/dir2/newdir).
-\item La gestion des fichiers ouverts à l'aide d'un tableau défini au niveau du système.
-\item La gestion concurrente de plusieurs threads accédant au système du fichiers. Ceci nécessiterait que chaque thread possède sa propre table des fichiers ouverts en plus de celle définie pour le système, ce qui permettrait le blocage des commandes interdites comme la modification ou la fermeture d'un fichier ouvert par thread différent du thread courant.
+\item L'ajout de l'option -mv (nom)(rep) servant à déplacer un fichier ou un répertoire de nom \textit{nom} vers le répertoire \textit{rep}.\bigskip
+\item L'extension de l'option -cp (nom1) (nom2) pour qu'elle permette d'effectuer une copie d'un fichier \textit{nom1} présent dans le système vers un nouveau fichier \textit{nom2} également dans le système.\bigskip
+\item L'augmentation de la taille maximale des fichiers à 120ko, qui pourrait être réalisée en utilisant une classe similaire à FileHeader mais permettant le stockage de 32 entiers (soit 128 octets) au lieu de 30 actuellement.\bigskip
+\item L'extension des commandes mkdir et rmdir afin de permettre l'utilisation de chemins (exemple : mkdir dir1/dir2/newdir).\bigskip
+\item La gestion des fichiers ouverts à l'aide d'un tableau défini au niveau du système.\bigskip
+\item La gestion concurrente de plusieurs threads accédant au système du fichiers. Ceci nécessiterait que chaque thread possède sa propre table des fichiers ouverts en plus de celle définie pour le système, ce qui permettrait le blocage des commandes interdites comme la modification ou la fermeture d'un fichier ouvert par thread différent du thread courant.\bigskip
+\item Dans la partie réseau, l'adaptation du délai avant réémission des messages perdus à l'environnement. Notamment, la valeur du timer utilisé pourrait être calculée en fonction du débit dont bénéficie la machine sur le réseau.
 \end{itemize}
 
 
@@ -316,7 +320,7 @@ créés. Ce test simple permet de vérifier la validité du fonctionnement de Us
 valeur de retour, et UserThreadJoin().
 \newpage
 
-\textbf{testMultithreading.c :} Crée un grand nombre de threads afin de vérifier le nombre de threads maximal supporté. Notre système d'exploitation peut supporter au plus 16 threads. Le système bloque lorsque plus 16 threads sont exécutés dans un même processus en raison d'un dépassement de capacité mémoire.\\
+\textbf{testMultithreading.c :} Crée un grand nombre de threads afin de vérifier le nombre de threads maximal supporté. Notre système d'exploitation pouvant supporter au plus 16 threads par processus, le système bloque à la création d'un thread supplémentaire en raison d'un dépassement de capacité mémoire.\\
 
 \textbf{testSemThreads.c :} Crée un producteur et 3 consommateurs. Le producteur initialise un buffer avec une suite de caractères ASCII puis signale aux consommateurs qui attendent que le buffer est plein. Le consommateur doit remplacer le caratère lu du buffer avec un caractère 'x' pour indiquer aux autres consommateurs que le caratère a été lu. Ce test permet de tester la bonne utilisation des sémaphores au niveau utilisateur.
 \bigskip
@@ -392,7 +396,7 @@ Contribution au rapport
 
 \chapter{Retour global sur le projet}
 
-\'A la fin de la période de projet, notre système possède au moins une implémentation basique de chaque étape demandée. La rigueur du groupe lors du développement a permis d'intégrer facilement toutes les facettes du système entre elles et favorise la reprise du projet pour d'éventuelles améliorations futures.
+\`A la fin de la période de projet, notre système possède au moins une implémentation basique de chaque étape demandée. La rigueur du groupe lors du développement a permis d'intégrer facilement toutes les facettes du système entre elles et favorise la reprise du projet pour d'éventuelles améliorations futures.
 \bigskip
 
 Malgré une gestion du temps et la communication au sein du groupe qui auraient pu être améliorées, le système présente la plupart des fonctionnalités de base qu'un utilisateur peut attendre de nos jours.
