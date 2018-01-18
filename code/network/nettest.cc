@@ -91,6 +91,12 @@ MailTestServeur(int farAddr)
 
 
     // Test constitué de n machines reliées par un anneau logique
+/*
+./nachos-network -m 0 -o 1
+./nachos-network -m 1 -o 2
+./nachos-network -m 2 -o 0
+
+*/
 void
 AnneauLogiqueTest(int farAddr){
     ReseauFiable *reseauFiable = new ReseauFiable();
@@ -111,6 +117,9 @@ AnneauLogiqueTest(int farAddr){
             outMailHdr.length = strlen(data) + 1;
             reseauFiable->Send(outPktHdr, outMailHdr,data);
 
+            reseauFiable->currentACK = -1;
+            Delay(TEMPO*3);
+
             reseauFiable->Receive(1, &inPktHdr, &inMailHdr, buffer);
             printf("A: Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
             fflush(stdout);
@@ -120,6 +129,9 @@ AnneauLogiqueTest(int farAddr){
             reseauFiable->Receive(0, &inPktHdr, &inMailHdr, buffer);
             printf("B: Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
             
+            reseauFiable->currentACK = -1;
+            Delay(TEMPO*3);
+
             strcpy(data,"Salut C,10 réponse de A");
             outMailHdr.to = 2;
             outMailHdr.from = 0;
@@ -132,6 +144,9 @@ AnneauLogiqueTest(int farAddr){
             reseauFiable->Receive(2, &inPktHdr, &inMailHdr, buffer);
             printf("C: Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
 
+            reseauFiable->currentACK = -1;
+            Delay(TEMPO*3);
+
             strcpy(data,"Salut A,10 réponse ?");
             outMailHdr.to = 1;
             outMailHdr.from = 2;
@@ -139,6 +154,7 @@ AnneauLogiqueTest(int farAddr){
             reseauFiable->Send(outPktHdr, outMailHdr,data); 
         break;
     }
-
-    //interrupt->Halt();
+    Delay(TEMPO*3);
+    printf("\n\nFinFin");
+    interrupt->Halt();
 }

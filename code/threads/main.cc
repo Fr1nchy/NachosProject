@@ -197,18 +197,18 @@ main (int argc, char **argv)
 		ASSERT (argc > 1);
 		Delay (2);	
         int res = atoi(*(argv + 1));
-        if(res==1){
+        /*if(res==1){
             printf("Client\n");
             MailTestClient (res);
         }else{
             printf("Serveur\n");
             MailTestServeur (res);
-        }
+        }*/
         // delay for 2 seconds
 		// to give the user time to 
 		// start up another nachos
 		//MailTest ());
-		//AnneauLogiqueTest(atoi (*(argv + 1)));
+		AnneauLogiqueTest(res);
 		argCount = 2;
 	    }
 #endif // NETWORK
