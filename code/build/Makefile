@@ -15,3 +15,34 @@ AUTOLOAD_KERNELS=$(USER_FLAVORS)
 AUTOLOAD_CPPFLAGS=-DCHANGED
 
 include ../Makefile.rules-nachos
+
+# Etape2: in/out
+test:
+	./nachos-userprog -rs 3 -x ./testEtape2
+
+# testMultithreading
+test1:
+	./nachos-userprog -rs 3 -x ./testMultithreading
+
+# testSemThreads
+test2:
+	./nachos-userprog -rs 3 -x ./testSemThreads
+
+# fork mono multithread
+test3:
+	./nachos-userprog -rs 3 -x ./testForkExec2
+
+# multi
+test4:
+	./nachos-userprog -rs 3 -x ./testForkExec4
+
+# Anneau
+testa:
+	./nachos-network -m 0 -o 1
+
+testb:
+	./nachos-network -m 1 -o 2
+
+testc:
+	./nachos-network -m 2 -o 0
+

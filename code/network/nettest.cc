@@ -52,8 +52,10 @@ MailTestClient(int farAddr)
     outMailHdr.length = strlen(data) + 1;
 
     // Send the first message
-    if(0)reseauFiable->Send(outPktHdr, outMailHdr,  data); 
-    fflush(stdout);
+    reseauFiable->Send(outPktHdr, outMailHdr,  data); 
+    
+    reseauFiable->currentACK = -1;
+    Delay(TEMPO*3);
 
     // Wait for the ack from the other machine to the first message we sent.
     reseauFiable->Receive(1, &inPktHdr, &inMailHdr, buffer);
@@ -61,7 +63,7 @@ MailTestClient(int farAddr)
     fflush(stdout);
    
     // Then we're done!
-    //interrupt->Halt();
+    interrupt->Halt();
 }
 
 void
@@ -75,8 +77,12 @@ MailTestServeur(int farAddr)
     char buffer[MaxMailSize];
 
     
-    if(0)reseauFiable->Receive(0, &inPktHdr, &inMailHdr, buffer);
+    reseauFiable->Receive(0, &inPktHdr, &inMailHdr, buffer);
     printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
+
+
+    reseauFiable->currentACK = -1;
+    Delay(TEMPO*3);
 
     outPktHdr.to = farAddr;     
     outMailHdr.to = 1;
@@ -86,7 +92,7 @@ MailTestServeur(int farAddr)
     reseauFiable->Send(outPktHdr, outMailHdr,  data); 
     
     fflush(stdout);
-    //interrupt->Halt();
+    interrupt->Halt();
 }
 
 

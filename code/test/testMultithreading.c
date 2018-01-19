@@ -95,7 +95,7 @@ int main()
 	// UserThreadJoin(t18);
 	// PutString("Joined t18 ");
 
-    Halt();
+    //Halt();
 	return 0;
 }
 
